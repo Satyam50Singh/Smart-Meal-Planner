@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.satya.smartmealplanner.ui.home.DashboardScreen
 import com.satya.smartmealplanner.ui.home.FindByIngredientScreen
+import com.satya.smartmealplanner.ui.home.RecipeDetailScreen
 
 @Composable
 fun AppNavGraph(
@@ -27,6 +28,11 @@ fun AppNavGraph(
 
         composable(Screen.FindByIngredient.route) {
             FindByIngredientScreen(navController)
+        }
+
+        composable(Screen.RecipeDetailById.route) { backStackEntry ->
+            val recipeId = backStackEntry.arguments?.getString("recipeId")
+            RecipeDetailScreen(recipeId)
         }
     }
 }

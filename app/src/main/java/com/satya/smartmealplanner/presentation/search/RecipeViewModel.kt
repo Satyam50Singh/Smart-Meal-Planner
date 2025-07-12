@@ -3,11 +3,13 @@ package com.satya.smartmealplanner.presentation.search
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotId
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.satya.smartmealplanner.BuildConfig
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
+import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
 import com.satya.smartmealplanner.domain.usecase.RecipeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -32,6 +34,10 @@ class RecipeViewModel @Inject constructor(
                 uiState = uiState.copy(error = e.message, isLoading = false)
             }
         }
+    }
+
+    fun clearRecipes() {
+        uiState = uiState.copy(recipes = FindByIngredientsResponse())
     }
 
     fun getCategoryList(): List<DashboardCategory> {
@@ -98,5 +104,9 @@ class RecipeViewModel @Inject constructor(
                 "guess_nutrition_by_image"
             )
         )
+    }
+
+    fun getRecipeById(recipeId: String?) {
+
     }
 }
