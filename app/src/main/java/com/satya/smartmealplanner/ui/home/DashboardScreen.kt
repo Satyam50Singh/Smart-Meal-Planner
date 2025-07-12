@@ -13,17 +13,23 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
 import com.satya.smartmealplanner.ui.home.components.CategoryCard
 
 @Composable
-fun DashboardScreen(modifier: Modifier = Modifier, viewModel: RecipeViewModel = hiltViewModel()) {
+fun DashboardScreen(
+    navController: NavController,
+    viewModel: RecipeViewModel = hiltViewModel()
+) {
 
     val categoryList = viewModel.getCategoryList()
 
-    Column(modifier = modifier
-        .fillMaxSize()
-        .padding(8.dp)) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(8.dp)
+    ) {
         Text(
             text = "Categories . . .",
             fontSize = 24.sp,
@@ -35,7 +41,7 @@ fun DashboardScreen(modifier: Modifier = Modifier, viewModel: RecipeViewModel = 
             columns = StaggeredGridCells.Fixed(2),
             content = {
                 items(categoryList) { category ->
-                    CategoryCard(category)
+                    CategoryCard(category, navController)
                 }
             })
     }

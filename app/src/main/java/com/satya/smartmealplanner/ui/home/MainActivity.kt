@@ -4,9 +4,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.ui.Modifier
+import androidx.navigation.compose.rememberNavController
+import com.satya.smartmealplanner.presentation.navigation.AppNavGraph
+import com.satya.smartmealplanner.presentation.navigation.Screen
 import com.satya.smartmealplanner.ui.theme.SmartMealPlannerTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -17,9 +18,15 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SmartMealPlannerTheme {
-                Scaffold { innerPadding ->
-                    DashboardScreen(modifier = Modifier.padding(innerPadding))
+                val navController = rememberNavController()
+                Scaffold { paddingValues ->
+                    AppNavGraph(
+                        navController = navController,
+                        innerPadding = paddingValues,
+                        destination = Screen.Dashboard.route
+                    )
                 }
+
             }
         }
     }

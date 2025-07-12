@@ -88,4 +88,7 @@ dependencies {
     // Coil
     implementation(libs.coil.compose)
 
+    // Jetpack Compose
+    implementation(libs.androidx.navigation.compose)
+
 }

@@ -40,53 +40,62 @@ class RecipeViewModel @Inject constructor(
                 1,
                 "Search\nRestaurants",
                 R.drawable.restaurant,
-                "Discover restaurants near you that match your taste. Search by food type, rating, or location."
+                "Discover restaurants near you that match your taste. Search by food type, rating, or location.",
+                "search_restaurants"
             ), DashboardCategory(
                 2,
                 "Search\nBy Ingredients",
                 R.drawable.search,
-                "Find recipes based on the ingredients you already have at home. Save time and reduce food waste!"
+                "Find recipes based on the ingredients you already have at home. Save time and reduce food waste!",
+                "search_by_ingredients"
             ),
             DashboardCategory(
                 3,
                 "Search\nBy Nutrients",
                 R.drawable.nutrient,
-                "Looking for high-protein, low-carb, or vitamin-rich meals? Get personalized recipes by nutritional content."
+                "Looking for high-protein, low-carb, or vitamin-rich meals? Get personalized recipes by nutritional content.",
+                "search_by_nutrients"
             ),
             DashboardCategory(
                 4,
                 "Search\nBy Cuisines",
                 R.drawable.cuisine,
-                "Explore diverse world cuisines – Italian, Mexican, Indian, Thai, and more. Find authentic meals by culture."
+                "Explore diverse world cuisines – Italian, Mexican, Indian, Thai, and more. Find authentic meals by culture.",
+                "search_by_cuisines"
             ), DashboardCategory(
                 5,
                 "Random\nRecipes",
                 R.drawable.search,
-                "Feeling spontaneous? Get inspired with completely random meals."
+                "Feeling spontaneous? Get inspired with completely random meals.",
+                "random_recipes"
             ),
             DashboardCategory(
                 6,
                 "Meal\nPlanner",
                 R.drawable.nutrient,
-                "Plan your breakfast, lunch, and dinner for the whole week with Spoonacular's meal planner."
+                "Plan your breakfast, lunch, and dinner for the whole week with Spoonacular's meal planner.",
+                "meal_planner"
             ),
             DashboardCategory(
                 7,
                 "Find\nSimilar Recipes",
                 R.drawable.cuisine,
-                "Found a recipe you like? Discover similar ones instantly with a single click."
+                "Found a recipe you like? Discover similar ones instantly with a single click.",
+                "find_similar_recipes"
             ),
             DashboardCategory(
                 8,
                 "Recipe\nInformation",
                 R.drawable.search,
-                "Get detailed nutritional and preparation info for any Spoonacular recipe by ID."
+                "Get detailed nutritional and preparation info for any Spoonacular recipe by ID.",
+                "recipe_information"
             ),
             DashboardCategory(
                 10,
                 "Guess\nNutrition by Image",
                 R.drawable.search,
-                "Upload a food image and let AI predict the nutrition facts — calories, protein, fat, and more."
+                "Upload a food image and let AI predict the nutrition facts — calories, protein, fat, and more.",
+                "guess_nutrition_by_image"
             )
         )
     }
