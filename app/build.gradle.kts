@@ -2,11 +2,17 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.hilt.android)
+    id("kotlin-kapt")
 }
 
 android {
     namespace = "com.satya.smartmealplanner"
     compileSdk = 35
+
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId = "com.satya.smartmealplanner"
@@ -16,6 +22,9 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "SPOONACULAR_API_KEY", "\"5e5f5b7f9b464322a395f3a15ff4466f\"")
+
     }
 
     buildTypes {
@@ -56,4 +65,27 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Retrofit
+    implementation(libs.retrofit)
+    implementation(libs.gsonConverter)
+    implementation(libs.okhttp)
+    implementation(libs.loggingInterceptor)
+
+    // Hilt Core
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+
+    // Hilt for Jetpack Compose (optional but recommended)
+    implementation(libs.androidx.hilt.navigation.compose)
+
+    // ViewModel injection
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Compose runtime
+    implementation(libs.androidx.compose.runtime)
+
+    // Coil
+    implementation(libs.coil.compose)
+
 }
