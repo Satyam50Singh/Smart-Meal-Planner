@@ -14,7 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.satya.smartmealplanner.presentation.search.DashboardCategory
+import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
 
 @Composable
 fun CategoryCard(category: DashboardCategory) {

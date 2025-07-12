@@ -25,7 +25,7 @@ fun DashboardScreen(modifier: Modifier = Modifier, viewModel: RecipeViewModel = 
         .fillMaxSize()
         .padding(8.dp)) {
         Text(
-            text = "Categories",
+            text = "Categories . . .",
             fontSize = 24.sp,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
             fontWeight = FontWeight.Bold
