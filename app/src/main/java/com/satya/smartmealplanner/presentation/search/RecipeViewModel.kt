@@ -116,11 +116,30 @@ class RecipeViewModel @Inject constructor(
 
             try {
                 val recipeDetails = recipeUseCase.getRecipeDetailsById(recipeId)
-                selectedRecipeState = selectedRecipeState.copy(recipe = recipeDetails, isLoading = false)
+                selectedRecipeState =
+                    selectedRecipeState.copy(recipe = recipeDetails, isLoading = false)
             } catch (e: Exception) {
                 selectedRecipeState = selectedRecipeState.copy(error = e.message, isLoading = false)
             }
         }
 
     }
+
+    var recipeByCuisineState by mutableStateOf(RecipeByCuisineState())
+        private set
+
+    fun getRecipeByCuisine(cuisine: String, diet: String) {
+        viewModelScope.launch {
+            recipeByCuisineState = recipeByCuisineState.copy(isLoading = true)
+
+            try {
+                val listOfRecipes = recipeUseCase.getRecipeByCuisine(cuisine, diet)
+                recipeByCuisineState.copy(isLoading = false, recipes = listOfRecipes, error = null)
+            } catch (e: Exception) {
+                recipeByCuisineState =
+                    recipeByCuisineState.copy(error = e.message, isLoading = false)
+            }
+        }
+    }
+
 }

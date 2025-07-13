@@ -34,6 +34,7 @@ import androidx.navigation.NavController
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
 import com.satya.smartmealplanner.ui.findByIngredients.components.RecipeCard
+import com.satya.smartmealplanner.ui.utils.Loader
 
 @Composable
 fun FindByIngredientScreen(
@@ -99,12 +100,7 @@ fun FindByIngredientScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         when {
-            uiState.isLoading -> Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator()
-            }
+            uiState.isLoading -> Loader()
 
             uiState.error != null -> Text("Error: ${uiState.error}")
 

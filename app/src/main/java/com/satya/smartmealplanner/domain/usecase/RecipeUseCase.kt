@@ -15,4 +15,7 @@ class RecipeUseCase @Inject constructor(
 
 
     suspend fun getRecipeDetailsById(recipeId: Int) = repository.getRecipeDetailsById(recipeId)
+
+    suspend fun getRecipeByCuisine(cuisine: String, diet: String) = repository.getRecipeByCuisine(cuisine, diet)
+
 }

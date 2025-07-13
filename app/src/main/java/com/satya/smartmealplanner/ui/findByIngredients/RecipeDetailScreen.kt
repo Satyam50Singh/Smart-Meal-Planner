@@ -46,6 +46,12 @@ fun RecipeDetailScreen(
             Text("Error: ${selectedRecipeState.error}")
         }
 
+        selectedRecipeState.recipe == null -> {
+            Box(
+                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+            ) { Text("No details found") }
+        }
+
         else -> {
             val recipe = selectedRecipeState.recipe
             Column(modifier = Modifier.padding(8.dp)) {
