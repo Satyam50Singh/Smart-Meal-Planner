@@ -30,6 +30,7 @@ fun CategoryCard(category: DashboardCategory, navController: NavController) {
         onClick = {
             when (category.categoryRoute) {
                 "search_by_ingredients" -> navController.navigate(Screen.FindByIngredient.route)
+                "search_by_cuisines" -> navController.navigate(Screen.SearchByCuisines.route)
                 else ->
                     Toast.makeText(context, "${category.categoryRoute} clicked", Toast.LENGTH_SHORT)
                         .show()
