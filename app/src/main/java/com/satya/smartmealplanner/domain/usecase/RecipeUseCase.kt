@@ -13,4 +13,6 @@ class RecipeUseCase @Inject constructor(
         apiKey: String
     ) = repository.findByIngredients(ingredients, number, apiKey)
 
+
+    suspend fun getRecipeDetailsById(recipeId: Int) = repository.getRecipeDetailsById(recipeId)
 }

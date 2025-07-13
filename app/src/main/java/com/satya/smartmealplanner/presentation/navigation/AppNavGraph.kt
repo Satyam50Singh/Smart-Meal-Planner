@@ -32,7 +32,7 @@ fun AppNavGraph(
 
         composable(Screen.RecipeDetailById.route) { backStackEntry ->
             val recipeId = backStackEntry.arguments?.getString("recipeId")
-            RecipeDetailScreen(recipeId)
+            RecipeDetailScreen(recipeId?.toIntOrNull(), navController)
         }
     }
 }

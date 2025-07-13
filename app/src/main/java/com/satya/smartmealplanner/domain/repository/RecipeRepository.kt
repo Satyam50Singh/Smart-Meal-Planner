@@ -1,6 +1,7 @@
 package com.satya.smartmealplanner.domain.repository
 
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
+import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 
 interface RecipeRepository {
 
@@ -9,5 +10,7 @@ interface RecipeRepository {
         number: Int,
         apiKey: String
     ): FindByIngredientsResponse
+
+    suspend fun getRecipeDetailsById(recipeId: Int): SelectedRecipeDetails
 
 }
