@@ -1,4 +1,4 @@
-package com.satya.smartmealplanner.ui.home
+package com.satya.smartmealplanner.ui
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -31,4 +31,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

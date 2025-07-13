@@ -1,4 +1,4 @@
-package com.satya.smartmealplanner.ui.home
+package com.satya.smartmealplanner.ui.findByIngredients
 
 import android.widget.Toast
 import androidx.compose.foundation.Image
@@ -33,7 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
-import com.satya.smartmealplanner.ui.home.components.RecipeCard
+import com.satya.smartmealplanner.ui.findByIngredients.components.RecipeCard
 
 @Composable
 fun FindByIngredientScreen(

@@ -8,8 +8,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.satya.smartmealplanner.ui.home.DashboardScreen
-import com.satya.smartmealplanner.ui.home.FindByIngredientScreen
-import com.satya.smartmealplanner.ui.home.RecipeDetailScreen
+import com.satya.smartmealplanner.ui.findByIngredients.FindByIngredientScreen
+import com.satya.smartmealplanner.ui.findByIngredients.RecipeDetailScreen
 
 @Composable
 fun AppNavGraph(

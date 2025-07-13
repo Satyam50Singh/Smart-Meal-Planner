@@ -1,5 +1,6 @@
-package com.satya.smartmealplanner.ui.home.components
+package com.satya.smartmealplanner.ui.findByIngredients.components
 
+import android.text.Html
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -66,9 +67,9 @@ fun RecipeDetailCard(recipe: SelectedRecipeDetails) {
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = android.text.Html.fromHtml(
+                    text = Html.fromHtml(
                         recipe.summary,
-                        android.text.Html.FROM_HTML_MODE_COMPACT
+                        Html.FROM_HTML_MODE_COMPACT
                     ).toString(),
                     style = MaterialTheme.typography.bodyMedium
                 )
