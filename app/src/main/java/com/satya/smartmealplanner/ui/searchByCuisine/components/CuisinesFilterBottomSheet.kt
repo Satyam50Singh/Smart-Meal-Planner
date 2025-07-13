@@ -7,10 +7,15 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,7 +38,7 @@ fun CuisinesFilterBottomSheet(
     val allDiets = getListOfDiets()
 
     var selectedCuisine by remember { mutableStateOf("") }
-    var selectedDiets by remember { mutableStateOf("") }
+    var selectedDiet by remember { mutableStateOf("") }
 
     ModalBottomSheet(onDismissRequest = { onDismiss() }) {
         Column(modifier = Modifier.padding(16.dp)) {
@@ -51,11 +56,22 @@ fun CuisinesFilterBottomSheet(
             ) {
                 allDiets.forEach { diet ->
                     FilterChip(
-                        selected = selectedDiets == diet,
+                        selected = selectedDiet == diet,
                         onClick = {
-                            selectedDiets = diet
+                            selectedDiet = diet
                         },
-                        label = { Text(diet) }
+                        label = { Text(diet) },
+                        leadingIcon = if (selectedDiet == diet) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Filled.Done,
+                                    contentDescription = "Done icon",
+                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                )
+                            }
+                        } else {
+                            null
+                        },
                     )
                 }
             }
@@ -78,7 +94,18 @@ fun CuisinesFilterBottomSheet(
                         onClick = {
                             selectedCuisine = cuisine
                         },
-                        label = { Text(cuisine) }
+                        label = { Text(cuisine) },
+                        leadingIcon = if (selectedCuisine == cuisine) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Filled.Done,
+                                    contentDescription = "Done icon",
+                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                )
+                            }
+                        } else {
+                            null
+                        },
                     )
                 }
             }
@@ -87,7 +114,7 @@ fun CuisinesFilterBottomSheet(
 
             Button(
                 onClick = {
-                    onApplyClick(selectedCuisine, selectedDiets)
+                    onApplyClick(selectedCuisine, selectedDiet)
                 },
                 modifier = Modifier
                     .align(Alignment.End)
