@@ -24,12 +24,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.satya.smartmealplanner.R
+import com.satya.smartmealplanner.ui.searchByCuisine.components.CuisinesFilterBottomSheet
+import com.satya.smartmealplanner.utils.UIHelpers
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchByCuisineScreen(navController: NavHostController) {
 
     var showBottomSheet by remember { mutableStateOf(false) }
+    var selectedCuisine by remember { mutableStateOf("") }
+    var selectedDiet by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.padding(8.dp)) {
         Row(
@@ -61,11 +65,21 @@ fun SearchByCuisineScreen(navController: NavHostController) {
                 Text(text = "Filter")
             }
         }
+
+        Text(text = "Selected Cuisine: $selectedCuisine")
+        Text(text = "Selected Cuisine: $selectedDiet")
     }
 
     if (showBottomSheet) {
-        ModalBottomSheet(onDismissRequest = { showBottomSheet = false }) {
-
-        }
+        CuisinesFilterBottomSheet(
+            onApplyClick = { cuisine, diet ->
+                selectedCuisine = cuisine
+                selectedDiet = diet
+                showBottomSheet = false
+            },
+            onDismiss = {
+                showBottomSheet = false
+            }
+        )
     }
 }
