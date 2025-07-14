@@ -15,9 +15,11 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -42,10 +44,19 @@ fun SearchByCuisineScreen(
 ) {
 
     var showBottomSheet by remember { mutableStateOf(false) }
-    var selectedCuisine by remember { mutableStateOf("") }
-    var selectedDiet by remember { mutableStateOf("") }
+    var selectedCuisine by rememberSaveable { mutableStateOf("") }
+    var selectedDiet by rememberSaveable { mutableStateOf("") }
+    var hasLoadedOnce by rememberSaveable { mutableStateOf(false) }
+
 
     val recipeByCuisine = viewModel.recipeByCuisineState
+
+    LaunchedEffect(Unit) {
+        if (!hasLoadedOnce) {
+            viewModel.getRecipeByCuisine("Indian", "Vegetarian")
+            hasLoadedOnce = true
+        }
+    }
 
     Column(modifier = Modifier.padding(8.dp)) {
         Row(
