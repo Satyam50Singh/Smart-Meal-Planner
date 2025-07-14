@@ -115,6 +115,8 @@ fun SearchByCuisineScreen(
 
     if (showBottomSheet) {
         CuisinesFilterBottomSheet(
+            selectedCuisine,
+            selectedDiet,
             onApplyClick = { cuisine, diet ->
                 selectedCuisine = cuisine
                 selectedDiet = diet

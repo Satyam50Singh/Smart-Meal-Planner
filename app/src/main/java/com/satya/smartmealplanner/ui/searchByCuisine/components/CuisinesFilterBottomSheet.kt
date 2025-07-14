@@ -30,6 +30,8 @@ import androidx.compose.ui.unit.dp
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
 fun CuisinesFilterBottomSheet(
+    cuisine: String,
+    diet: String,
     onApplyClick: (String, String) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -37,8 +39,8 @@ fun CuisinesFilterBottomSheet(
     val allCuisines = getListOfCuisines()
     val allDiets = getListOfDiets()
 
-    var selectedCuisine by remember { mutableStateOf("") }
-    var selectedDiet by remember { mutableStateOf("") }
+    var selectedCuisine by remember { mutableStateOf(cuisine) }
+    var selectedDiet by remember { mutableStateOf(diet) }
 
     ModalBottomSheet(onDismissRequest = { onDismiss() }) {
         Column(modifier = Modifier.padding(16.dp)) {
