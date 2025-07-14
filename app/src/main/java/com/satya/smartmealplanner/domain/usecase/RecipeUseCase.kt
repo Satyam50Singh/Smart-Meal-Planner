@@ -1,5 +1,6 @@
 package com.satya.smartmealplanner.domain.usecase
 
+import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.domain.repository.RecipeRepository
 import javax.inject.Inject
 
@@ -16,6 +17,7 @@ class RecipeUseCase @Inject constructor(
 
     suspend fun getRecipeDetailsById(recipeId: Int) = repository.getRecipeDetailsById(recipeId)
 
-    suspend fun getRecipeByCuisine(cuisine: String, diet: String) = repository.getRecipeByCuisine(cuisine, diet)
+    suspend fun getRecipeByCuisine(cuisine: String, diet: String): RecipeByCuisine =
+        repository.getRecipeByCuisine(cuisine, diet)
 
 }

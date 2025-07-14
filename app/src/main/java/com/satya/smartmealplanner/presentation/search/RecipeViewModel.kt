@@ -3,13 +3,13 @@ package com.satya.smartmealplanner.presentation.search
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotId
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.satya.smartmealplanner.BuildConfig
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
+import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.domain.usecase.RecipeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -130,11 +130,15 @@ class RecipeViewModel @Inject constructor(
 
     fun getRecipeByCuisine(cuisine: String, diet: String) {
         viewModelScope.launch {
-            recipeByCuisineState = recipeByCuisineState.copy(isLoading = true)
+            recipeByCuisineState = recipeByCuisineState.copy(isLoading = true, error = null)
 
             try {
-                val listOfRecipes = recipeUseCase.getRecipeByCuisine(cuisine, diet)
-                recipeByCuisineState.copy(isLoading = false, recipes = listOfRecipes, error = null)
+                val listOfRecipes: RecipeByCuisine = recipeUseCase.getRecipeByCuisine(cuisine, diet)
+                recipeByCuisineState = recipeByCuisineState.copy(
+                    isLoading = false,
+                    recipes = listOfRecipes,
+                    error = null
+                )
             } catch (e: Exception) {
                 recipeByCuisineState =
                     recipeByCuisineState.copy(error = e.message, isLoading = false)

@@ -22,6 +22,7 @@ import androidx.navigation.NavHostController
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
 import com.satya.smartmealplanner.ui.findByIngredients.components.RecipeDetailCard
+import com.satya.smartmealplanner.ui.utils.Loader
 
 @Composable
 fun RecipeDetailScreen(
@@ -34,53 +35,42 @@ fun RecipeDetailScreen(
     LaunchedEffect(Unit) {
         recipeId?.let { viewModel.getRecipeById(it) }
     }
+    Column(modifier = Modifier.padding(8.dp)) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(R.drawable.outline_arrow_back),
+                contentDescription = null,
+                modifier = Modifier.clickable(
+                    onClick = { navController.popBackStack() }
+                )
+            )
 
-    when {
-        selectedRecipeState.isLoading -> {
-            Box(
-                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-            ) { CircularProgressIndicator() }
+            Text(
+                text = selectedRecipeState.recipe?.title?: "Details",
+                fontSize = 22.sp,
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
+                fontWeight = FontWeight.Bold
+            )
         }
 
-        selectedRecipeState.error != null -> {
-            Text("Error: ${selectedRecipeState.error}")
-        }
+        when {
+            selectedRecipeState.isLoading -> Loader()
 
-        selectedRecipeState.recipe == null -> {
-            Box(
-                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-            ) { Text("No details found") }
-        }
+            selectedRecipeState.error != null -> {
+                Text("Error: ${selectedRecipeState.error}")
+            }
 
-        else -> {
-            val recipe = selectedRecipeState.recipe
-            Column(modifier = Modifier.padding(8.dp)) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.outline_arrow_back),
-                        contentDescription = null,
-                        modifier = Modifier.clickable(
-                            onClick = { navController.popBackStack() }
-                        )
-                    )
+            selectedRecipeState.recipe == null -> {
+                Box(
+                    modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
+                ) { Text("No details found, Please try another recipe") }
+            }
 
-                    Text(
-                        text = "${selectedRecipeState.recipe?.title}",
-                        fontSize = 22.sp,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-                if (recipe != null) {
-                    RecipeDetailCard(recipe)
-                } else {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) { Text("No details found") }
-                }
+            else -> {
+                val recipe = selectedRecipeState.recipe
+                RecipeDetailCard(recipe)
             }
         }
     }
