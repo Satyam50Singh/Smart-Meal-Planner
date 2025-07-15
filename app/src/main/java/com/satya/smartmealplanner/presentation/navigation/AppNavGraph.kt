@@ -11,7 +11,7 @@ import com.satya.smartmealplanner.ui.home.DashboardScreen
 import com.satya.smartmealplanner.ui.findByIngredients.FindByIngredientScreen
 import com.satya.smartmealplanner.ui.findByIngredients.RecipeDetailScreen
 import com.satya.smartmealplanner.ui.searchByCuisine.SearchByCuisineScreen
-import com.satya.smartmealplanner.ui.searchByNutrients.components.SearchByNutrientsScreen
+import com.satya.smartmealplanner.ui.searchByNutrients.SearchByNutrientsScreen
 
 @Composable
 fun AppNavGraph(

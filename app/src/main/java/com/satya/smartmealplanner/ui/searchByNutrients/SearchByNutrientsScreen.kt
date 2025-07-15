@@ -1,4 +1,4 @@
-package com.satya.smartmealplanner.ui.searchByNutrients.components
+package com.satya.smartmealplanner.ui.searchByNutrients
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -9,7 +9,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -19,7 +22,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.satya.smartmealplanner.R
+import com.satya.smartmealplanner.data.model.recipeByNutrients.NutrientRange
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
+import com.satya.smartmealplanner.ui.searchByNutrients.components.LaunchFilterDialog
+import com.satya.smartmealplanner.ui.searchByNutrients.components.RecipeList
+import com.satya.smartmealplanner.ui.searchByNutrients.components.SelectedNutrientsChips
 import com.satya.smartmealplanner.ui.utils.Loader
 
 @Composable
@@ -29,8 +36,32 @@ fun SearchByNutrientsScreen(
 
     var recipeByNutrientsState = viewModel.recipeByNutrientsState
 
-    LaunchedEffect(Unit) {
-        viewModel.getRecipeByNutrients(10, 100, 10, 100, 10, 100, 10, 100)
+    var showDialog by remember { mutableStateOf(true) }
+
+    var nutrientRange by remember { mutableStateOf(NutrientRange()) }
+
+    var showNutrientFilterChip by remember { mutableStateOf(false) }
+
+    if (showDialog) {
+        LaunchFilterDialog(
+            navController,
+            onDismiss = { showDialog = false },
+            onApply = { range: NutrientRange, visible: Boolean ->
+                showDialog = false
+                nutrientRange = range
+                showNutrientFilterChip = visible
+
+                viewModel.getRecipeByNutrients(
+                    nutrientRange.carbs?.start?.toInt() ?: 10,
+                    nutrientRange.carbs?.endInclusive?.toInt() ?: 100,
+                    nutrientRange.protein?.start?.toInt() ?: 10,
+                    nutrientRange.protein?.endInclusive?.toInt() ?: 100,
+                    nutrientRange.calories?.start?.toInt() ?: 100,
+                    nutrientRange.calories?.endInclusive?.toInt() ?: 500,
+                    nutrientRange.fat?.start?.toInt() ?: 10,
+                    nutrientRange.fat?.endInclusive?.toInt() ?: 100,
+                )
+            })
     }
 
     Column(modifier = Modifier.padding(8.dp)) {
@@ -41,12 +72,20 @@ fun SearchByNutrientsScreen(
                 painter = painterResource(R.drawable.outline_arrow_back),
                 contentDescription = null,
                 modifier = Modifier.clickable(
-                    onClick = { navController.popBackStack() }))
+                    onClick = { navController.popBackStack() })
+            )
 
             Text(
                 text = "Search By Nutrients",
                 fontSize = 22.sp,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
+            )
+        }
+
+        if (showNutrientFilterChip) {
+            SelectedNutrientsChips(
+                nutrientRange = nutrientRange,
+                onClick = { showDialog = it }
             )
         }
 
@@ -66,10 +105,13 @@ fun SearchByNutrientsScreen(
             }
 
             else -> {
-                Text(text = recipeByNutrientsState.recipes.toString())
+                RecipeList(navController, recipeByNutrientsState.recipes)
             }
 
         }
 
     }
+
 }
+
+
