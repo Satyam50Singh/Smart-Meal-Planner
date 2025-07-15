@@ -2,6 +2,7 @@ package com.satya.smartmealplanner.ui.searchByCuisine
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,8 +46,8 @@ fun SearchByCuisineScreen(
 ) {
 
     var showBottomSheet by remember { mutableStateOf(false) }
-    var selectedCuisine by rememberSaveable { mutableStateOf("") }
-    var selectedDiet by rememberSaveable { mutableStateOf("") }
+    var selectedCuisine by rememberSaveable { mutableStateOf("Indian") }
+    var selectedDiet by rememberSaveable { mutableStateOf("Vegetarian") }
     var hasLoadedOnce by rememberSaveable { mutableStateOf(false) }
 
 
@@ -53,7 +55,7 @@ fun SearchByCuisineScreen(
 
     LaunchedEffect(Unit) {
         if (!hasLoadedOnce) {
-            viewModel.getRecipeByCuisine("Indian", "Vegetarian")
+            viewModel.getRecipeByCuisine(selectedCuisine, selectedDiet)
             hasLoadedOnce = true
         }
     }
@@ -74,7 +76,6 @@ fun SearchByCuisineScreen(
                 text = "Search By Cuisine",
                 fontSize = 22.sp,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
-                fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -115,6 +116,50 @@ fun SearchByCuisineScreen(
             }
 
             else -> {
+
+                Row(
+                    modifier = Modifier.padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = "Selected Filters:",
+                        modifier = Modifier.weight(1f),
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    if (selectedCuisine.isNotEmpty()) {
+                        FilterChip(
+                            selected = true,
+                            onClick = {
+                                selectedCuisine = ""
+                                viewModel.getRecipeByCuisine(selectedCuisine, selectedDiet)
+                            },
+                            label = { Text(selectedCuisine) },
+                            trailingIcon = {
+                                Image(
+                                    painter = painterResource(R.drawable.outline_close_small),
+                                    contentDescription = null
+                                )
+                            })
+                    }
+                    if (selectedDiet.isNotEmpty()) {
+                        FilterChip(
+                            selected = true,
+                            onClick = {
+                                selectedDiet = ""
+                                viewModel.getRecipeByCuisine(selectedCuisine, selectedDiet)
+                            },
+                            label = { Text(selectedDiet) },
+                            trailingIcon = {
+                                Image(
+                                    painter = painterResource(R.drawable.outline_close_small),
+                                    contentDescription = null
+                                )
+                            })
+                    }
+                }
+
                 LazyColumn {
                     items(recipeByCuisine.recipes.results) { recipe ->
                         RecipeByCuisineCard(recipe, navController)
