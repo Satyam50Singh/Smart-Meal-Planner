@@ -1,6 +1,7 @@
 package com.satya.smartmealplanner.domain.usecase
 
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
+import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.domain.repository.RecipeRepository
 import javax.inject.Inject
 
@@ -9,9 +10,7 @@ class RecipeUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(
-        ingredients: String,
-        number: Int,
-        apiKey: String
+        ingredients: String, number: Int, apiKey: String
     ) = repository.findByIngredients(ingredients, number, apiKey)
 
 
@@ -20,4 +19,16 @@ class RecipeUseCase @Inject constructor(
     suspend fun getRecipeByCuisine(cuisine: String, diet: String): RecipeByCuisine =
         repository.getRecipeByCuisine(cuisine, diet)
 
+    suspend fun getRecipeByNutrients(
+        minCarbs: Int,
+        maxCarbs: Int,
+        minProtein: Int,
+        maxProtein: Int,
+        minCalories: Int,
+        maxCalories: Int,
+        minFat: Int,
+        maxFat: Int
+    ): RecipeByNutrients = repository.getRecipeByNutrients(
+        minCarbs, maxCarbs, minProtein, maxProtein, minCalories, maxCalories, minFat, maxFat
+    )
 }

@@ -11,6 +11,7 @@ import com.satya.smartmealplanner.ui.home.DashboardScreen
 import com.satya.smartmealplanner.ui.findByIngredients.FindByIngredientScreen
 import com.satya.smartmealplanner.ui.findByIngredients.RecipeDetailScreen
 import com.satya.smartmealplanner.ui.searchByCuisine.SearchByCuisineScreen
+import com.satya.smartmealplanner.ui.searchByNutrients.components.SearchByNutrientsScreen
 
 @Composable
 fun AppNavGraph(
@@ -39,5 +40,10 @@ fun AppNavGraph(
         composable(Screen.SearchByCuisines.route) {
             SearchByCuisineScreen(navController)
         }
+
+        composable(Screen.SearchByNutrients.route) {
+            SearchByNutrientsScreen(navController)
+        }
+
     }
 }

@@ -2,6 +2,7 @@ package com.satya.smartmealplanner.data.repository
 
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
+import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.data.remote.ApiService
 import com.satya.smartmealplanner.domain.repository.RecipeRepository
@@ -30,5 +31,27 @@ class RecipeRepositoryImpl @Inject constructor(
         return apiService.getRecipeByCuisine(cuisine, diet)
     }
 
+
+    override suspend fun getRecipeByNutrients(
+        minCarbs: Int,
+        maxCarbs: Int,
+        minProtein: Int,
+        maxProtein: Int,
+        minCalories: Int,
+        maxCalories: Int,
+        minFat: Int,
+        maxFat: Int
+    ): RecipeByNutrients {
+        return apiService.findByNutrients(
+            minCarbs,
+            maxCarbs,
+            minProtein,
+            maxProtein,
+            minCalories,
+            maxCalories,
+            minFat,
+            maxFat
+        )
+    }
 
 }
