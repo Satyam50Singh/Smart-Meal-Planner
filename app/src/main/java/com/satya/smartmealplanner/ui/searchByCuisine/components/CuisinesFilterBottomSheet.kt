@@ -1,0 +1,159 @@
+package com.satya.smartmealplanner.ui.searchByCuisine.components
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@Composable
+fun CuisinesFilterBottomSheet(
+    cuisine: String,
+    diet: String,
+    onApplyClick: (String, String) -> Unit,
+    onDismiss: () -> Unit
+) {
+
+    val allCuisines = getListOfCuisines()
+    val allDiets = getListOfDiets()
+
+    var selectedCuisine by remember { mutableStateOf(cuisine) }
+    var selectedDiet by remember { mutableStateOf(diet) }
+
+    ModalBottomSheet(onDismissRequest = { onDismiss() }) {
+        Column(modifier = Modifier.padding(16.dp)) {
+
+
+            Text(
+                text = "Select Diet",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                allDiets.forEach { diet ->
+                    FilterChip(
+                        selected = selectedDiet == diet,
+                        onClick = {
+                            selectedDiet = diet
+                        },
+                        label = { Text(diet) },
+                        leadingIcon = if (selectedDiet == diet) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Filled.Done,
+                                    contentDescription = "Done icon",
+                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                )
+                            }
+                        } else {
+                            null
+                        },
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Text(
+                text = "Select Cuisine",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalArrangement = Arrangement.spacedBy(2.dp)
+            ) {
+                allCuisines.forEach { cuisine ->
+                    FilterChip(
+                        selected = selectedCuisine == cuisine,
+                        onClick = {
+                            selectedCuisine = cuisine
+                        },
+                        label = { Text(cuisine) },
+                        leadingIcon = if (selectedCuisine == cuisine) {
+                            {
+                                Icon(
+                                    imageVector = Icons.Filled.Done,
+                                    contentDescription = "Done icon",
+                                    modifier = Modifier.size(FilterChipDefaults.IconSize)
+                                )
+                            }
+                        } else {
+                            null
+                        },
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {
+                    onApplyClick(selectedCuisine, selectedDiet)
+                },
+                modifier = Modifier
+                    .align(Alignment.End)
+            ) {
+                Text("Apply Filter")
+            }
+        }
+    }
+}
+
+fun getListOfDiets(): List<String> {
+    return listOf(
+        "Vegetarian",
+        "Vegan",
+        "Gluten-Free",
+        "Paleo",
+        "Ketogenic",
+        "Lacto-Vegetarian",
+        "Ovo-Vegetarian",
+        "Pescetarian",
+        "Whole30",
+        "Low FODMAP"
+    )
+}
+
+
+fun getListOfCuisines(): List<String> {
+    return listOf(
+        "Indian",
+        "Italian",
+        "Chinese",
+        "Mexican",
+        "American",
+        "Thai",
+        "Japanese",
+        "French",
+        "Mediterranean",
+        "Greek"
+    )
+}
