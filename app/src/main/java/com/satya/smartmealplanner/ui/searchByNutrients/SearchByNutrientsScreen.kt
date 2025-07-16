@@ -61,9 +61,8 @@ fun SearchByNutrientsScreen(
                 showDialog = false
                 nutrientRange = range
                 showNutrientFilterChip = true
-                launchedFromUserAction = true
 
-                if (isChanged) {
+                if (isChanged || !launchedFromUserAction) {
                     viewModel.getRecipeByNutrients(
                         nutrientRange.carbs.start.toInt(),
                         nutrientRange.carbs.endInclusive.toInt(),
@@ -75,6 +74,8 @@ fun SearchByNutrientsScreen(
                         nutrientRange.fat.endInclusive.toInt()
                     )
                 }
+
+                launchedFromUserAction = true
             })
     }
 
