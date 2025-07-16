@@ -57,22 +57,24 @@ fun SearchByNutrientsScreen(
                     navController.popBackStack()
                 }
             },
-            onApply = { range: NutrientRange, visible: Boolean ->
+            onApply = { range: NutrientRange, isChanged: Boolean ->
                 showDialog = false
                 nutrientRange = range
-                showNutrientFilterChip = visible
+                showNutrientFilterChip = true
                 launchedFromUserAction = true
 
-                viewModel.getRecipeByNutrients(
-                    nutrientRange.carbs?.start?.toInt() ?: 10,
-                    nutrientRange.carbs?.endInclusive?.toInt() ?: 100,
-                    nutrientRange.protein?.start?.toInt() ?: 10,
-                    nutrientRange.protein?.endInclusive?.toInt() ?: 100,
-                    nutrientRange.calories?.start?.toInt() ?: 100,
-                    nutrientRange.calories?.endInclusive?.toInt() ?: 500,
-                    nutrientRange.fat?.start?.toInt() ?: 10,
-                    nutrientRange.fat?.endInclusive?.toInt() ?: 100,
-                )
+                if (isChanged) {
+                    viewModel.getRecipeByNutrients(
+                        nutrientRange.carbs.start.toInt(),
+                        nutrientRange.carbs.endInclusive.toInt(),
+                        nutrientRange.protein.start.toInt(),
+                        nutrientRange.protein.endInclusive.toInt(),
+                        nutrientRange.calories.start.toInt(),
+                        nutrientRange.calories.endInclusive.toInt(),
+                        nutrientRange.fat.start.toInt(),
+                        nutrientRange.fat.endInclusive.toInt()
+                    )
+                }
             })
     }
 

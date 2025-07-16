@@ -4,10 +4,10 @@ import android.os.Parcel
 import android.os.Parcelable
 
 data class NutrientRange(
-    var carbs: ClosedFloatingPointRange<Float> = 10f..40f,
+    var carbs: ClosedFloatingPointRange<Float> = 10f..80f,
     var protein: ClosedFloatingPointRange<Float> = 40f..80f,
     var calories: ClosedFloatingPointRange<Float> = 200f..500f,
-    var fat: ClosedFloatingPointRange<Float> = 30f..50f
+    var fat: ClosedFloatingPointRange<Float> = 20f..70f
 ) : Parcelable {
 
     override fun writeToParcel(dest: Parcel, flags: Int) {

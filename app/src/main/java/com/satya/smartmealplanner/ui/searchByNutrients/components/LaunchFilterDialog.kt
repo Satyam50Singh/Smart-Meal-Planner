@@ -196,18 +196,23 @@ fun LaunchFilterDialog(
                             onClick = { onDismiss() },
                             modifier = Modifier.padding(4.dp),
                         ) {
-                            Text("Dismiss")
+                            Text("Close")
                         }
                         TextButton(
                             onClick = {
+                                val isChanged = carbsRange != nutrientRange.carbs ||
+                                        proteinRange != nutrientRange.protein ||
+                                        caloriesRange != nutrientRange.calories ||
+                                        fatRange != nutrientRange.fat
+
                                 onApply(
                                     NutrientRange(
-                                        carbsRange,
-                                        proteinRange,
-                                        caloriesRange,
-                                        fatRange
+                                        carbs = carbsRange,
+                                        protein = proteinRange,
+                                        calories = caloriesRange,
+                                        fat = fatRange
                                     ),
-                                    true
+                                    isChanged
                                 )
                             },
                             modifier = Modifier.padding(4.dp),
