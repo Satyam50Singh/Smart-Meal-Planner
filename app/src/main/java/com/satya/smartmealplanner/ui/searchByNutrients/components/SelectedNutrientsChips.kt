@@ -15,7 +15,7 @@ import com.satya.smartmealplanner.data.model.recipeByNutrients.NutrientRange
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun SelectedNutrientsChips(nutrientRange: NutrientRange, onClick: (Boolean) -> Unit) {
+fun SelectedNutrientsChips(nutrientRange: NutrientRange, onClick: () -> Unit) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth()
@@ -32,7 +32,7 @@ fun SelectedNutrientsChips(nutrientRange: NutrientRange, onClick: (Boolean) -> U
         ) {
             AssistChip(
                 onClick = {
-                    onClick(true)
+                    onClick()
                 },
                 label = { Text(text = it) }
             )

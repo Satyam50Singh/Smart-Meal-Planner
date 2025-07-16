@@ -11,7 +11,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.Saver
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,20 +37,31 @@ fun SearchByNutrientsScreen(
 
     var recipeByNutrientsState = viewModel.recipeByNutrientsState
 
-    var showDialog by remember { mutableStateOf(true) }
+    var showDialog by rememberSaveable { mutableStateOf(true) }
 
-    var nutrientRange by remember { mutableStateOf(NutrientRange()) }
+    var nutrientRange by rememberSaveable(saver = Saver(
+        save = { it },
+        restore = { it }
+    )) { mutableStateOf(NutrientRange()) }
 
-    var showNutrientFilterChip by remember { mutableStateOf(false) }
+    var showNutrientFilterChip by rememberSaveable { mutableStateOf(false) }
+
+    var launchedFromUserAction by rememberSaveable { mutableStateOf(false) }
 
     if (showDialog) {
         LaunchFilterDialog(
-            navController,
-            onDismiss = { showDialog = false },
+            nutrientRange,
+            onDismiss = {
+                showDialog = false
+                if (!launchedFromUserAction) {
+                    navController.popBackStack()
+                }
+            },
             onApply = { range: NutrientRange, visible: Boolean ->
                 showDialog = false
                 nutrientRange = range
                 showNutrientFilterChip = visible
+                launchedFromUserAction = true
 
                 viewModel.getRecipeByNutrients(
                     nutrientRange.carbs?.start?.toInt() ?: 10,
@@ -85,7 +97,7 @@ fun SearchByNutrientsScreen(
         if (showNutrientFilterChip) {
             SelectedNutrientsChips(
                 nutrientRange = nutrientRange,
-                onClick = { showDialog = it }
+                onClick = { showDialog = true }
             )
         }
 

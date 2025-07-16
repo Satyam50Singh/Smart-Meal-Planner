@@ -24,19 +24,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
-import androidx.navigation.NavController
 import com.satya.smartmealplanner.data.model.recipeByNutrients.NutrientRange
 
 @Composable
 fun LaunchFilterDialog(
-    navController: NavController,
+    nutrientRange: NutrientRange,
     onDismiss: () -> Unit,
     onApply: (NutrientRange, Boolean) -> Unit
 ) {
-    var carbsRange by remember { mutableStateOf(10f..60f) }
-    var proteinRange by remember { mutableStateOf(30f..70f) }
-    var caloriesRange by remember { mutableStateOf(300f..500f) }
-    var fatRange by remember { mutableStateOf(30f..70f) }
+    var carbsRange by remember { mutableStateOf(nutrientRange.carbs) }
+    var proteinRange by remember { mutableStateOf(nutrientRange.protein) }
+    var caloriesRange by remember { mutableStateOf(nutrientRange.calories) }
+    var fatRange by remember { mutableStateOf(nutrientRange.fat) }
 
     Dialog(
         onDismissRequest = { onDismiss() },
@@ -194,10 +193,7 @@ fun LaunchFilterDialog(
                     ) {
                         Spacer(modifier = Modifier.weight(1f))
                         TextButton(
-                            onClick = {
-                                onDismiss()
-                                navController.popBackStack()
-                            },
+                            onClick = { onDismiss() },
                             modifier = Modifier.padding(4.dp),
                         ) {
                             Text("Dismiss")
