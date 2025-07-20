@@ -8,12 +8,16 @@ import androidx.lifecycle.viewModelScope
 import com.satya.smartmealplanner.BuildConfig
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
+import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
+import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.usecase.RecipeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -44,11 +48,11 @@ class RecipeViewModel @Inject constructor(
     fun getCategoryList(): List<DashboardCategory> {
         return arrayListOf(
             DashboardCategory(
-                1,
-                "Search\nRestaurants",
-                R.drawable.restaurant,
-                "Discover restaurants near you that match your taste. Search by food type, rating, or location.",
-                "search_restaurants"
+                1005,
+                "Random Recipes",
+                R.drawable.search,
+                "Feeling spontaneous? Get inspired with completely random meals.",
+                "random_recipes"
             ), DashboardCategory(
                 2,
                 "Search\nBy Ingredients",
@@ -67,12 +71,6 @@ class RecipeViewModel @Inject constructor(
                 R.drawable.cuisine,
                 "Explore diverse world cuisines – Italian, Mexican, Indian, Thai, and more. Find authentic meals by culture.",
                 "search_by_cuisines"
-            ), DashboardCategory(
-                5,
-                "Random\nRecipes",
-                R.drawable.search,
-                "Feeling spontaneous? Get inspired with completely random meals.",
-                "random_recipes"
             ), DashboardCategory(
                 6,
                 "Meal\nPlanner",
@@ -139,7 +137,6 @@ class RecipeViewModel @Inject constructor(
         }
     }
 
-
     var recipeByNutrientsState by mutableStateOf(RecipeByNutrientsState())
         private set
 
@@ -179,4 +176,67 @@ class RecipeViewModel @Inject constructor(
         }
 
     }
+
+    var randomJokeState by mutableStateOf(RandomJokeState())
+        private set
+
+    fun getRandomJoke() {
+        viewModelScope.launch {
+            randomJokeState = randomJokeState.copy(isLoading = true, error = null)
+
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    recipeUseCase.getRandomJoke()
+                }
+
+                when (response) {
+                    is Resource.Error -> {
+                        randomJokeState =
+                            randomJokeState.copy(error = response.message, isLoading = false)
+                    }
+
+                    is Resource.Success -> {
+                        response.data.let {
+                            randomJokeState =
+                                randomJokeState.copy(randomJoke = it, isLoading = false)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                randomJokeState = randomJokeState.copy(error = e.message, isLoading = false)
+                e.printStackTrace()
+            }
+        }
+    }
+
+    var foodTriviaState by mutableStateOf(FoodTriviaState())
+        private set
+
+    fun getRandomTrivia() {
+        viewModelScope.launch {
+            foodTriviaState = foodTriviaState.copy(isLoading = true, error = null)
+
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    recipeUseCase.getRandomTrivia()
+                }
+
+                when (response) {
+                    is Resource.Error -> foodTriviaState =
+                        foodTriviaState.copy(isLoading = false, error = response.message)
+
+                    is Resource.Success -> {
+                        response.data.let {
+                            foodTriviaState =
+                                foodTriviaState.copy(recipes = it, isLoading = false)
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                foodTriviaState = foodTriviaState.copy(error = e.message, isLoading = false)
+                e.printStackTrace()
+            }
+        }
+    }
+
 }

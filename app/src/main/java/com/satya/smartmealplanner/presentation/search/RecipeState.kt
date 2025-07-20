@@ -1,5 +1,7 @@
 package com.satya.smartmealplanner.presentation.search
 
+import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
+import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
@@ -26,5 +28,17 @@ data class RecipeByCuisineState(
 data class RecipeByNutrientsState(
     val isLoading: Boolean = false,
     val recipes: RecipeByNutrients? = null,
+    val error: String? = null
+)
+
+data class RandomJokeState (
+    val isLoading: Boolean = false,
+    val randomJoke: RandomJoke? = null,
+    val error: String? = null
+)
+
+data class FoodTriviaState (
+    val isLoading: Boolean = false,
+    val recipes: FoodTrivia? = null,
     val error: String? = null
 )

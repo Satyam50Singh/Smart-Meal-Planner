@@ -42,14 +42,16 @@ fun CategoryCard(category: DashboardCategory, navController: NavController) {
             modifier = Modifier
                 .padding(8.dp)
         ) {
-            Image(
-                painter = painterResource(category.categoryImage),
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .height(90.dp)
-                    .fillMaxWidth()
-            )
+            if (category.categoryImage != -1) {
+                Image(
+                    painter = painterResource(category.categoryImage),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .height(80.dp)
+                        .fillMaxWidth()
+                )
+            }
 
             Text(
                 category.categoryName,

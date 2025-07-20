@@ -1,7 +1,10 @@
 package com.satya.smartmealplanner.domain.usecase
 
+import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
+import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
+import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.repository.RecipeRepository
 import javax.inject.Inject
 
@@ -31,4 +34,9 @@ class RecipeUseCase @Inject constructor(
     ): RecipeByNutrients = repository.getRecipeByNutrients(
         minCarbs, maxCarbs, minProtein, maxProtein, minCalories, maxCalories, minFat, maxFat
     )
+
+    suspend fun getRandomJoke(): Resource<RandomJoke?> = repository.getRandomJoke()
+
+    suspend fun getRandomTrivia(): Resource<FoodTrivia?> = repository.getRandomTrivia()
+
 }

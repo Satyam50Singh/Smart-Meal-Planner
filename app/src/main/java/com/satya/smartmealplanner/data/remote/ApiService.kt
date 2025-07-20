@@ -1,10 +1,13 @@
 package com.satya.smartmealplanner.data.remote
 
 import com.satya.smartmealplanner.BuildConfig
+import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
+import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
+import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -49,5 +52,15 @@ interface ApiService {
         @Query("number") number: Int = 20,
         @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
     ): RecipeByNutrients
+
+    @GET("food/jokes/random")
+    suspend fun fetchRandomJoke(
+        @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
+    ) : Response<RandomJoke>
+
+    @GET("/food/trivia/random")
+    suspend fun fetchRandomTrivia(
+        @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
+    ): Response<FoodTrivia>
 
 }
