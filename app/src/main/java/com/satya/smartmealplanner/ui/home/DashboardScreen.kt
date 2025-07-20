@@ -26,6 +26,7 @@ import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
 import com.satya.smartmealplanner.ui.home.components.CategoryCard
 import com.satya.smartmealplanner.ui.home.components.FactCard
+import com.satya.smartmealplanner.ui.home.components.HorizontalPagerWithIndicators
 import com.satya.smartmealplanner.ui.utils.ErrorContainer
 import com.satya.smartmealplanner.ui.utils.CircularLoader
 
@@ -43,8 +44,8 @@ fun DashboardScreen(
 
     LaunchedEffect(Unit) {
         viewModel.getRandomRecipes()
-        // viewModel.getRandomJoke()
-        // viewModel.getRandomTrivia()
+        //viewModel.getRandomJoke()
+        //viewModel.getRandomTrivia()
     }
 
     LaunchedEffect(randomFoodTrivia, randomJokeState) {
@@ -80,7 +81,7 @@ fun DashboardScreen(
             .padding(8.dp)
     ) {
         Text(
-            text = "Categories . . .",
+            text = "Meal Planner",
             fontSize = 24.sp,
             modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
             fontWeight = FontWeight.Bold
@@ -97,7 +98,8 @@ fun DashboardScreen(
                 randomRecipes.isError != null -> ErrorContainer(randomRecipes.isError)
 
                 randomRecipes.isSuccess != null -> {
-                    Text(text = "Random Recipes")
+                    val listOfRecipes = randomRecipes.isSuccess.recipes
+                    HorizontalPagerWithIndicators(listOfRecipes, navController)
                 }
             }
         }
@@ -117,7 +119,7 @@ fun DashboardScreen(
                     columns = StaggeredGridCells.Fixed(2), content = {
                         items(updatedCategoryList, span = { item ->
                             if (item.categoryId in listOf(
-                                    1001, 1002, 1005
+                                    1001, 1002
                                 )
                             ) StaggeredGridItemSpan.FullLine else StaggeredGridItemSpan.SingleLane
                         }) { category ->

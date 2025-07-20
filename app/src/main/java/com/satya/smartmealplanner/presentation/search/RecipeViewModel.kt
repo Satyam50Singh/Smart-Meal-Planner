@@ -50,12 +50,6 @@ class RecipeViewModel @Inject constructor(
     fun getCategoryList(): List<DashboardCategory> {
         return arrayListOf(
             DashboardCategory(
-                1005,
-                "Random Recipes",
-                R.drawable.search,
-                "Feeling spontaneous? Get inspired with completely random meals.",
-                "random_recipes"
-            ), DashboardCategory(
                 2,
                 "Search\nBy Ingredients",
                 R.drawable.search,
@@ -243,24 +237,27 @@ class RecipeViewModel @Inject constructor(
 
     var randomRecipesState by mutableStateOf(State<RandomRecipes>())
         private set
+
     fun getRandomRecipes() {
         viewModelScope.launch {
             randomRecipesState = randomRecipesState.copy(isLoading = true, isError = null)
 
             try {
 
-                val response = withContext(Dispatchers.IO)  {
+                val response = withContext(Dispatchers.IO) {
                     recipeUseCase.getRandomRecipes()
                 }
 
                 when (response) {
                     is Resource.Error -> {
-                        randomRecipesState = randomRecipesState.copy(isError = response.message, isLoading = false)
+                        randomRecipesState =
+                            randomRecipesState.copy(isError = response.message, isLoading = false)
                     }
 
                     is Resource.Success -> {
                         response.data?.let {
-                            randomRecipesState = randomRecipesState.copy(isSuccess = it, isLoading = false)
+                            randomRecipesState =
+                                randomRecipesState.copy(isSuccess = it, isLoading = false)
                         }
                     }
                 }

@@ -13,7 +13,7 @@ fun ErrorContainer(message: String) {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Text(
             text = message,
-            fontSize = 18.sp
+            fontSize = 16.sp
         )
     }
 }

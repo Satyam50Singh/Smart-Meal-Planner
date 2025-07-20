@@ -48,15 +48,18 @@ fun CategoryCard(category: DashboardCategory, navController: NavController) {
                     contentDescription = null,
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
-                        .height(80.dp)
+                        .height(70.dp)
                         .fillMaxWidth()
                 )
             }
 
             Text(
                 category.categoryName,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                fontSize = 18.sp,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 8.dp, vertical = 4.dp),
+                fontSize = 16.sp,
+                lineHeight = 18.sp,
                 fontWeight = FontWeight.Bold
             )
             Text(
