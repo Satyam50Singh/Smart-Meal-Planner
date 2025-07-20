@@ -3,6 +3,7 @@ package com.satya.smartmealplanner.ui.home
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
@@ -38,10 +39,12 @@ fun DashboardScreen(
 
     val randomJokeState = viewModel.randomJokeState
     val randomFoodTrivia = viewModel.foodTriviaState
+    val randomRecipes = viewModel.randomRecipesState
 
     LaunchedEffect(Unit) {
-        viewModel.getRandomJoke()
-        viewModel.getRandomTrivia()
+        viewModel.getRandomRecipes()
+        // viewModel.getRandomJoke()
+        // viewModel.getRandomTrivia()
     }
 
     LaunchedEffect(randomFoodTrivia, randomJokeState) {
@@ -83,12 +86,30 @@ fun DashboardScreen(
             fontWeight = FontWeight.Bold
         )
 
+
+        Column(
+            modifier = Modifier.height(200.dp)
+        ) {
+
+            when {
+                randomRecipes.isLoading -> CircularLoader()
+
+                randomRecipes.isError != null -> ErrorContainer(randomRecipes.isError)
+
+                randomRecipes.isSuccess != null -> {
+                    Text(text = "Random Recipes")
+                }
+            }
+        }
+
         when {
             randomJokeState.isLoading || randomFoodTrivia.isLoading -> CircularLoader()
 
 
             randomJokeState.error != null || randomFoodTrivia.error != null -> {
-                ErrorContainer(randomJokeState.error ?: randomFoodTrivia.error ?: "Something went wrong")
+                ErrorContainer(
+                    randomJokeState.error ?: randomFoodTrivia.error ?: "Something went wrong"
+                )
             }
 
             updatedCategoryList.isNotEmpty() -> {

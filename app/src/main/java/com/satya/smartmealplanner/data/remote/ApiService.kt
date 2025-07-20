@@ -4,6 +4,7 @@ import com.satya.smartmealplanner.BuildConfig
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
+import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
@@ -62,5 +63,12 @@ interface ApiService {
     suspend fun fetchRandomTrivia(
         @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
     ): Response<FoodTrivia>
+
+    @GET("recipes/random")
+    suspend fun fetchRandomRecipes(
+        @Query("number") number: Int = 6,
+        @Query("limitLicense") limitLicense: Boolean = true,
+        @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
+    ): Response<RandomRecipes>
 
 }

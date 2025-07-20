@@ -10,10 +10,12 @@ import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
+import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.usecase.RecipeUseCase
+import com.satya.smartmealplanner.ui.utils.ErrorContainer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -234,6 +236,37 @@ class RecipeViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 foodTriviaState = foodTriviaState.copy(error = e.message, isLoading = false)
+                e.printStackTrace()
+            }
+        }
+    }
+
+    var randomRecipesState by mutableStateOf(State<RandomRecipes>())
+        private set
+    fun getRandomRecipes() {
+        viewModelScope.launch {
+            randomRecipesState = randomRecipesState.copy(isLoading = true, isError = null)
+
+            try {
+
+                val response = withContext(Dispatchers.IO)  {
+                    recipeUseCase.getRandomRecipes()
+                }
+
+                when (response) {
+                    is Resource.Error -> {
+                        randomRecipesState = randomRecipesState.copy(isError = response.message, isLoading = false)
+                    }
+
+                    is Resource.Success -> {
+                        response.data?.let {
+                            randomRecipesState = randomRecipesState.copy(isSuccess = it, isLoading = false)
+                        }
+                    }
+                }
+
+            } catch (e: Exception) {
+                randomRecipesState = randomRecipesState.copy(isError = e.message, isLoading = false)
                 e.printStackTrace()
             }
         }

@@ -31,14 +31,20 @@ data class RecipeByNutrientsState(
     val error: String? = null
 )
 
-data class RandomJokeState (
+data class RandomJokeState(
     val isLoading: Boolean = false,
     val randomJoke: RandomJoke? = null,
     val error: String? = null
 )
 
-data class FoodTriviaState (
+data class FoodTriviaState(
     val isLoading: Boolean = false,
     val foodTrivia: FoodTrivia? = null,
     val error: String? = null
+)
+
+data class State<T>(
+    val isLoading: Boolean = false,
+    val isSuccess: T? = null,
+    val isError: String? = null
 )
