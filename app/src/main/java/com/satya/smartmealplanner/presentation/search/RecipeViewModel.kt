@@ -228,7 +228,7 @@ class RecipeViewModel @Inject constructor(
                     is Resource.Success -> {
                         response.data.let {
                             foodTriviaState =
-                                foodTriviaState.copy(recipes = it, isLoading = false)
+                                foodTriviaState.copy(foodTrivia = it, isLoading = false, error = null)
                         }
                     }
                 }

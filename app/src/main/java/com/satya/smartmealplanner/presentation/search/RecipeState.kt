@@ -39,6 +39,6 @@ data class RandomJokeState (
 
 data class FoodTriviaState (
     val isLoading: Boolean = false,
-    val recipes: FoodTrivia? = null,
+    val foodTrivia: FoodTrivia? = null,
     val error: String? = null
 )

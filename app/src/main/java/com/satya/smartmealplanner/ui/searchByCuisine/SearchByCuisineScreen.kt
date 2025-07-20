@@ -36,7 +36,7 @@ import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
 import com.satya.smartmealplanner.ui.searchByCuisine.components.CuisinesFilterBottomSheet
 import com.satya.smartmealplanner.ui.searchByCuisine.components.RecipeByCuisineCard
-import com.satya.smartmealplanner.ui.utils.Loader
+import com.satya.smartmealplanner.ui.utils.CircularLoader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -91,7 +91,7 @@ fun SearchByCuisineScreen(
         }
 
         when {
-            recipeByCuisine.isLoading -> Loader()
+            recipeByCuisine.isLoading -> CircularLoader()
 
             recipeByCuisine.error != null -> Box(
                 modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center

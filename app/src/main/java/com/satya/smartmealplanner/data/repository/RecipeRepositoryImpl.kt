@@ -9,7 +9,7 @@ import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.data.remote.ApiService
 import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.repository.RecipeRepository
-import retrofit2.Response
+import com.satya.smartmealplanner.utils.parseErrorBody
 import javax.inject.Inject
 
 class RecipeRepositoryImpl @Inject constructor(
@@ -64,12 +64,12 @@ class RecipeRepositoryImpl @Inject constructor(
         return when {
             response.isSuccessful -> {
                 response.body()?.let {
-                     Resource.Success(it)
-                } ?:  Resource.Error("Something went wrong")
+                    Resource.Success(it)
+                } ?: Resource.Error("Something went wrong")
             }
 
             response.errorBody() != null -> {
-                 Resource.Error("Error: ${response.code()} - ${response.errorBody()}")
+                parseErrorBody<RandomJoke?>(response.errorBody(), response.code())
             }
 
             else -> {
@@ -89,7 +89,7 @@ class RecipeRepositoryImpl @Inject constructor(
             }
 
             response.errorBody() != null -> {
-                Resource.Error("Error: ${response.code()} - ${response.errorBody()}")
+                parseErrorBody<FoodTrivia?>(response.errorBody(), response.code())
             }
 
             else -> {
@@ -99,3 +99,4 @@ class RecipeRepositoryImpl @Inject constructor(
     }
 
 }
+

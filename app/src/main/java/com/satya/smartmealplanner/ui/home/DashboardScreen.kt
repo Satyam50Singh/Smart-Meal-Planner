@@ -11,6 +11,10 @@ import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -21,16 +25,16 @@ import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
 import com.satya.smartmealplanner.ui.home.components.CategoryCard
 import com.satya.smartmealplanner.ui.home.components.FactCard
-import com.satya.smartmealplanner.ui.utils.Loader
+import com.satya.smartmealplanner.ui.utils.ErrorContainer
+import com.satya.smartmealplanner.ui.utils.CircularLoader
 
 @Composable
 fun DashboardScreen(
-    navController: NavController,
-    viewModel: RecipeViewModel = hiltViewModel()
+    navController: NavController, viewModel: RecipeViewModel = hiltViewModel()
 ) {
 
-    val categoryList = viewModel.getCategoryList()
-    val updatedCategoryList: MutableList<DashboardCategory> = mutableListOf()
+    val baseCategoryList = remember { viewModel.getCategoryList() }
+    var updatedCategoryList by remember { mutableStateOf<List<DashboardCategory>>(emptyList()) }
 
     val randomJokeState = viewModel.randomJokeState
     val randomFoodTrivia = viewModel.foodTriviaState
@@ -38,6 +42,33 @@ fun DashboardScreen(
     LaunchedEffect(Unit) {
         viewModel.getRandomJoke()
         viewModel.getRandomTrivia()
+    }
+
+    LaunchedEffect(randomFoodTrivia, randomJokeState) {
+
+        val list = baseCategoryList.toMutableList()
+
+        randomJokeState.randomJoke?.let {
+            list.add(
+                3, DashboardCategory(
+                    1001,
+                    randomJokeState.randomJoke.text,
+                    -1, "", "",
+                )
+            )
+        }
+
+        randomFoodTrivia.foodTrivia?.let {
+            list.add(
+                6, DashboardCategory(
+                    1002,
+                    randomFoodTrivia.foodTrivia.text,
+                    -1, "", "",
+                )
+            )
+        }
+
+        updatedCategoryList = list
     }
 
     Column(
@@ -53,44 +84,31 @@ fun DashboardScreen(
         )
 
         when {
-            randomJokeState.isLoading -> {
-                Loader()
+            randomJokeState.isLoading || randomFoodTrivia.isLoading -> CircularLoader()
+
+
+            randomJokeState.error != null || randomFoodTrivia.error != null -> {
+                ErrorContainer(randomJokeState.error ?: randomFoodTrivia.error ?: "Something went wrong")
             }
 
-            randomJokeState.error != null -> {
-                Text(text = "Error: ${randomJokeState.error}")
-            }
-
-
-            randomJokeState.randomJoke != null -> {
-                categoryList.forEachIndexed { index, category ->
-                    if (index == 3) {
-                        updatedCategoryList.add(
-                            DashboardCategory(
-                                1001,
-                                randomJokeState.randomJoke.text,
-                                -1, "", "",
-                            )
-                        )
-                    } else {
-                        updatedCategoryList.add(category)
-                    }
-
-                }
-
+            updatedCategoryList.isNotEmpty() -> {
                 LazyVerticalStaggeredGrid(
-                    columns = StaggeredGridCells.Fixed(2),
-                    content = {
+                    columns = StaggeredGridCells.Fixed(2), content = {
                         items(updatedCategoryList, span = { item ->
-                            if (item.categoryId == 1001 || item.categoryId == 1005) StaggeredGridItemSpan.FullLine else StaggeredGridItemSpan.SingleLane
+                            if (item.categoryId in listOf(
+                                    1001, 1002, 1005
+                                )
+                            ) StaggeredGridItemSpan.FullLine else StaggeredGridItemSpan.SingleLane
                         }) { category ->
-                            if (category.categoryId == 1001) {
+                            if (category.categoryId in listOf(1001, 1002)) {
                                 FactCard(
                                     category.categoryName,
+                                    if (category.categoryId == 1001) "Joke" else "Fun Fact",
                                     modifier = Modifier
                                         .padding(8.dp)
-                                        .fillMaxWidth()
-                                ) // Special card
+                                        .fillMaxWidth(),
+
+                                    )
                             } else {
                                 CategoryCard(category, navController)
                             }
@@ -98,6 +116,7 @@ fun DashboardScreen(
                     })
             }
         }
+
     }
 }
 

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,7 +21,7 @@ import androidx.navigation.NavHostController
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
 import com.satya.smartmealplanner.ui.findByIngredients.components.RecipeDetailCard
-import com.satya.smartmealplanner.ui.utils.Loader
+import com.satya.smartmealplanner.ui.utils.CircularLoader
 
 @Composable
 fun RecipeDetailScreen(
@@ -56,7 +55,7 @@ fun RecipeDetailScreen(
         }
 
         when {
-            selectedRecipeState.isLoading -> Loader()
+            selectedRecipeState.isLoading -> CircularLoader()
 
             selectedRecipeState.error != null -> {
                 Text("Error: ${selectedRecipeState.error}")
