@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,7 +33,7 @@ import androidx.navigation.NavController
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
 import com.satya.smartmealplanner.ui.findByIngredients.components.RecipeCard
-import com.satya.smartmealplanner.ui.utils.Loader
+import com.satya.smartmealplanner.ui.utils.CircularLoader
 
 @Composable
 fun FindByIngredientScreen(
@@ -100,7 +99,7 @@ fun FindByIngredientScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         when {
-            uiState.isLoading -> Loader()
+            uiState.isLoading -> CircularLoader()
 
             uiState.error != null -> Text("Error: ${uiState.error}")
 

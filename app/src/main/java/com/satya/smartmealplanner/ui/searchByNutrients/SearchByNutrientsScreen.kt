@@ -28,7 +28,7 @@ import com.satya.smartmealplanner.presentation.search.RecipeViewModel
 import com.satya.smartmealplanner.ui.searchByNutrients.components.LaunchFilterDialog
 import com.satya.smartmealplanner.ui.searchByNutrients.components.RecipeList
 import com.satya.smartmealplanner.ui.searchByNutrients.components.SelectedNutrientsChips
-import com.satya.smartmealplanner.ui.utils.Loader
+import com.satya.smartmealplanner.ui.utils.CircularLoader
 
 @Composable
 fun SearchByNutrientsScreen(
@@ -61,9 +61,8 @@ fun SearchByNutrientsScreen(
                 showDialog = false
                 nutrientRange = range
                 showNutrientFilterChip = true
-                launchedFromUserAction = true
 
-                if (isChanged) {
+                if (isChanged || !launchedFromUserAction) {
                     viewModel.getRecipeByNutrients(
                         nutrientRange.carbs.start.toInt(),
                         nutrientRange.carbs.endInclusive.toInt(),
@@ -75,6 +74,8 @@ fun SearchByNutrientsScreen(
                         nutrientRange.fat.endInclusive.toInt()
                     )
                 }
+
+                launchedFromUserAction = true
             })
     }
 
@@ -104,7 +105,7 @@ fun SearchByNutrientsScreen(
         }
 
         when {
-            recipeByNutrientsState.isLoading -> Loader()
+            recipeByNutrientsState.isLoading -> CircularLoader()
 
             recipeByNutrientsState.error != null -> Text(text = recipeByNutrientsState.error)
 

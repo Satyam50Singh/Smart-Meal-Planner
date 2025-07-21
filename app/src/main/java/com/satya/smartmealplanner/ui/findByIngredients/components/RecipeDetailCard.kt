@@ -22,7 +22,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 
 @Composable
-fun RecipeDetailCard(recipe: SelectedRecipeDetails) {
+fun RecipeDetailCard(recipe: SelectedRecipeDetails?) {
 
     // Details
     LazyColumn(
@@ -32,7 +32,7 @@ fun RecipeDetailCard(recipe: SelectedRecipeDetails) {
     ) {
         item {
             Image(
-                painter = rememberAsyncImagePainter(recipe.image),
+                painter = rememberAsyncImagePainter(recipe?.image),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
@@ -44,7 +44,7 @@ fun RecipeDetailCard(recipe: SelectedRecipeDetails) {
             Spacer(modifier = Modifier.height(16.dp))
 
             Text(
-                text = recipe.title,
+                text = recipe?.title ?: "",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold
             )
@@ -52,13 +52,13 @@ fun RecipeDetailCard(recipe: SelectedRecipeDetails) {
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Ready in ${recipe.readyInMinutes} minutes • Serves ${recipe.servings}",
+                text = "Ready in ${recipe?.readyInMinutes} minutes • Serves ${recipe?.servings}",
                 style = MaterialTheme.typography.bodyMedium
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            if (!recipe.summary.isNullOrEmpty()) {
+            if (!recipe?.summary.isNullOrEmpty()) {
                 Text(
                     text = "Summary",
                     style = MaterialTheme.typography.titleMedium,
@@ -85,12 +85,14 @@ fun RecipeDetailCard(recipe: SelectedRecipeDetails) {
             )
         }
 
-        items(recipe.extendedIngredients) { ingredient ->
-            Text(
-                text = "• ${ingredient.original}",
-                style = MaterialTheme.typography.bodyMedium,
-                modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
-            )
+        recipe?.extendedIngredients?.let {
+            items(it) { ingredient ->
+                Text(
+                    text = "• ${ingredient.original}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.padding(start = 8.dp, bottom = 4.dp)
+                )
+            }
         }
 
         item {
@@ -102,7 +104,7 @@ fun RecipeDetailCard(recipe: SelectedRecipeDetails) {
                 fontWeight = FontWeight.SemiBold
             )
 
-            if (recipe.winePairing.pairedWines.isNotEmpty() == true) {
+            if (recipe?.winePairing?.pairedWines.isNullOrEmpty() == false) {
                 Text(
                     text = recipe.winePairing.pairingText,
                     style = MaterialTheme.typography.bodyMedium

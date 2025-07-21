@@ -24,12 +24,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import coil.request.ImageRequest
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrientsItem
 import com.satya.smartmealplanner.presentation.navigation.Screen
@@ -49,7 +51,12 @@ fun RecipeItem(navController: NavController, recipe: RecipeByNutrientsItem) {
         ) {
             // Recipe Image
             Image(
-                painter = rememberAsyncImagePainter(recipe.image),
+                painter = rememberAsyncImagePainter(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(recipe.image)
+                        .error(R.drawable.placeholder)
+                        .build()
+                ),
                 contentDescription = recipe.title,
                 contentScale = ContentScale.Crop,
                 modifier = Modifier

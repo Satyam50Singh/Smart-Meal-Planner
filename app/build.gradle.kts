@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt.android)
-    id("kotlin-kapt")
+    alias(libs.plugins.ksp)
     id("kotlin-parcelize")
 }
 
@@ -44,8 +44,13 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
+    }
+
+    ksp {
+        arg("dagger.hilt.disableModulesHaveInstallInCheck", "true")
     }
 }
 
@@ -75,7 +80,7 @@ dependencies {
 
     // Hilt Core
     implementation(libs.hilt.android)
-    kapt(libs.hilt.android.compiler)
+    ksp(libs.hilt.android.compiler)
 
     // Hilt for Jetpack Compose (optional but recommended)
     implementation(libs.androidx.hilt.navigation.compose)
