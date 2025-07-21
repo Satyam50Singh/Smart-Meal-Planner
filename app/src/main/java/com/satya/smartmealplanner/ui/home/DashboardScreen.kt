@@ -44,8 +44,8 @@ fun DashboardScreen(
 
     LaunchedEffect(Unit) {
         viewModel.getRandomRecipes()
-        //viewModel.getRandomJoke()
-        //viewModel.getRandomTrivia()
+        viewModel.getRandomJoke()
+        viewModel.getRandomTrivia()
     }
 
     LaunchedEffect(randomFoodTrivia, randomJokeState) {
@@ -54,7 +54,7 @@ fun DashboardScreen(
 
         randomJokeState.randomJoke?.let {
             list.add(
-                3, DashboardCategory(
+                2, DashboardCategory(
                     1001,
                     randomJokeState.randomJoke.text,
                     -1, "", "",
@@ -64,7 +64,7 @@ fun DashboardScreen(
 
         randomFoodTrivia.foodTrivia?.let {
             list.add(
-                6, DashboardCategory(
+                5, DashboardCategory(
                     1002,
                     randomFoodTrivia.foodTrivia.text,
                     -1, "", "",
@@ -89,7 +89,7 @@ fun DashboardScreen(
 
 
         Column(
-            modifier = Modifier.height(200.dp)
+            modifier = Modifier.height(240.dp)
         ) {
 
             when {

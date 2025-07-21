@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -40,7 +41,7 @@ fun CategoryCard(category: DashboardCategory, navController: NavController) {
     ) {
         Column(
             modifier = Modifier
-                .padding(8.dp)
+                .padding(8.dp).fillMaxWidth()
         ) {
             if (category.categoryImage != -1) {
                 Image(
@@ -48,6 +49,7 @@ fun CategoryCard(category: DashboardCategory, navController: NavController) {
                     contentDescription = null,
                     modifier = Modifier
                         .padding(horizontal = 8.dp)
+                        .padding(bottom = 12.dp)
                         .height(70.dp)
                         .fillMaxWidth()
                 )
@@ -60,13 +62,15 @@ fun CategoryCard(category: DashboardCategory, navController: NavController) {
                     .padding(horizontal = 8.dp, vertical = 4.dp),
                 fontSize = 16.sp,
                 lineHeight = 18.sp,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
             )
             Text(
                 category.categoryDescription,
                 fontSize = 13.sp,
                 lineHeight = 18.sp,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                textAlign = TextAlign.Justify
             )
         }
     }

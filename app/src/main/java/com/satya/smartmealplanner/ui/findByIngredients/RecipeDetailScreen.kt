@@ -47,7 +47,7 @@ fun RecipeDetailScreen(
             )
 
             Text(
-                text = selectedRecipeState.recipe?.title?: "Details",
+                text = selectedRecipeState.recipe?.title?: "",
                 fontSize = 22.sp,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
                 fontWeight = FontWeight.Bold
