@@ -23,16 +23,20 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
+import com.satya.smartmealplanner.presentation.preferences.SharedPreferencesViewModel
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
 import com.satya.smartmealplanner.ui.home.components.CategoryCard
 import com.satya.smartmealplanner.ui.home.components.FactCard
 import com.satya.smartmealplanner.ui.home.components.HorizontalPagerWithIndicators
-import com.satya.smartmealplanner.ui.utils.ErrorContainer
 import com.satya.smartmealplanner.ui.utils.CircularLoader
+import com.satya.smartmealplanner.ui.utils.ErrorContainer
+import com.satya.smartmealplanner.utils.Utils
 
 @Composable
 fun DashboardScreen(
-    navController: NavController, viewModel: RecipeViewModel = hiltViewModel()
+    navController: NavController,
+    viewModel: RecipeViewModel = hiltViewModel(),
+    sharedPreferencesViewModel: SharedPreferencesViewModel = hiltViewModel()
 ) {
 
     val baseCategoryList = remember { viewModel.getCategoryList() }
@@ -42,10 +46,23 @@ fun DashboardScreen(
     val randomFoodTrivia = viewModel.foodTriviaState
     val randomRecipes = viewModel.randomRecipesState
 
+    var showHorizontalViewPager by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
-        viewModel.getRandomRecipes()
-        viewModel.getRandomJoke()
-        viewModel.getRandomTrivia()
+        val currentDate: String = Utils.getCurrentDate()
+
+        sharedPreferencesViewModel.getCurrentDate { date: String? ->
+            if (currentDate != date) {
+                viewModel.getRandomRecipes()
+                viewModel.getRandomJoke()
+                viewModel.getRandomTrivia()
+                showHorizontalViewPager = true
+                sharedPreferencesViewModel.saveCurrentDate(currentDate)
+            } else {
+                // fetch data from the room-db
+            }
+        }
+
     }
 
     LaunchedEffect(randomFoodTrivia, randomJokeState) {
@@ -88,18 +105,20 @@ fun DashboardScreen(
         )
 
 
-        Column(
-            modifier = Modifier.height(240.dp)
-        ) {
+        if (showHorizontalViewPager) {
+            Column(
+                modifier = Modifier.height(240.dp)
+            ) {
 
-            when {
-                randomRecipes.isLoading -> CircularLoader()
+                when {
+                    randomRecipes.isLoading -> CircularLoader()
 
-                randomRecipes.isError != null -> ErrorContainer(randomRecipes.isError)
+                    randomRecipes.isError != null -> ErrorContainer(randomRecipes.isError)
 
-                randomRecipes.isSuccess != null -> {
-                    val listOfRecipes = randomRecipes.isSuccess.recipes
-                    HorizontalPagerWithIndicators(listOfRecipes, navController)
+                    randomRecipes.isSuccess != null -> {
+                        val listOfRecipes = randomRecipes.isSuccess.recipes
+                        HorizontalPagerWithIndicators(listOfRecipes, navController)
+                    }
                 }
             }
         }
