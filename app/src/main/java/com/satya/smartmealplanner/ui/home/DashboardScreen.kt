@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -52,7 +53,7 @@ fun DashboardScreen(
         val currentDate: String = Utils.getCurrentDate()
 
         sharedPreferencesViewModel.getCurrentDate { date: String? ->
-            if (currentDate != date) {
+            if (currentDate == date) {
                 viewModel.getRandomRecipes()
                 viewModel.getRandomJoke()
                 viewModel.getRandomTrivia()
@@ -99,15 +100,16 @@ fun DashboardScreen(
     ) {
         Text(
             text = "Meal Planner",
-            fontSize = 24.sp,
-            modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
+            fontSize = 22.sp,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp).fillMaxWidth(),
             fontWeight = FontWeight.Bold
         )
 
 
         if (showHorizontalViewPager) {
             Column(
-                modifier = Modifier.height(240.dp)
+                modifier = Modifier.padding(vertical = 8.dp).height(240.dp)
             ) {
 
                 when {

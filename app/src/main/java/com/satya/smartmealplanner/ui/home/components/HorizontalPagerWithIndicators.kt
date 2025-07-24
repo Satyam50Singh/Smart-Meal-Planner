@@ -28,7 +28,7 @@ fun HorizontalPagerWithIndicators(listOfRecipes: List<Recipe>, navController: Na
     val coroutineScope = rememberCoroutineScope()
     val autoScrollDelay = 5000L // 5 seconds
 
-    Column(modifier = Modifier.padding(8.dp, bottom = 16.dp)) {
+    Column(modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp)) {
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
