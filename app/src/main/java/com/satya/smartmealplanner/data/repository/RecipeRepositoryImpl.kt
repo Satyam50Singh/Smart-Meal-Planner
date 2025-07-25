@@ -6,6 +6,7 @@ import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
+import com.satya.smartmealplanner.data.model.randomRecipes.Recipe
 import com.satya.smartmealplanner.data.model.randomRecipes.toEntity
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
@@ -114,9 +115,19 @@ class RecipeRepositoryImpl @Inject constructor(
 
         return when {
             response.isSuccessful -> {
-                response.body()?.let {
+                val body = response.body()
+                val recipeEntities: List<RandomRecipeEntity> =
+                    body?.recipes?.map { recipe: Recipe -> recipe.toEntity() } ?: emptyList()
+
+                withContext(Dispatchers.IO) {
+                    randomRecipeDao.deleteAllRandomRecipes()
+                    randomRecipeDao.insertRandomRecipes(recipeEntities)
+                }
+
+                body?.let {
                     Resource.Success(it)
                 } ?: Resource.Error("Something went wrong")
+
             }
 
             response.errorBody() != null -> {
