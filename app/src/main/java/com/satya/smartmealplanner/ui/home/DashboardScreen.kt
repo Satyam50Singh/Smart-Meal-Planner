@@ -53,15 +53,16 @@ fun DashboardScreen(
         val currentDate: String = Utils.getCurrentDate()
 
         sharedPreferencesViewModel.getCurrentDate { date: String? ->
-            if (currentDate == date) {
-                viewModel.getRandomRecipes()
+            if (currentDate != date) {
+                viewModel.getRandomRecipes(true)
                 viewModel.getRandomJoke()
                 viewModel.getRandomTrivia()
-                showHorizontalViewPager = true
                 sharedPreferencesViewModel.saveCurrentDate(currentDate)
             } else {
                 // fetch data from the room-db
+                viewModel.getRandomRecipes(false)
             }
+            showHorizontalViewPager = true
         }
 
     }

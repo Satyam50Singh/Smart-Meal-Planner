@@ -238,14 +238,14 @@ class RecipeViewModel @Inject constructor(
     var randomRecipesState by mutableStateOf(State<RandomRecipes>())
         private set
 
-    fun getRandomRecipes() {
+    fun getRandomRecipes(forceRefresh: Boolean = false) {
         viewModelScope.launch {
             randomRecipesState = randomRecipesState.copy(isLoading = true, isError = null)
 
             try {
 
                 val response = withContext(Dispatchers.IO) {
-                    recipeUseCase.getRandomRecipes()
+                    recipeUseCase.getRandomRecipes(forceRefresh)
                 }
 
                 when (response) {

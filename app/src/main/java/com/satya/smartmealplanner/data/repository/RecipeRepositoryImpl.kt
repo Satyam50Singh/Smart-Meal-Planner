@@ -1,20 +1,30 @@
 package com.satya.smartmealplanner.data.repository
 
+import com.satya.smartmealplanner.data.local.RandomRecipeDao
+import com.satya.smartmealplanner.data.local.RandomRecipeEntity
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
+import com.satya.smartmealplanner.data.model.randomRecipes.toEntity
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
+import com.satya.smartmealplanner.data.preferences.PreferenceKeys
+import com.satya.smartmealplanner.data.preferences.SharedPreferencesManager
 import com.satya.smartmealplanner.data.remote.ApiService
 import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.repository.RecipeRepository
+import com.satya.smartmealplanner.utils.Utils
 import com.satya.smartmealplanner.utils.parseErrorBody
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class RecipeRepositoryImpl @Inject constructor(
-    private val apiService: ApiService
+    private val apiService: ApiService,
+    private val randomRecipeDao: RandomRecipeDao,
+    private val sharedPreferencesManager: SharedPreferencesManager
 ) : RecipeRepository {
 
     override suspend fun findByIngredients(
@@ -110,12 +120,45 @@ class RecipeRepositoryImpl @Inject constructor(
             }
 
             response.errorBody() != null -> {
-                parseErrorBody<RandomRecipes?>(response.errorBody(), response.code())
+                parseErrorBody(response.errorBody(), response.code())
             }
 
             else -> {
                 Resource.Error("Something went wrong")
             }
+        }
+    }
+
+    override suspend fun fetchRandomRecipesFromDb(): Resource<List<RandomRecipeEntity>> {
+        return try {
+            val todayDate = Utils.getCurrentDate()
+            val savedDate = sharedPreferencesManager.getString(PreferenceKeys.CURRENT_DATE, "")
+
+            if (todayDate == savedDate) {
+                val savedRecipes = randomRecipeDao.getAllRandomRecipes()
+                Resource.Success(savedRecipes)
+            } else {
+                val response = apiService.fetchRandomRecipes()
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body != null) {
+                        val recipeEntities = body.recipes.map { recipe -> recipe.toEntity() }
+                        withContext(Dispatchers.IO) {
+                            randomRecipeDao.deleteAllRandomRecipes()
+                            randomRecipeDao.insertRandomRecipes(recipeEntities)
+                        }
+                        sharedPreferencesManager.putString(PreferenceKeys.CURRENT_DATE, todayDate)
+                        Resource.Success(recipeEntities)
+                    } else {
+                        Resource.Error("Something went wrong")
+                    }
+                } else {
+                    parseErrorBody(response.errorBody(), response.code())
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Error(e.localizedMessage ?: "Unexpected error")
         }
     }
 }

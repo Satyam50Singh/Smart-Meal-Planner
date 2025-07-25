@@ -1,5 +1,7 @@
 package com.satya.smartmealplanner.domain.usecase
 
+import com.satya.smartmealplanner.data.local.RandomRecipeEntity
+import com.satya.smartmealplanner.data.local.toDomain
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
@@ -40,6 +42,29 @@ class RecipeUseCase @Inject constructor(
 
     suspend fun getRandomTrivia(): Resource<FoodTrivia?> = repository.getRandomTrivia()
 
-    suspend fun getRandomRecipes(): Resource<RandomRecipes?> = repository.fetchRandomRecipes()
+    suspend fun getRandomRecipes(forceRefresh: Boolean = false): Resource<RandomRecipes?> {
+        return if (forceRefresh) {
+            repository.fetchRandomRecipes()
+        } else {
+            val savedRecipes: Resource<List<RandomRecipeEntity>> =
+                repository.fetchRandomRecipesFromDb()
+            if (savedRecipes is Resource.Success && savedRecipes.data.isNotEmpty()) {
+                val mappedResult = savedRecipes.mapToRawRandomRecipes()
+                mappedResult
+            } else {
+                repository.fetchRandomRecipes()
+            }
+        }
+    }
 
+    private fun Resource<List<RandomRecipeEntity>>.mapToRawRandomRecipes(): Resource<RandomRecipes?> {
+        return when (this) {
+            is Resource.Success -> {
+                val randomRecipes = this.data.map { it.toDomain() }
+                Resource.Success(RandomRecipes(randomRecipes))
+            }
+
+            is Resource.Error -> Resource.Error(this.message)
+        }
+    }
 }

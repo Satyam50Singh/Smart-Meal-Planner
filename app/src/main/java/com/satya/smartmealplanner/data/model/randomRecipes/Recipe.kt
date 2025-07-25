@@ -1,5 +1,6 @@
 package com.satya.smartmealplanner.data.model.randomRecipes
 
+import com.satya.smartmealplanner.data.local.RandomRecipeEntity
 import com.satya.smartmealplanner.data.model.recipeDetails.ExtendedIngredient
 
 data class Recipe(
@@ -23,7 +24,7 @@ data class Recipe(
     val license: String,
     val lowFodmap: Boolean,
     val occasions: List<String>,
-    val originalId: Any,
+    val originalId: Any?,
     val preparationMinutes: Int,
     val pricePerServing: Double,
     val readyInMinutes: Int,
@@ -41,3 +42,11 @@ data class Recipe(
     val veryPopular: Boolean,
     val weightWatcherSmartPoints: Int
 )
+
+fun Recipe.toEntity(): RandomRecipeEntity {
+    return RandomRecipeEntity(
+        id = id,
+        title = title,
+        imageUrl = image
+    )
+}

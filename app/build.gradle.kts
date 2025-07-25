@@ -97,4 +97,8 @@ dependencies {
     // Jetpack Compose
     implementation(libs.androidx.navigation.compose)
 
+    // Room DB
+    implementation(libs.room.runtime)
+    ksp(libs.room.compiler)
+    implementation(libs.room.ktx)
 }
