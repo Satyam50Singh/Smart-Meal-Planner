@@ -35,12 +35,13 @@ fun DashboardScreen(
         sharedPreferencesViewModel.getCurrentDate { previousDate: String? ->
             if (currentDate != previousDate) {
                 viewModel.getRandomRecipes(true)
-                viewModel.getRandomJoke()
+                viewModel.getRandomJoke(true)
                 viewModel.getRandomTrivia(true)
                 sharedPreferencesViewModel.saveCurrentDate(currentDate)
             } else {
                 viewModel.getRandomRecipes(false)
                 viewModel.getRandomTrivia(false)
+                viewModel.getRandomJoke(false)
             }
         }
 
@@ -54,11 +55,11 @@ fun DashboardScreen(
 
         val list = baseCategoryList.toMutableList()
 
-        randomJokeState.randomJoke?.let {
+        randomJokeState.isSuccess?.let {
             list.add(
                 2, DashboardCategory(
                     1001,
-                    randomJokeState.randomJoke.text,
+                    randomJokeState.isSuccess.text,
                     -1, "", "",
                 )
             )
@@ -77,6 +78,13 @@ fun DashboardScreen(
         updatedCategoryList = list
     }
 
-    DashboardScreenUI(showHorizontalViewPager, updatedCategoryList, navController, randomRecipes, randomJokeState, randomFoodTrivia)
+    DashboardScreenUI(
+        showHorizontalViewPager,
+        updatedCategoryList,
+        navController,
+        randomRecipes,
+        randomJokeState,
+        randomFoodTrivia
+    )
 
 }

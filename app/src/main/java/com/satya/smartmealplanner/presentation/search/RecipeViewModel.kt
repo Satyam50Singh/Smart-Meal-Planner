@@ -174,33 +174,33 @@ class RecipeViewModel @Inject constructor(
 
     }
 
-    var randomJokeState by mutableStateOf(RandomJokeState())
+    var randomJokeState by mutableStateOf(State<RandomJoke>())
         private set
 
-    fun getRandomJoke() {
+    fun getRandomJoke(forceRefresh: Boolean) {
         viewModelScope.launch {
-            randomJokeState = randomJokeState.copy(isLoading = true, error = null)
+            randomJokeState = randomJokeState.copy(isLoading = true, isError = null)
 
             try {
                 val response = withContext(Dispatchers.IO) {
-                    recipeUseCase.getRandomJoke()
+                    recipeUseCase.getRandomJoke(forceRefresh)
                 }
 
                 when (response) {
                     is Resource.Error -> {
                         randomJokeState =
-                            randomJokeState.copy(error = response.message, isLoading = false)
+                            randomJokeState.copy(isError = response.message, isLoading = false)
                     }
 
                     is Resource.Success -> {
                         response.data.let {
                             randomJokeState =
-                                randomJokeState.copy(randomJoke = it, isLoading = false)
+                                randomJokeState.copy(isSuccess = it, isLoading = false)
                         }
                     }
                 }
             } catch (e: Exception) {
-                randomJokeState = randomJokeState.copy(error = e.message, isLoading = false)
+                randomJokeState = randomJokeState.copy(isError = e.message, isLoading = false)
                 e.printStackTrace()
             }
         }

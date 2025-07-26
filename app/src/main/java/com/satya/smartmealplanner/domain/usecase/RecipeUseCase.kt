@@ -40,7 +40,18 @@ class RecipeUseCase @Inject constructor(
         minCarbs, maxCarbs, minProtein, maxProtein, minCalories, maxCalories, minFat, maxFat
     )
 
-    suspend fun getRandomJoke(): Resource<RandomJoke?> = repository.getRandomJoke()
+    suspend fun getRandomJoke(forceRefresh: Boolean): Resource<RandomJoke?> {
+        return if (forceRefresh) {
+            repository.getRandomJoke()
+        } else {
+            val savedJoke: Resource<FoodFactEntity> = repository.getRandomJokeFromDb(type = Constants.JOKE)
+            if (savedJoke is Resource.Success) {
+                Resource.Success(RandomJoke(savedJoke.data.text))
+            } else {
+                repository.getRandomJoke()
+            }
+        }
+    }
 
     suspend fun getRandomTrivia(forceRefresh: Boolean): Resource<FoodTrivia?> {
         return if (forceRefresh) {

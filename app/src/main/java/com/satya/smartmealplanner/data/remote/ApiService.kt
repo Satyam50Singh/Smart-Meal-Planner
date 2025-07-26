@@ -59,7 +59,7 @@ interface ApiService {
         @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
     ) : Response<RandomJoke>
 
-    @GET("/food/trivia/random")
+    @GET("food/trivia/random")
     suspend fun fetchRandomTrivia(
         @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
     ): Response<FoodTrivia>

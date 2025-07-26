@@ -36,6 +36,8 @@ interface RecipeRepository {
 
     suspend fun getRandomJoke(): Resource<RandomJoke?>
 
+    suspend fun getRandomJokeFromDb(type: String): Resource<FoodFactEntity>
+
     suspend fun getRandomTrivia(): Resource<FoodTrivia?>
 
     suspend fun getRandomTriviaFromDb(type: String): Resource<FoodFactEntity>

@@ -79,9 +79,20 @@ class RecipeRepositoryImpl @Inject constructor(
 
         return when {
             response.isSuccessful -> {
-                response.body()?.let {
-                    Resource.Success(it)
-                } ?: Resource.Error("Something went wrong")
+                val body = response.body()
+                if (body != null) {
+                    val foodFactEntity = FoodFactEntity(
+                        text = body.text,
+                        type = Constants.JOKE
+                    )
+
+                    withContext(Dispatchers.IO) {
+                        foodFactDao.deleteFoodFactByType("joke")
+                        foodFactDao.insertFoodFact(foodFactEntity)
+                    }
+                }
+
+                body?.let { Resource.Success(it) } ?: Resource.Error("Something went wrong")
             }
 
             response.errorBody() != null -> {
@@ -90,6 +101,45 @@ class RecipeRepositoryImpl @Inject constructor(
 
             else -> {
                 Resource.Error("Something went wrong")
+            }
+        }
+    }
+
+    override suspend fun getRandomJokeFromDb(type: String): Resource<FoodFactEntity> {
+        val savedDate = sharedPreferencesManager.getString(PreferenceKeys.CURRENT_DATE, "")
+
+        return if (savedDate.isNotEmpty()) {
+            val savedJoke = foodFactDao.getFoodFactByType(Constants.JOKE)
+            if (savedJoke != null) {
+                Resource.Success(savedJoke)
+            } else {
+                Resource.Error("Something went wrong")
+            }
+        } else {
+            val response = apiService.fetchRandomJoke()
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body != null) {
+                    val foodFactEntity = FoodFactEntity(
+                        text = body.text,
+                        type = Constants.JOKE
+                    )
+
+                    withContext(Dispatchers.IO) {
+                        foodFactDao.deleteFoodFactByType("joke")
+                        foodFactDao.insertFoodFact(foodFactEntity)
+                    }
+
+                    sharedPreferencesManager.putString(
+                        PreferenceKeys.CURRENT_DATE,
+                        Utils.getCurrentDate()
+                    )
+                    Resource.Success(foodFactEntity)
+                } else {
+                    Resource.Error("Something went wrong")
+                }
+            } else {
+                parseErrorBody(errorBody = response.errorBody(), code = response.code())
             }
         }
     }
@@ -149,7 +199,10 @@ class RecipeRepositoryImpl @Inject constructor(
                             foodFactDao.deleteFoodFactByType(Constants.TRIVIA)
                             foodFactDao.insertFoodFact(foodFactEntity)
                         }
-                        sharedPreferencesManager.putString(PreferenceKeys.CURRENT_DATE, Utils.getCurrentDate())
+                        sharedPreferencesManager.putString(
+                            PreferenceKeys.CURRENT_DATE,
+                            Utils.getCurrentDate()
+                        )
                         Resource.Success(foodFactEntity)
                     } else {
                         Resource.Error("Something went wrong")

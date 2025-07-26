@@ -31,8 +31,8 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
+import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
-import com.satya.smartmealplanner.presentation.search.RandomJokeState
 import com.satya.smartmealplanner.presentation.search.State
 import com.satya.smartmealplanner.ui.home.components.CategoryCard
 import com.satya.smartmealplanner.ui.home.components.FactCard
@@ -45,7 +45,7 @@ fun DashboardScreenUI(
     updatedCategoryList: List<DashboardCategory>,
     navController: NavController,
     randomRecipes: State<RandomRecipes>,
-    randomJokeState: RandomJokeState,
+    randomJokeState: State<RandomJoke>,
     randomFoodTrivia: State<FoodTrivia>
 ) {
 
@@ -58,7 +58,7 @@ fun DashboardScreenUI(
     if (errorMessage == null) {
         errorMessage = when {
             randomRecipes.isError != null -> randomRecipes.isError
-            randomJokeState.error != null -> randomJokeState.error
+            randomJokeState.isError != null -> randomJokeState.isError
             randomFoodTrivia.isError != null -> randomFoodTrivia.isError
             else -> null
         }
