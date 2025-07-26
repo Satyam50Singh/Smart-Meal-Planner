@@ -22,6 +22,7 @@ import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
 import com.satya.smartmealplanner.ui.findByIngredients.components.RecipeDetailCard
 import com.satya.smartmealplanner.ui.utils.CircularLoader
+import com.satya.smartmealplanner.ui.utils.ErrorContainer
 
 @Composable
 fun RecipeDetailScreen(
@@ -47,7 +48,7 @@ fun RecipeDetailScreen(
             )
 
             Text(
-                text = selectedRecipeState.recipe?.title?: "",
+                text = selectedRecipeState.isSuccess?.title?: "",
                 fontSize = 22.sp,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
                 fontWeight = FontWeight.Bold
@@ -57,19 +58,17 @@ fun RecipeDetailScreen(
         when {
             selectedRecipeState.isLoading -> CircularLoader()
 
-            selectedRecipeState.error != null -> {
-                Text("Error: ${selectedRecipeState.error}")
-            }
+            selectedRecipeState.isError != null -> ErrorContainer(message = "Error: ${selectedRecipeState.isError}")
 
-            selectedRecipeState.recipe == null -> {
+            selectedRecipeState.isSuccess == null -> {
                 Box(
                     modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
                 ) { Text("No details found, Please try another recipe") }
             }
 
             else -> {
-                val recipe = selectedRecipeState.recipe
-                RecipeDetailCard(recipe)
+                val recipeDetails = selectedRecipeState.isSuccess
+                RecipeDetailCard(recipeDetails)
             }
         }
     }

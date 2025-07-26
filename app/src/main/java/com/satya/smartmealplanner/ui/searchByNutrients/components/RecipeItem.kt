@@ -40,7 +40,7 @@ import com.satya.smartmealplanner.presentation.navigation.Screen
 fun RecipeItem(navController: NavController, recipe: RecipeByNutrientsItem) {
     Card(
         modifier = Modifier
-            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .padding(horizontal = 12.dp, vertical = 8.dp)
             .fillMaxWidth()
             .height(180.dp),
         elevation = CardDefaults.cardElevation(6.dp),

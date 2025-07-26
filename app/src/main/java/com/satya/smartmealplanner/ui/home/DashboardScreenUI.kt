@@ -75,7 +75,7 @@ fun DashboardScreenUI(
             fontSize = 22.sp,
             textAlign = TextAlign.Center,
             modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 16.dp)
+                .padding(vertical = 16.dp)
                 .fillMaxWidth(),
             fontWeight = FontWeight.Bold
         )

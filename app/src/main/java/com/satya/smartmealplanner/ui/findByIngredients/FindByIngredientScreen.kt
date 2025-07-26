@@ -26,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,6 +35,7 @@ import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
 import com.satya.smartmealplanner.ui.findByIngredients.components.RecipeCard
 import com.satya.smartmealplanner.ui.utils.CircularLoader
+import com.satya.smartmealplanner.ui.utils.ErrorContainer
 
 @Composable
 fun FindByIngredientScreen(
@@ -62,7 +64,10 @@ fun FindByIngredientScreen(
             Text(
                 text = "Recipes by Ingredients",
                 fontSize = 22.sp,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
                 fontWeight = FontWeight.Bold
             )
         }
@@ -82,7 +87,7 @@ fun FindByIngredientScreen(
                     contentDescription = null,
                     modifier = Modifier.clickable(
                         onClick = {
-                            if (!input.isEmpty()) {
+                            if (input.isNotEmpty()) {
                                 viewModel.findByIngredients(input)
                             } else {
                                 Toast.makeText(
@@ -101,9 +106,9 @@ fun FindByIngredientScreen(
         when {
             uiState.isLoading -> CircularLoader()
 
-            uiState.error != null -> Text("Error: ${uiState.error}")
+            uiState.isError != null -> ErrorContainer(message = "Error: ${uiState.isError}")
 
-            uiState.recipes.isEmpty() -> {
+            uiState.isSuccess.isNullOrEmpty() -> {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -131,8 +136,10 @@ fun FindByIngredientScreen(
                 LazyVerticalStaggeredGrid(
                     columns = StaggeredGridCells.Fixed(2),
                     content = {
-                        items(uiState.recipes) { recipe ->
-                            RecipeCard(recipe, navController)
+                        uiState.isSuccess?.let { recipes ->
+                            items(recipes) { recipe ->
+                                RecipeCard(recipe, navController)
+                            }
                         }
                     }
                 )

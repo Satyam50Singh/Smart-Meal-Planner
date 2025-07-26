@@ -14,6 +14,7 @@ import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredients
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
+import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.usecase.RecipeUseCase
 import com.satya.smartmealplanner.ui.utils.ErrorContainer
@@ -28,7 +29,7 @@ class RecipeViewModel @Inject constructor(
     private val recipeUseCase: RecipeUseCase
 ) : ViewModel() {
 
-    var uiState by mutableStateOf(RecipeState())
+    var uiState by mutableStateOf(State<FindByIngredientsResponse>())
         private set
 
     fun findByIngredients(ingredients: String) {
@@ -37,15 +38,15 @@ class RecipeViewModel @Inject constructor(
 
             try {
                 val recipe = recipeUseCase(ingredients, 20, BuildConfig.SPOONACULAR_API_KEY)
-                uiState = uiState.copy(recipes = recipe, isLoading = false)
+                uiState = uiState.copy(isSuccess = recipe, isLoading = false)
             } catch (e: Exception) {
-                uiState = uiState.copy(error = e.message, isLoading = false)
+                uiState = uiState.copy(isError = e.message, isLoading = false)
             }
         }
     }
 
     fun clearRecipes() {
-        uiState = uiState.copy(recipes = FindByIngredientsResponse())
+        uiState = uiState.copy(isSuccess = FindByIngredientsResponse())
     }
 
     fun getCategoryList(): List<DashboardCategory> {
@@ -96,7 +97,7 @@ class RecipeViewModel @Inject constructor(
         )
     }
 
-    var selectedRecipeState by mutableStateOf(SelectedRecipeState())
+    var selectedRecipeState by mutableStateOf(State<SelectedRecipeDetails>())
         private set
 
     fun getRecipeById(recipeId: Int) {
@@ -107,34 +108,34 @@ class RecipeViewModel @Inject constructor(
             try {
                 val recipeDetails = recipeUseCase.getRecipeDetailsById(recipeId)
                 selectedRecipeState =
-                    selectedRecipeState.copy(recipe = recipeDetails, isLoading = false)
+                    selectedRecipeState.copy(isSuccess = recipeDetails, isLoading = false)
             } catch (e: Exception) {
-                selectedRecipeState = selectedRecipeState.copy(error = e.message, isLoading = false)
+                selectedRecipeState = selectedRecipeState.copy(isError = e.message, isLoading = false)
             }
         }
 
     }
 
-    var recipeByCuisineState by mutableStateOf(RecipeByCuisineState())
+    var recipeByCuisineState by mutableStateOf(State<RecipeByCuisine>())
         private set
 
     fun getRecipeByCuisine(cuisine: String, diet: String) {
         viewModelScope.launch {
-            recipeByCuisineState = recipeByCuisineState.copy(isLoading = true, error = null)
+            recipeByCuisineState = recipeByCuisineState.copy(isLoading = true, isError = null)
 
             try {
                 val listOfRecipes: RecipeByCuisine = recipeUseCase.getRecipeByCuisine(cuisine, diet)
                 recipeByCuisineState = recipeByCuisineState.copy(
-                    isLoading = false, recipes = listOfRecipes, error = null
+                    isLoading = false, isSuccess = listOfRecipes, isError = null
                 )
             } catch (e: Exception) {
                 recipeByCuisineState =
-                    recipeByCuisineState.copy(error = e.message, isLoading = false)
+                    recipeByCuisineState.copy(isError = e.message, isLoading = false)
             }
         }
     }
 
-    var recipeByNutrientsState by mutableStateOf(RecipeByNutrientsState())
+    var recipeByNutrientsState by mutableStateOf(State<RecipeByNutrients>())
         private set
 
     fun getRecipeByNutrients(
@@ -150,7 +151,7 @@ class RecipeViewModel @Inject constructor(
 
         viewModelScope.launch {
 
-            recipeByNutrientsState = recipeByNutrientsState.copy(isLoading = true, error = null)
+            recipeByNutrientsState = recipeByNutrientsState.copy(isLoading = true, isError = null)
 
             try {
                 val listOfRecipes: RecipeByNutrients = recipeUseCase.getRecipeByNutrients(
@@ -164,11 +165,11 @@ class RecipeViewModel @Inject constructor(
                     maxFat
                 )
                 recipeByNutrientsState = recipeByNutrientsState.copy(
-                    isLoading = false, recipes = listOfRecipes, error = null
+                    isLoading = false, isSuccess = listOfRecipes, isError = null
                 )
             } catch (e: Exception) {
                 recipeByNutrientsState =
-                    recipeByNutrientsState.copy(error = e.message, isLoading = false)
+                    recipeByNutrientsState.copy(isError = e.message, isLoading = false)
             }
         }
 
