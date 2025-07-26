@@ -11,6 +11,7 @@ import androidx.navigation.NavController
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
 import com.satya.smartmealplanner.presentation.preferences.SharedPreferencesViewModel
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
+import com.satya.smartmealplanner.utils.UIHelpers
 import com.satya.smartmealplanner.utils.Utils
 
 @Composable
@@ -84,7 +85,11 @@ fun DashboardScreen(
         navController,
         randomRecipes,
         randomJokeState,
-        randomFoodTrivia
+        randomFoodTrivia,
+        onSearchQueryChanged = { query ->
+            // viewModel.searchRecipes(query)
+            UIHelpers.customToast(navController.context, query)
+        }
     )
 
 }

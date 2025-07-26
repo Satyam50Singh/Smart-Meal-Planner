@@ -1,5 +1,7 @@
 package com.satya.smartmealplanner.ui.home
 
+import android.os.Handler
+import android.os.Looper
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +13,15 @@ import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -46,7 +56,8 @@ fun DashboardScreenUI(
     navController: NavController,
     randomRecipes: State<RandomRecipes>,
     randomJokeState: State<RandomJoke>,
-    randomFoodTrivia: State<FoodTrivia>
+    randomFoodTrivia: State<FoodTrivia>,
+    onSearchQueryChanged: (String) -> Unit
 ) {
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -65,6 +76,8 @@ fun DashboardScreenUI(
         errorMessageDialog = errorMessage != null
     }
 
+    var searchQuery by remember { mutableStateOf("") }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -79,6 +92,37 @@ fun DashboardScreenUI(
                 .fillMaxWidth(),
             fontWeight = FontWeight.Bold
         )
+
+
+        OutlinedTextField(
+            value = searchQuery,
+            onValueChange = {
+                searchQuery = it
+                if (searchQuery.length >= 3) {
+                    Handler(Looper.getMainLooper()).postDelayed({
+                        onSearchQueryChanged(searchQuery)
+                    }, 2000)
+                }
+            },
+            label = { Text("Search recipes...") },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp),
+            shape = RoundedCornerShape(16.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                unfocusedBorderColor = Color.Gray,
+                cursorColor = MaterialTheme.colorScheme.primary,
+                focusedLabelColor = MaterialTheme.colorScheme.primary,
+                focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),  // replaces containerColor
+                unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            ),
+            leadingIcon = {
+                Icon(imageVector = Icons.Default.Search, contentDescription = null)
+            },
+            singleLine = true
+        )
+
 
         Column {
             if (showHorizontalViewPager) {

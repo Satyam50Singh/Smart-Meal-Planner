@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
@@ -51,7 +52,7 @@ fun HorizontalPagerWithIndicators(listOfRecipes: List<Recipe>, navController: Na
                 HorizontalPagerIndicator(
                     pagerState = pagerState,
                     pageCount = listOfRecipes.size,
-                    activeColor = Color.DarkGray,
+                    activeColor = MaterialTheme.colorScheme.primary,
                     inactiveColor = Color.LightGray,
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
