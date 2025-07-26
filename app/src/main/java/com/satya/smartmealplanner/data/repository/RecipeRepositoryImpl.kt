@@ -13,6 +13,7 @@ import com.satya.smartmealplanner.data.model.randomRecipes.toEntity
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
+import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import com.satya.smartmealplanner.data.preferences.PreferenceKeys
 import com.satya.smartmealplanner.data.preferences.SharedPreferencesManager
 import com.satya.smartmealplanner.data.remote.ApiService
@@ -264,7 +265,10 @@ class RecipeRepositoryImpl @Inject constructor(
                             randomRecipeDao.deleteAllRandomRecipes()
                             randomRecipeDao.insertRandomRecipes(recipeEntities)
                         }
-                        sharedPreferencesManager.putString(PreferenceKeys.CURRENT_DATE, Utils.getCurrentDate())
+                        sharedPreferencesManager.putString(
+                            PreferenceKeys.CURRENT_DATE,
+                            Utils.getCurrentDate()
+                        )
                         Resource.Success(recipeEntities)
                     } else {
                         Resource.Error("Something went wrong")
@@ -276,6 +280,22 @@ class RecipeRepositoryImpl @Inject constructor(
         } catch (e: Exception) {
             e.printStackTrace()
             Resource.Error(e.localizedMessage ?: "Unexpected error")
+        }
+    }
+
+    override suspend fun fetchRecipeByQuery(searchQuery: String): Resource<SearchByQuery?> {
+        val response = apiService.fetchRecipesByQuery(query = searchQuery)
+        return if (response.isSuccessful) {
+            val body = response.body()
+            if (body != null) {
+                Resource.Success(body)
+            } else {
+                Resource.Error("Something went wrong!")
+            }
+        } else if (response.errorBody() != null) {
+            parseErrorBody(response.errorBody(), response.code())
+        } else {
+            Resource.Error("Something went wrong!")
         }
     }
 }

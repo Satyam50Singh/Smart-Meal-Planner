@@ -9,6 +9,7 @@ import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
+import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import com.satya.smartmealplanner.domain.model.Resource
 
 interface RecipeRepository {
@@ -46,5 +47,6 @@ interface RecipeRepository {
 
     suspend fun fetchRandomRecipesFromDb(): Resource<List<RandomRecipeEntity>>
 
+    suspend fun fetchRecipeByQuery(searchQuery: String): Resource<SearchByQuery?>
 
 }

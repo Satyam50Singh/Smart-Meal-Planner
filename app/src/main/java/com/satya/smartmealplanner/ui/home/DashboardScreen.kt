@@ -27,10 +27,13 @@ fun DashboardScreen(
     val randomJokeState = viewModel.randomJokeState
     val randomFoodTrivia = viewModel.foodTriviaState
     val randomRecipes = viewModel.randomRecipesState
+    val searchByQueryState = viewModel.searchByQueryState
 
     var showHorizontalViewPager by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
+        viewModel.fetchRecipesByQuery("")
+
         val currentDate: String = Utils.getCurrentDate()
 
         sharedPreferencesViewModel.getCurrentDate { previousDate: String? ->
@@ -68,7 +71,7 @@ fun DashboardScreen(
 
         randomFoodTrivia.isSuccess?.let {
             list.add(
-                5, DashboardCategory(
+                6, DashboardCategory(
                     1002,
                     randomFoodTrivia.isSuccess.text,
                     -1, "", "",
@@ -86,9 +89,9 @@ fun DashboardScreen(
         randomRecipes,
         randomJokeState,
         randomFoodTrivia,
+        searchByQueryState,
         onSearchQueryChanged = { query ->
-            // viewModel.searchRecipes(query)
-            UIHelpers.customToast(navController.context, query)
+             viewModel.fetchRecipesByQuery(query)
         }
     )
 

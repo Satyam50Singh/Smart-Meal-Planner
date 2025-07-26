@@ -2,23 +2,36 @@ package com.satya.smartmealplanner.ui.home
 
 import android.os.Handler
 import android.os.Looper
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -33,16 +46,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
+import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import com.satya.smartmealplanner.presentation.search.State
 import com.satya.smartmealplanner.ui.home.components.CategoryCard
 import com.satya.smartmealplanner.ui.home.components.FactCard
@@ -57,6 +76,7 @@ fun DashboardScreenUI(
     randomRecipes: State<RandomRecipes>,
     randomJokeState: State<RandomJoke>,
     randomFoodTrivia: State<FoodTrivia>,
+    searchByQueryState: State<SearchByQuery>,
     onSearchQueryChanged: (String) -> Unit
 ) {
 
@@ -64,13 +84,14 @@ fun DashboardScreenUI(
     var errorMessageDialog by remember { mutableStateOf(false) }
 
     val isLoading =
-        randomRecipes.isLoading || randomJokeState.isLoading || randomFoodTrivia.isLoading
+        randomRecipes.isLoading || randomJokeState.isLoading || randomFoodTrivia.isLoading || searchByQueryState.isLoading
 
     if (errorMessage == null) {
         errorMessage = when {
             randomRecipes.isError != null -> randomRecipes.isError
             randomJokeState.isError != null -> randomJokeState.isError
             randomFoodTrivia.isError != null -> randomFoodTrivia.isError
+            searchByQueryState.isError != null -> searchByQueryState.isError
             else -> null
         }
         errorMessageDialog = errorMessage != null
@@ -78,53 +99,161 @@ fun DashboardScreenUI(
 
     var searchQuery by remember { mutableStateOf("") }
 
-    Column(
+    val focusManager = LocalFocusManager.current
+
+    LazyColumn(
         modifier = Modifier
             .fillMaxSize()
             .padding(8.dp)
-    ) {
-        Text(
-            text = "Meal Planner",
-            fontSize = 22.sp,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .padding(vertical = 16.dp)
-                .fillMaxWidth(),
-            fontWeight = FontWeight.Bold
-        )
-
-
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = {
-                searchQuery = it
-                if (searchQuery.length >= 3) {
-                    Handler(Looper.getMainLooper()).postDelayed({
-                        onSearchQueryChanged(searchQuery)
-                    }, 2000)
+            .pointerInput(Unit) {
+                detectTapGestures {
+                    focusManager.clearFocus()
                 }
-            },
-            label = { Text("Search recipes...") },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp),
-            shape = RoundedCornerShape(16.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = MaterialTheme.colorScheme.primary,
-                unfocusedBorderColor = Color.Gray,
-                cursorColor = MaterialTheme.colorScheme.primary,
-                focusedLabelColor = MaterialTheme.colorScheme.primary,
-                focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),  // replaces containerColor
-                unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-            ),
-            leadingIcon = {
-                Icon(imageVector = Icons.Default.Search, contentDescription = null)
-            },
-            singleLine = true
-        )
+            }) {
 
+        item {
+            Text(
+                text = "Meal Planner",
+                fontSize = 22.sp,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .padding(vertical = 16.dp)
+                    .fillMaxWidth(),
+                fontWeight = FontWeight.Bold
+            )
+        }
 
-        Column {
+        item {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = {
+                    searchQuery = it
+                    if (searchQuery.length >= 3) {
+                        Handler(Looper.getMainLooper()).postDelayed({
+                            onSearchQueryChanged(searchQuery)
+                        }, 2000)
+                    }
+                },
+                label = { Text("Search recipes...") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 12.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = Color.Gray,
+                    cursorColor = MaterialTheme.colorScheme.primary,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),  // replaces containerColor
+                    unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                ),
+                leadingIcon = {
+                    Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                },
+                singleLine = true
+            )
+        }
+
+        item {
+            LazyVerticalGrid(
+                modifier = Modifier
+                    .padding(vertical = 24.dp)
+                    .heightIn(max = 1200.dp),
+                columns = GridCells.Fixed(3),
+                content = {
+                    searchByQueryState.isSuccess?.results?.let { results ->
+                        items(results) { recipe ->
+                            Column {
+                                Card(
+                                    modifier = Modifier.padding(
+                                        horizontal = 8.dp,
+                                        vertical = 4.dp
+                                    ),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Image(
+                                        painter = rememberAsyncImagePainter(recipe.image),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier
+                                            .height(100.dp)
+                                            .fillMaxWidth()
+                                    )
+                                }
+
+                                Text(
+                                    text = recipe.title,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 4.dp, vertical = 8.dp),
+                                    fontSize = 12.sp,
+                                    maxLines = 2,
+                                    lineHeight = 14.sp
+                                )
+                            }
+                        }
+                    }
+                })
+        }
+
+        item {
+            Text(
+                text = "Explore",
+                fontSize = 22.sp,
+                fontFamily = FontFamily.SansSerif,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier
+                    .padding(horizontal = 8.dp)
+                    .padding(bottom = 16.dp)
+            )
+        }
+
+        item {
+            LazyHorizontalGrid(
+                modifier = Modifier.heightIn(max = 220.dp),
+                rows = GridCells.Fixed(1),
+                content = {
+                    items(updatedCategoryList) { recipe ->
+                        if (recipe.categoryId in listOf(2, 3, 4))
+                            Column(
+                                modifier = Modifier
+                                    .height(210.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Card(
+                                    modifier = Modifier.padding(
+                                        horizontal = 8.dp,
+                                        vertical = 4.dp
+                                    ),
+                                    shape = RoundedCornerShape(12.dp)
+                                ) {
+                                    Image(
+                                        painter = rememberAsyncImagePainter(recipe.categoryImage),
+                                        contentDescription = null,
+                                        contentScale = ContentScale.FillHeight,
+                                        modifier = Modifier
+                                            .height(160.dp)
+                                            .width(170.dp)
+                                    )
+                                }
+
+                                Text(
+                                    text = recipe.categoryName,
+                                    textAlign = TextAlign.Center,
+                                    modifier = Modifier
+                                        .padding(horizontal = 4.dp, vertical = 8.dp),
+                                    fontSize = 13.sp,
+                                    fontWeight = FontWeight.W500,
+                                    maxLines = 2,
+                                    lineHeight = 14.sp
+                                )
+                            }
+                    }
+                })
+        }
+
+        item {
             if (showHorizontalViewPager) {
                 Column(
                     modifier = Modifier
@@ -140,6 +269,7 @@ fun DashboardScreenUI(
 
             if (updatedCategoryList.isNotEmpty()) {
                 LazyVerticalStaggeredGrid(
+                    modifier = Modifier.heightIn(max = 2000.dp),
                     columns = StaggeredGridCells.Fixed(2), content = {
                         items(updatedCategoryList, span = { item ->
                             if (item.categoryId in listOf(
@@ -156,17 +286,18 @@ fun DashboardScreenUI(
                                         .fillMaxWidth(),
 
                                     )
-                            } else {
+                            } else if (category.categoryId !in listOf(2, 3, 4)) {
                                 CategoryCard(category, navController)
                             }
                         }
                     })
             }
+
         }
     }
 
 
-    // Show loading indicator if isLoading is true
+// Show loading indicator if isLoading is true
     if (isLoading) {
         Box(
             modifier = Modifier
@@ -185,7 +316,7 @@ fun DashboardScreenUI(
         }
     }
 
-    // Show Alert Dialog if errorMessage is not null
+// Show Alert Dialog if errorMessage is not null
     if (errorMessageDialog) {
         AlertDialog(
             onDismissRequest = { errorMessageDialog = false },

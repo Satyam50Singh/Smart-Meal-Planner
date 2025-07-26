@@ -8,6 +8,7 @@ import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
+import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -70,5 +71,15 @@ interface ApiService {
         @Query("limitLicense") limitLicense: Boolean = true,
         @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
     ): Response<RandomRecipes>
+
+
+    @GET("recipes/complexSearch")
+    suspend fun fetchRecipesByQuery(
+        @Query("query") query: String,
+        @Query("number") number: Int = 9,
+        @Query("type") type: String = "main course",
+        @Query("diet") diet: String = "vegetarian",
+        @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
+    ): Response<SearchByQuery>
 
 }

@@ -15,6 +15,7 @@ import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
+import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.usecase.RecipeUseCase
 import com.satya.smartmealplanner.ui.utils.ErrorContainer
@@ -53,20 +54,20 @@ class RecipeViewModel @Inject constructor(
         return arrayListOf(
             DashboardCategory(
                 2,
-                "Search\nBy Ingredients",
-                R.drawable.search,
+                "Search By Ingredients",
+                R.drawable.search_by_ingredients,
                 "Find recipes based on the ingredients you already have at home. Save time and reduce food waste!",
                 "search_by_ingredients"
             ), DashboardCategory(
                 3,
-                "Search\nBy Nutrients",
-                R.drawable.nutrient,
+                "Search By Nutrients",
+                R.drawable.search_by_nutrition,
                 "Looking for high-protein, low-carb, or vitamin-rich meals? Get personalized recipes by nutritional content.",
                 "search_by_nutrients"
             ), DashboardCategory(
                 4,
-                "Search\nBy Cuisines",
-                R.drawable.cuisine,
+                "Search By Cuisines",
+                R.drawable.search_by_cuisine,
                 "Explore diverse world cuisines – Italian, Mexican, Indian, Thai, and more. Find authentic meals by culture.",
                 "search_by_cuisines"
             ), DashboardCategory(
@@ -110,7 +111,8 @@ class RecipeViewModel @Inject constructor(
                 selectedRecipeState =
                     selectedRecipeState.copy(isSuccess = recipeDetails, isLoading = false)
             } catch (e: Exception) {
-                selectedRecipeState = selectedRecipeState.copy(isError = e.message, isLoading = false)
+                selectedRecipeState =
+                    selectedRecipeState.copy(isError = e.message, isLoading = false)
             }
         }
 
@@ -226,7 +228,11 @@ class RecipeViewModel @Inject constructor(
                     is Resource.Success -> {
                         response.data.let {
                             foodTriviaState =
-                                foodTriviaState.copy(isSuccess = it, isLoading = false, isError = null)
+                                foodTriviaState.copy(
+                                    isSuccess = it,
+                                    isLoading = false,
+                                    isError = null
+                                )
                         }
                     }
                 }
@@ -271,4 +277,23 @@ class RecipeViewModel @Inject constructor(
         }
     }
 
+    var searchByQueryState by mutableStateOf(State<SearchByQuery>())
+        private set
+
+    fun fetchRecipesByQuery(searchQuery: String) {
+        viewModelScope.launch {
+            searchByQueryState = searchByQueryState.copy(isLoading = true, isError = null)
+
+            val response = withContext(Dispatchers.IO) {
+                recipeUseCase.fetchRecipesByQuery(searchQuery)
+            }
+
+            searchByQueryState = when(response) {
+                is Resource.Error -> searchByQueryState.copy(isLoading = false, isError = response.message)
+                is Resource.Success -> {
+                    searchByQueryState.copy(isLoading = false, isError = null, isSuccess = response.data)
+                }
+            }
+        }
+    }
 }

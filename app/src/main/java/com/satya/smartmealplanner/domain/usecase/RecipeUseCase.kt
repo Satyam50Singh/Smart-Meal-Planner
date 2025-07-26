@@ -91,4 +91,7 @@ class RecipeUseCase @Inject constructor(
             is Resource.Error -> Resource.Error(this.message)
         }
     }
+
+    suspend fun fetchRecipesByQuery(searchQuery: String) = repository.fetchRecipeByQuery(searchQuery)
+
 }
