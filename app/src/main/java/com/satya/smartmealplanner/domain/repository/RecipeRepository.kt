@@ -1,6 +1,7 @@
 package com.satya.smartmealplanner.domain.repository
 
-import com.satya.smartmealplanner.data.local.RandomRecipeEntity
+import com.satya.smartmealplanner.data.local.entity.FoodFactEntity
+import com.satya.smartmealplanner.data.local.entity.RandomRecipeEntity
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
@@ -37,8 +38,11 @@ interface RecipeRepository {
 
     suspend fun getRandomTrivia(): Resource<FoodTrivia?>
 
+    suspend fun getRandomTriviaFromDb(type: String): Resource<FoodFactEntity>
+
     suspend fun fetchRandomRecipes(): Resource<RandomRecipes?>
 
     suspend fun fetchRandomRecipesFromDb(): Resource<List<RandomRecipeEntity>>
+
 
 }

@@ -1,6 +1,7 @@
 package com.satya.smartmealplanner.di
 
-import com.satya.smartmealplanner.data.local.RandomRecipeDao
+import com.satya.smartmealplanner.data.local.dao.FoodFactDao
+import com.satya.smartmealplanner.data.local.dao.RandomRecipeDao
 import com.satya.smartmealplanner.data.preferences.SharedPreferencesManager
 import com.satya.smartmealplanner.data.remote.ApiService
 import com.satya.smartmealplanner.data.repository.RecipeRepositoryImpl
@@ -19,9 +20,10 @@ object RepositoryModule {
     fun provideRecipeRepository(
         apiService: ApiService,
         randomRecipeDao: RandomRecipeDao,
+        foodFactDao: FoodFactDao,
         prefs: SharedPreferencesManager
     ): RecipeRepository {
-        return RecipeRepositoryImpl(apiService, randomRecipeDao, prefs)
+        return RecipeRepositoryImpl(apiService, randomRecipeDao, foodFactDao, prefs)
     }
 
 }

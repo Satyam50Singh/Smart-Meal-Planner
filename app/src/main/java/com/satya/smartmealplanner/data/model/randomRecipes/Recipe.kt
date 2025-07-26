@@ -1,6 +1,6 @@
 package com.satya.smartmealplanner.data.model.randomRecipes
 
-import com.satya.smartmealplanner.data.local.RandomRecipeEntity
+import com.satya.smartmealplanner.data.local.entity.RandomRecipeEntity
 import com.satya.smartmealplanner.data.model.recipeDetails.ExtendedIngredient
 
 data class Recipe(

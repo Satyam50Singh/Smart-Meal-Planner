@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.satya.smartmealplanner.BuildConfig
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
+import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
@@ -205,31 +206,31 @@ class RecipeViewModel @Inject constructor(
         }
     }
 
-    var foodTriviaState by mutableStateOf(FoodTriviaState())
+    var foodTriviaState by mutableStateOf(State<FoodTrivia>())
         private set
 
-    fun getRandomTrivia() {
+    fun getRandomTrivia(forceRefresh: Boolean) {
         viewModelScope.launch {
-            foodTriviaState = foodTriviaState.copy(isLoading = true, error = null)
+            foodTriviaState = foodTriviaState.copy(isLoading = true, isError = null)
 
             try {
                 val response = withContext(Dispatchers.IO) {
-                    recipeUseCase.getRandomTrivia()
+                    recipeUseCase.getRandomTrivia(forceRefresh)
                 }
 
                 when (response) {
                     is Resource.Error -> foodTriviaState =
-                        foodTriviaState.copy(isLoading = false, error = response.message)
+                        foodTriviaState.copy(isLoading = false, isError = response.message)
 
                     is Resource.Success -> {
                         response.data.let {
                             foodTriviaState =
-                                foodTriviaState.copy(foodTrivia = it, isLoading = false, error = null)
+                                foodTriviaState.copy(isSuccess = it, isLoading = false, isError = null)
                         }
                     }
                 }
             } catch (e: Exception) {
-                foodTriviaState = foodTriviaState.copy(error = e.message, isLoading = false)
+                foodTriviaState = foodTriviaState.copy(isError = e.message, isLoading = false)
                 e.printStackTrace()
             }
         }

@@ -36,10 +36,11 @@ fun DashboardScreen(
             if (currentDate != previousDate) {
                 viewModel.getRandomRecipes(true)
                 viewModel.getRandomJoke()
-                viewModel.getRandomTrivia()
+                viewModel.getRandomTrivia(true)
                 sharedPreferencesViewModel.saveCurrentDate(currentDate)
             } else {
                 viewModel.getRandomRecipes(false)
+                viewModel.getRandomTrivia(false)
             }
         }
 
@@ -63,11 +64,11 @@ fun DashboardScreen(
             )
         }
 
-        randomFoodTrivia.foodTrivia?.let {
+        randomFoodTrivia.isSuccess?.let {
             list.add(
                 5, DashboardCategory(
                     1002,
-                    randomFoodTrivia.foodTrivia.text,
+                    randomFoodTrivia.isSuccess.text,
                     -1, "", "",
                 )
             )

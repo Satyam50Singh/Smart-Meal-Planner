@@ -1,7 +1,9 @@
 package com.satya.smartmealplanner.data.repository
 
-import com.satya.smartmealplanner.data.local.RandomRecipeDao
-import com.satya.smartmealplanner.data.local.RandomRecipeEntity
+import com.satya.smartmealplanner.data.local.dao.FoodFactDao
+import com.satya.smartmealplanner.data.local.dao.RandomRecipeDao
+import com.satya.smartmealplanner.data.local.entity.FoodFactEntity
+import com.satya.smartmealplanner.data.local.entity.RandomRecipeEntity
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
@@ -16,6 +18,7 @@ import com.satya.smartmealplanner.data.preferences.SharedPreferencesManager
 import com.satya.smartmealplanner.data.remote.ApiService
 import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.repository.RecipeRepository
+import com.satya.smartmealplanner.utils.Constants
 import com.satya.smartmealplanner.utils.Utils
 import com.satya.smartmealplanner.utils.parseErrorBody
 import kotlinx.coroutines.Dispatchers
@@ -25,6 +28,7 @@ import javax.inject.Inject
 class RecipeRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
     private val randomRecipeDao: RandomRecipeDao,
+    private val foodFactDao: FoodFactDao,
     private val sharedPreferencesManager: SharedPreferencesManager
 ) : RecipeRepository {
 
@@ -81,7 +85,7 @@ class RecipeRepositoryImpl @Inject constructor(
             }
 
             response.errorBody() != null -> {
-                parseErrorBody<RandomJoke?>(response.errorBody(), response.code())
+                parseErrorBody(response.errorBody(), response.code())
             }
 
             else -> {
@@ -95,18 +99,68 @@ class RecipeRepositoryImpl @Inject constructor(
 
         return when {
             response.isSuccessful -> {
-                response.body()?.let {
+                val body = response.body()
+                val foodFactEntity = FoodFactEntity(
+                    text = body?.text ?: "",
+                    type = Constants.TRIVIA
+                )
+
+                withContext(Dispatchers.IO) {
+                    foodFactDao.deleteFoodFactByType("trivia")
+                    foodFactDao.insertFoodFact(foodFactEntity)
+                }
+
+                body?.let {
                     Resource.Success(it)
                 } ?: Resource.Error("Something went wrong")
             }
 
             response.errorBody() != null -> {
-                parseErrorBody<FoodTrivia?>(response.errorBody(), response.code())
+                parseErrorBody(response.errorBody(), response.code())
             }
 
             else -> {
                 Resource.Error("Something went wrong")
             }
+        }
+    }
+
+    override suspend fun getRandomTriviaFromDb(type: String): Resource<FoodFactEntity> {
+        return try {
+            val savedDate = sharedPreferencesManager.getString(PreferenceKeys.CURRENT_DATE, "")
+
+            if (savedDate.isNotEmpty()) {
+                val savedTrivia = foodFactDao.getFoodFactByType(type)
+                if (savedTrivia != null) {
+                    Resource.Success(savedTrivia)
+                } else {
+                    Resource.Error("Something went wrong")
+                }
+            } else {
+                val response = apiService.fetchRandomTrivia()
+                if (response.isSuccessful) {
+                    val body = response.body()
+                    if (body != null) {
+                        val foodFactEntity = FoodFactEntity(
+                            text = body.text,
+                            type = Constants.TRIVIA
+                        )
+                        withContext(Dispatchers.IO) {
+                            foodFactDao.deleteFoodFactByType(Constants.TRIVIA)
+                            foodFactDao.insertFoodFact(foodFactEntity)
+                        }
+                        sharedPreferencesManager.putString(PreferenceKeys.CURRENT_DATE, Utils.getCurrentDate())
+                        Resource.Success(foodFactEntity)
+                    } else {
+                        Resource.Error("Something went wrong")
+                    }
+                } else {
+                    parseErrorBody(errorBody = response.errorBody(), code = response.code())
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Resource.Error(e.localizedMessage ?: "Unexpected error")
         }
     }
 
@@ -142,10 +196,9 @@ class RecipeRepositoryImpl @Inject constructor(
 
     override suspend fun fetchRandomRecipesFromDb(): Resource<List<RandomRecipeEntity>> {
         return try {
-            val todayDate = Utils.getCurrentDate()
             val savedDate = sharedPreferencesManager.getString(PreferenceKeys.CURRENT_DATE, "")
 
-            if (todayDate == savedDate) {
+            if (savedDate.isNotEmpty()) {
                 val savedRecipes = randomRecipeDao.getAllRandomRecipes()
                 Resource.Success(savedRecipes)
             } else {
@@ -158,7 +211,7 @@ class RecipeRepositoryImpl @Inject constructor(
                             randomRecipeDao.deleteAllRandomRecipes()
                             randomRecipeDao.insertRandomRecipes(recipeEntities)
                         }
-                        sharedPreferencesManager.putString(PreferenceKeys.CURRENT_DATE, todayDate)
+                        sharedPreferencesManager.putString(PreferenceKeys.CURRENT_DATE, Utils.getCurrentDate())
                         Resource.Success(recipeEntities)
                     } else {
                         Resource.Error("Something went wrong")

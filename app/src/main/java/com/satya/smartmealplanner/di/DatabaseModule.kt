@@ -23,5 +23,7 @@ object DatabaseModule {
     @Provides
     fun providesRandomRecipeDao(appDatabase: AppDatabase) = appDatabase.randomRecipeDao()
 
+    @Provides
+    fun providesFoodFactDao(appDatabase: AppDatabase) = appDatabase.foodFactDao()
 
 }
