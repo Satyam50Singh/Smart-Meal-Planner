@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -31,24 +32,29 @@ fun DashboardScreen(
 
     var showHorizontalViewPager by remember { mutableStateOf(false) }
 
+    var preserveState by rememberSaveable { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
-        viewModel.fetchRecipesByQuery("")
+        if (!preserveState) {
+            viewModel.fetchRecipesByQuery("")
 
-        val currentDate: String = Utils.getCurrentDate()
+            val currentDate: String = Utils.getCurrentDate()
 
-        sharedPreferencesViewModel.getCurrentDate { previousDate: String? ->
-            if (currentDate != previousDate) {
-                viewModel.getRandomRecipes(true)
-                viewModel.getRandomJoke(true)
-                viewModel.getRandomTrivia(true)
-                sharedPreferencesViewModel.saveCurrentDate(currentDate)
-            } else {
-                viewModel.getRandomRecipes(false)
-                viewModel.getRandomTrivia(false)
-                viewModel.getRandomJoke(false)
+            sharedPreferencesViewModel.getCurrentDate { previousDate: String? ->
+                if (currentDate != previousDate) {
+                    viewModel.getRandomRecipes(true)
+                    viewModel.getRandomJoke(true)
+                    viewModel.getRandomTrivia(true)
+                    sharedPreferencesViewModel.saveCurrentDate(currentDate)
+                } else {
+                    viewModel.getRandomRecipes(false)
+                    viewModel.getRandomTrivia(false)
+                    viewModel.getRandomJoke(false)
+                }
             }
-        }
 
+            preserveState = true
+        }
     }
 
     if (randomRecipes.isSuccess != null) {
@@ -91,7 +97,7 @@ fun DashboardScreen(
         randomFoodTrivia,
         searchByQueryState,
         onSearchQueryChanged = { query ->
-             viewModel.fetchRecipesByQuery(query)
+            viewModel.fetchRecipesByQuery(query)
         }
     )
 
