@@ -96,7 +96,7 @@ fun DashboardScreen(
         randomFoodTrivia,
         searchByQueryState,
         onSearchQueryChanged = { query, isVeg ->
-            viewModel.fetchRecipesByQuery(query, isVeg)
+            viewModel.onQueryChange(query, isVeg)
         }
     )
 

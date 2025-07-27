@@ -20,7 +20,6 @@ import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.usecase.RecipeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -280,15 +279,22 @@ class RecipeViewModel @Inject constructor(
         }
     }
 
-    private var searchJob: Job? = null
+    private val searchQueryHandler = SearchQueryHandler(
+        coroutineScope = viewModelScope,
+        onSearchTriggered = { query, isVeg ->
+            fetchRecipesByQuery(query, isVeg)
+        }
+    )
 
     var searchByQueryState by mutableStateOf(State<SearchByQuery>())
         private set
 
-    fun fetchRecipesByQuery(searchQuery: String, isVeg: Boolean) {
-        searchJob?.cancel()
+    fun onQueryChange(query: String, isVeg: Boolean) {
+        searchQueryHandler.onQueryChange(query, isVeg)
+    }
 
-        searchJob = viewModelScope.launch {
+    fun fetchRecipesByQuery(searchQuery: String, isVeg: Boolean) {
+        viewModelScope.launch {
             searchByQueryState = searchByQueryState.copy(isLoading = true, isError = null)
 
             try {
