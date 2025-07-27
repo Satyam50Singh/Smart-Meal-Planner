@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
-import com.satya.smartmealplanner.presentation.navigation.Screen
 
 @Composable
 fun CategoryCard(category: DashboardCategory, navController: NavController) {
@@ -29,19 +28,13 @@ fun CategoryCard(category: DashboardCategory, navController: NavController) {
             .fillMaxSize()
             .padding(4.dp),
         onClick = {
-            when (category.categoryRoute) {
-                "search_by_ingredients" -> navController.navigate(Screen.FindByIngredient.route)
-                "search_by_cuisines" -> navController.navigate(Screen.SearchByCuisines.route)
-                "search_by_nutrients" -> navController.navigate(Screen.SearchByNutrients.route)
-                else ->
-                    Toast.makeText(context, "${category.categoryRoute} clicked", Toast.LENGTH_SHORT)
-                        .show()
-            }
+            Toast.makeText(context, "${category.categoryRoute} clicked", Toast.LENGTH_SHORT).show()
         }
     ) {
         Column(
             modifier = Modifier
-                .padding(8.dp).fillMaxWidth()
+                .padding(8.dp)
+                .fillMaxWidth()
         ) {
             if (category.categoryImage != -1) {
                 Image(

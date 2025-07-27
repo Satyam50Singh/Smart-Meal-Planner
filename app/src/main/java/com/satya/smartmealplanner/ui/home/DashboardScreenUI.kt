@@ -2,8 +2,10 @@ package com.satya.smartmealplanner.ui.home
 
 import android.os.Handler
 import android.os.Looper
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -47,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
@@ -62,6 +65,7 @@ import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
 import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
+import com.satya.smartmealplanner.presentation.navigation.Screen
 import com.satya.smartmealplanner.presentation.search.State
 import com.satya.smartmealplanner.ui.home.components.CategoryCard
 import com.satya.smartmealplanner.ui.home.components.FactCard
@@ -100,6 +104,8 @@ fun DashboardScreenUI(
     var searchQuery by remember { mutableStateOf("") }
 
     val focusManager = LocalFocusManager.current
+
+    val context = LocalContext.current
 
     LazyColumn(
         modifier = Modifier
@@ -163,7 +169,15 @@ fun DashboardScreenUI(
                 content = {
                     searchByQueryState.isSuccess?.results?.let { results ->
                         items(results) { recipe ->
-                            Column {
+                            Column(
+                                modifier = Modifier.clickable {
+                                    navController.navigate(
+                                        Screen.RecipeDetailById.createRoute(
+                                            recipe.id.toString()
+                                        )
+                                    )
+                                }
+                            ) {
                                 Card(
                                     modifier = Modifier.padding(
                                         horizontal = 8.dp,
@@ -214,11 +228,18 @@ fun DashboardScreenUI(
                 modifier = Modifier.heightIn(max = 220.dp),
                 rows = GridCells.Fixed(1),
                 content = {
-                    items(updatedCategoryList) { recipe ->
-                        if (recipe.categoryId in listOf(2, 3, 4))
+                    items(updatedCategoryList) { category ->
+                        if (category.categoryId in listOf(2, 3, 4))
                             Column(
                                 modifier = Modifier
-                                    .height(210.dp),
+                                    .height(210.dp)
+                                    .clickable {
+                                        when (category.categoryRoute) {
+                                            "search_by_ingredients" -> navController.navigate(Screen.FindByIngredient.route)
+                                            "search_by_cuisines" -> navController.navigate(Screen.SearchByCuisines.route)
+                                            "search_by_nutrients" -> navController.navigate(Screen.SearchByNutrients.route)
+                                        }
+                                    },
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Card(
@@ -229,7 +250,7 @@ fun DashboardScreenUI(
                                     shape = RoundedCornerShape(12.dp)
                                 ) {
                                     Image(
-                                        painter = rememberAsyncImagePainter(recipe.categoryImage),
+                                        painter = rememberAsyncImagePainter(category.categoryImage),
                                         contentDescription = null,
                                         contentScale = ContentScale.FillHeight,
                                         modifier = Modifier
@@ -239,7 +260,7 @@ fun DashboardScreenUI(
                                 }
 
                                 Text(
-                                    text = recipe.categoryName,
+                                    text = category.categoryName,
                                     textAlign = TextAlign.Center,
                                     modifier = Modifier
                                         .padding(horizontal = 4.dp, vertical = 8.dp),
