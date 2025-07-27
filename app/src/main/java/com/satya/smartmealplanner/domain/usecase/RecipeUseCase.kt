@@ -8,6 +8,7 @@ import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
+import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.repository.RecipeRepository
 import com.satya.smartmealplanner.utils.Constants
@@ -92,6 +93,6 @@ class RecipeUseCase @Inject constructor(
         }
     }
 
-    suspend fun fetchRecipesByQuery(searchQuery: String) = repository.fetchRecipeByQuery(searchQuery)
+    suspend fun fetchRecipesByQuery(searchQuery: String, isVeg: Boolean): Resource<SearchByQuery?> = repository.fetchRecipeByQuery(searchQuery, isVeg)
 
 }

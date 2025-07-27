@@ -2,14 +2,14 @@ package com.satya.smartmealplanner.ui.home
 
 import android.os.Handler
 import android.os.Looper
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,14 +21,11 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
 import androidx.compose.foundation.lazy.staggeredgrid.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.AlertDialog
@@ -37,6 +34,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -46,12 +45,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -68,6 +67,7 @@ import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import com.satya.smartmealplanner.presentation.navigation.Screen
 import com.satya.smartmealplanner.presentation.search.State
 import com.satya.smartmealplanner.ui.home.components.CategoryCard
+import com.satya.smartmealplanner.ui.home.components.DietSwitchWithIcon
 import com.satya.smartmealplanner.ui.home.components.FactCard
 import com.satya.smartmealplanner.ui.home.components.HorizontalPagerWithIndicators
 import com.satya.smartmealplanner.ui.utils.CircularLoader
@@ -81,7 +81,7 @@ fun DashboardScreenUI(
     randomJokeState: State<RandomJoke>,
     randomFoodTrivia: State<FoodTrivia>,
     searchByQueryState: State<SearchByQuery>,
-    onSearchQueryChanged: (String) -> Unit
+    onSearchQueryChanged: (String, Boolean) -> Unit
 ) {
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
@@ -102,6 +102,8 @@ fun DashboardScreenUI(
     }
 
     var searchQuery by remember { mutableStateOf("") }
+
+    var isVeg by remember { mutableStateOf(true) }
 
     val focusManager = LocalFocusManager.current
 
@@ -130,34 +132,40 @@ fun DashboardScreenUI(
         }
 
         item {
-            OutlinedTextField(
-                value = searchQuery,
-                onValueChange = {
-                    searchQuery = it
-                    if (searchQuery.length >= 3) {
-                        Handler(Looper.getMainLooper()).postDelayed({
-                            onSearchQueryChanged(searchQuery)
-                        }, 2000)
-                    }
-                },
-                label = { Text("Search recipes...") },
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 12.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = Color.Gray,
-                    cursorColor = MaterialTheme.colorScheme.primary,
-                    focusedLabelColor = MaterialTheme.colorScheme.primary,
-                    focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),  // replaces containerColor
-                    unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                ),
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Search, contentDescription = null)
-                },
-                singleLine = true
-            )
+                    .padding(start = 8.dp, end = 4.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = {
+                        searchQuery = it
+                        if (it.length >= 3) onSearchQueryChanged(searchQuery, isVeg)
+                    },
+                    label = { Text("Search recipes...") },
+                    modifier = Modifier
+                        .weight(1f),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = Color.Gray,
+                        cursorColor = MaterialTheme.colorScheme.primary,
+                        focusedLabelColor = MaterialTheme.colorScheme.primary,
+                        focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),  // replaces containerColor
+                        unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                    ),
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                    },
+                    singleLine = true
+                )
+                DietSwitchWithIcon(onCheckedChange = {
+                    isVeg = it
+                    onSearchQueryChanged(searchQuery, it)
+                })
+            }
         }
 
         item {

@@ -77,7 +77,6 @@ interface ApiService {
     suspend fun fetchRecipesByQuery(
         @Query("query") query: String,
         @Query("number") number: Int = 9,
-        @Query("type") type: String = "main course",
         @Query("diet") diet: String = "vegetarian",
         @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
     ): Response<SearchByQuery>

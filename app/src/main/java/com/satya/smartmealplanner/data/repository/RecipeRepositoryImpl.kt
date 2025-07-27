@@ -283,8 +283,14 @@ class RecipeRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun fetchRecipeByQuery(searchQuery: String): Resource<SearchByQuery?> {
-        val response = apiService.fetchRecipesByQuery(query = searchQuery)
+    override suspend fun fetchRecipeByQuery(
+        searchQuery: String,
+        isVeg: Boolean
+    ): Resource<SearchByQuery?> {
+        val response = apiService.fetchRecipesByQuery(
+            query = searchQuery,
+            diet = if (isVeg) "vegetarian" else "Whole30"
+        )
         return if (response.isSuccessful) {
             val body = response.body()
             if (body != null) {

@@ -47,6 +47,6 @@ interface RecipeRepository {
 
     suspend fun fetchRandomRecipesFromDb(): Resource<List<RandomRecipeEntity>>
 
-    suspend fun fetchRecipeByQuery(searchQuery: String): Resource<SearchByQuery?>
+    suspend fun fetchRecipeByQuery(searchQuery: String, isVeg: Boolean): Resource<SearchByQuery?>
 
 }

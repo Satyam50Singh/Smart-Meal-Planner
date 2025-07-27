@@ -18,9 +18,10 @@ import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.usecase.RecipeUseCase
-import com.satya.smartmealplanner.ui.utils.ErrorContainer
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -248,6 +249,8 @@ class RecipeViewModel @Inject constructor(
 
     fun getRandomRecipes(forceRefresh: Boolean = false) {
         viewModelScope.launch {
+            delay(300)
+
             randomRecipesState = randomRecipesState.copy(isLoading = true, isError = null)
 
             try {
@@ -277,22 +280,42 @@ class RecipeViewModel @Inject constructor(
         }
     }
 
+    private var searchJob: Job? = null
+
     var searchByQueryState by mutableStateOf(State<SearchByQuery>())
         private set
 
-    fun fetchRecipesByQuery(searchQuery: String) {
-        viewModelScope.launch {
+    fun fetchRecipesByQuery(searchQuery: String, isVeg: Boolean) {
+        searchJob?.cancel()
+
+        searchJob = viewModelScope.launch {
             searchByQueryState = searchByQueryState.copy(isLoading = true, isError = null)
 
-            val response = withContext(Dispatchers.IO) {
-                recipeUseCase.fetchRecipesByQuery(searchQuery)
-            }
-
-            searchByQueryState = when(response) {
-                is Resource.Error -> searchByQueryState.copy(isLoading = false, isError = response.message)
-                is Resource.Success -> {
-                    searchByQueryState.copy(isLoading = false, isError = null, isSuccess = response.data)
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    recipeUseCase.fetchRecipesByQuery(searchQuery, isVeg)
                 }
+
+                searchByQueryState = when (response) {
+                    is Resource.Error -> searchByQueryState.copy(
+                        isLoading = false,
+                        isError = response.message
+                    )
+
+                    is Resource.Success -> {
+                        searchByQueryState.copy(
+                            isLoading = false,
+                            isError = null,
+                            isSuccess = response.data
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                searchByQueryState = searchByQueryState.copy(
+                    isLoading = false,
+                    isError = e.message
+                )
+                e.printStackTrace()
             }
         }
     }

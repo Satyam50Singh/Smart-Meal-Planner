@@ -12,7 +12,6 @@ import androidx.navigation.NavController
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
 import com.satya.smartmealplanner.presentation.preferences.SharedPreferencesViewModel
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
-import com.satya.smartmealplanner.utils.UIHelpers
 import com.satya.smartmealplanner.utils.Utils
 
 @Composable
@@ -36,7 +35,7 @@ fun DashboardScreen(
 
     LaunchedEffect(Unit) {
         if (!preserveState) {
-            viewModel.fetchRecipesByQuery("")
+            viewModel.fetchRecipesByQuery("", true)
 
             val currentDate: String = Utils.getCurrentDate()
 
@@ -96,8 +95,8 @@ fun DashboardScreen(
         randomJokeState,
         randomFoodTrivia,
         searchByQueryState,
-        onSearchQueryChanged = { query ->
-            viewModel.fetchRecipesByQuery(query)
+        onSearchQueryChanged = { query, isVeg ->
+            viewModel.fetchRecipesByQuery(query, isVeg)
         }
     )
 
