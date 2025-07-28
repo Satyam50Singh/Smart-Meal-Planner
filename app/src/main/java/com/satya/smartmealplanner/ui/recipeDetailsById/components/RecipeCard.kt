@@ -1,4 +1,4 @@
-package com.satya.smartmealplanner.ui.findByIngredients.components
+package com.satya.smartmealplanner.ui.recipeDetailsById.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column

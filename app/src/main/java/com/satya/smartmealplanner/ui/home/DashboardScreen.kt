@@ -34,7 +34,7 @@ fun DashboardScreen(
 
     LaunchedEffect(Unit) {
         if (!preserveState) {
-             viewModel.fetchRecipesByQuery("", true, false)
+            viewModel.fetchRecipesByQuery("", true, false)
             viewModel.getRandomRecipes(false)
             viewModel.getRandomTrivia(false)
             viewModel.getRandomJoke(false)

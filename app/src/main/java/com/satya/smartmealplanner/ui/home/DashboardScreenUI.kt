@@ -46,6 +46,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -56,6 +57,7 @@ import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.google.accompanist.swiperefresh.SwipeRefresh
 import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
+import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
@@ -68,6 +70,7 @@ import com.satya.smartmealplanner.ui.home.components.DietSwitchWithIcon
 import com.satya.smartmealplanner.ui.home.components.FactCard
 import com.satya.smartmealplanner.ui.home.components.HorizontalPagerWithIndicators
 import com.satya.smartmealplanner.ui.utils.CircularLoader
+import com.satya.smartmealplanner.utils.UIHelpers
 import kotlinx.coroutines.delay
 
 @Composable
@@ -164,7 +167,7 @@ fun DashboardScreenUI(
                         label = { Text("Search recipes...") },
                         modifier = Modifier
                             .weight(1f),
-                        shape = RoundedCornerShape(16.dp),
+                        shape = RoundedCornerShape(14.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = Color.Gray,
@@ -175,6 +178,25 @@ fun DashboardScreenUI(
                         ),
                         leadingIcon = {
                             Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                        },
+                        trailingIcon = {
+                            if (searchQuery.isNotEmpty()) {
+                                Image(
+                                    painter = painterResource(R.drawable.outline_close),
+                                    contentDescription = null,
+                                    modifier = Modifier.clickable {
+                                        searchQuery = ""
+                                    }
+                                )
+                            } else {
+                                Image(
+                                    painter = painterResource(R.drawable.outline_mic),
+                                    contentDescription = null,
+                                    modifier = Modifier.clickable {
+                                        UIHelpers.customToast(context, "Coming Soon")
+                                    }
+                                )
+                            }
                         },
                         singleLine = true
                     )

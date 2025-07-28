@@ -1,4 +1,4 @@
-package com.satya.smartmealplanner.ui.findByIngredients.components
+package com.satya.smartmealplanner.ui.recipeDetailsById.components
 
 import android.text.Html
 import androidx.compose.foundation.Image
@@ -68,7 +68,7 @@ fun RecipeDetailCard(recipe: SelectedRecipeDetails?) {
 
                 Text(
                     text = Html.fromHtml(
-                        recipe.summary,
+                        recipe?.summary,
                         Html.FROM_HTML_MODE_COMPACT
                     ).toString(),
                     style = MaterialTheme.typography.bodyMedium
@@ -104,13 +104,13 @@ fun RecipeDetailCard(recipe: SelectedRecipeDetails?) {
                 fontWeight = FontWeight.SemiBold
             )
 
-            if (recipe?.winePairing?.pairedWines.isNullOrEmpty() == false) {
+            if (!recipe?.winePairing?.pairedWines.isNullOrEmpty()) {
                 Text(
-                    text = recipe.winePairing.pairingText,
+                    text = recipe?.winePairing?.pairingText ?: "",
                     style = MaterialTheme.typography.bodyMedium
                 )
 
-                recipe.winePairing.productMatches.firstOrNull()?.let { wine ->
+                recipe?.winePairing?.productMatches?.firstOrNull()?.let { wine ->
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = wine.title,
