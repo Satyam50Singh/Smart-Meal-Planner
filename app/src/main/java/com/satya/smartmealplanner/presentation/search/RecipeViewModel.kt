@@ -282,7 +282,7 @@ class RecipeViewModel @Inject constructor(
     private val searchQueryHandler = SearchQueryHandler(
         coroutineScope = viewModelScope,
         onSearchTriggered = { query, isVeg ->
-            fetchRecipesByQuery(query, isVeg)
+            fetchRecipesByQuery(query, isVeg, false)
         }
     )
 
@@ -293,7 +293,7 @@ class RecipeViewModel @Inject constructor(
         searchQueryHandler.onQueryChange(query, isVeg)
     }
 
-    fun fetchRecipesByQuery(searchQuery: String, isVeg: Boolean) {
+    fun fetchRecipesByQuery(searchQuery: String, isVeg: Boolean, forceRefresh: Boolean) {
         viewModelScope.launch {
             searchByQueryState = searchByQueryState.copy(isLoading = true, isError = null)
 

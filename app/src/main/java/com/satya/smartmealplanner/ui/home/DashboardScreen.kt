@@ -18,7 +18,6 @@ import com.satya.smartmealplanner.utils.Utils
 fun DashboardScreen(
     navController: NavController,
     viewModel: RecipeViewModel = hiltViewModel(),
-    sharedPreferencesViewModel: SharedPreferencesViewModel = hiltViewModel()
 ) {
 
     val baseCategoryList = remember { viewModel.getCategoryList() }
@@ -35,23 +34,10 @@ fun DashboardScreen(
 
     LaunchedEffect(Unit) {
         if (!preserveState) {
-            viewModel.fetchRecipesByQuery("", true)
-
-            val currentDate: String = Utils.getCurrentDate()
-
-            sharedPreferencesViewModel.getCurrentDate { previousDate: String? ->
-                if (currentDate != previousDate) {
-                    viewModel.getRandomRecipes(true)
-                    viewModel.getRandomJoke(true)
-                    viewModel.getRandomTrivia(true)
-                    sharedPreferencesViewModel.saveCurrentDate(currentDate)
-                } else {
-                    viewModel.getRandomRecipes(false)
-                    viewModel.getRandomTrivia(false)
-                    viewModel.getRandomJoke(false)
-                }
-            }
-
+             viewModel.fetchRecipesByQuery("", true, false)
+            viewModel.getRandomRecipes(false)
+            viewModel.getRandomTrivia(false)
+            viewModel.getRandomJoke(false)
             preserveState = true
         }
     }
@@ -97,6 +83,12 @@ fun DashboardScreen(
         searchByQueryState,
         onSearchQueryChanged = { query, isVeg ->
             viewModel.onQueryChange(query, isVeg)
+        },
+        onReloadPage = { forceRefresh, isVeg ->
+            viewModel.getRandomRecipes(forceRefresh)
+            viewModel.getRandomJoke(forceRefresh)
+            viewModel.getRandomTrivia(forceRefresh)
+            viewModel.fetchRecipesByQuery("", isVeg, forceRefresh)
         }
     )
 

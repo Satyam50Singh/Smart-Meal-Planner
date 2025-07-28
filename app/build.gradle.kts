@@ -102,4 +102,7 @@ dependencies {
     implementation(libs.room.runtime)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
+
+    // Swipe to refresh
+    implementation(libs.swipe.to.refresh)
 }

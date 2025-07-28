@@ -19,6 +19,8 @@ coil = "2.5.0"
 ksp = "2.0.21-1.0.27"
 room = "2.6.0-alpha01"
 
+swipetToRefresh = "0.36.0"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
@@ -49,6 +51,8 @@ coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
+
+swipe-to-refresh = { module="com.google.accompanist:accompanist-swiperefresh", version.ref="swipetToRefresh"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

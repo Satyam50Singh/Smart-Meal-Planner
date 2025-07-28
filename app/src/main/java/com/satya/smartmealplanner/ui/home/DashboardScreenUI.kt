@@ -1,12 +1,9 @@
 package com.satya.smartmealplanner.ui.home
 
-import android.os.Handler
-import android.os.Looper
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -34,18 +31,16 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -59,6 +54,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
+import com.google.accompanist.swiperefresh.SwipeRefresh
+import com.google.accompanist.swiperefresh.rememberSwipeRefreshState
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
@@ -71,6 +68,7 @@ import com.satya.smartmealplanner.ui.home.components.DietSwitchWithIcon
 import com.satya.smartmealplanner.ui.home.components.FactCard
 import com.satya.smartmealplanner.ui.home.components.HorizontalPagerWithIndicators
 import com.satya.smartmealplanner.ui.utils.CircularLoader
+import kotlinx.coroutines.delay
 
 @Composable
 fun DashboardScreenUI(
@@ -81,14 +79,17 @@ fun DashboardScreenUI(
     randomJokeState: State<RandomJoke>,
     randomFoodTrivia: State<FoodTrivia>,
     searchByQueryState: State<SearchByQuery>,
-    onSearchQueryChanged: (String, Boolean) -> Unit
+    onSearchQueryChanged: (String, Boolean) -> Unit,
+    onReloadPage: (Boolean, Boolean) -> Unit
 ) {
 
     var errorMessage by remember { mutableStateOf<String?>(null) }
     var errorMessageDialog by remember { mutableStateOf(false) }
 
+    var isSwipeRefreshing by remember { mutableStateOf(false) }
+
     val isLoading =
-        randomRecipes.isLoading || randomJokeState.isLoading || randomFoodTrivia.isLoading || searchByQueryState.isLoading
+        !isSwipeRefreshing && (randomRecipes.isLoading || randomJokeState.isLoading || randomFoodTrivia.isLoading || searchByQueryState.isLoading)
 
     if (errorMessage == null) {
         errorMessage = when {
@@ -109,222 +110,247 @@ fun DashboardScreenUI(
 
     val context = LocalContext.current
 
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(8.dp)
-            .pointerInput(Unit) {
-                detectTapGestures {
-                    focusManager.clearFocus()
-                }
-            }) {
+    val swipeRefreshState = rememberSwipeRefreshState(isRefreshing = isSwipeRefreshing)
 
-        item {
-            Text(
-                text = "Meal Planner",
-                fontSize = 22.sp,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .padding(vertical = 16.dp)
-                    .fillMaxWidth(),
-                fontWeight = FontWeight.Bold
-            )
+    LaunchedEffect(isSwipeRefreshing) {
+        if (isSwipeRefreshing) {
+            delay(1000)
+            isSwipeRefreshing = false
         }
+    }
 
-        item {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 8.dp, end = 4.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = searchQuery,
-                    onValueChange = {
-                        searchQuery = it
-                        if (it.length >= 3) onSearchQueryChanged(searchQuery, isVeg)
-                    },
-                    label = { Text("Search recipes...") },
+    SwipeRefresh(
+        state = swipeRefreshState,
+        onRefresh = {
+            onReloadPage(true, isVeg)
+            isSwipeRefreshing = true
+        }
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(8.dp)
+                .pointerInput(Unit) {
+                    detectTapGestures {
+                        focusManager.clearFocus()
+                    }
+                }) {
+
+            item {
+                Text(
+                    text = "Meal Planner",
+                    fontSize = 22.sp,
+                    textAlign = TextAlign.Center,
                     modifier = Modifier
-                        .weight(1f),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = MaterialTheme.colorScheme.primary,
-                        unfocusedBorderColor = Color.Gray,
-                        cursorColor = MaterialTheme.colorScheme.primary,
-                        focusedLabelColor = MaterialTheme.colorScheme.primary,
-                        focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),  // replaces containerColor
-                        unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                    ),
-                    leadingIcon = {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = null)
-                    },
-                    singleLine = true
+                        .padding(vertical = 16.dp)
+                        .fillMaxWidth(),
+                    fontWeight = FontWeight.Bold
                 )
-                DietSwitchWithIcon(onCheckedChange = {
-                    isVeg = it
-                    onSearchQueryChanged(searchQuery, it)
-                })
             }
-        }
 
-        item {
-            LazyVerticalGrid(
-                modifier = Modifier
-                    .padding(vertical = 24.dp)
-                    .heightIn(max = 1200.dp),
-                columns = GridCells.Fixed(3),
-                content = {
-                    searchByQueryState.isSuccess?.results?.let { results ->
-                        items(results) { recipe ->
-                            Column(
-                                modifier = Modifier.clickable {
-                                    navController.navigate(
-                                        Screen.RecipeDetailById.createRoute(
-                                            recipe.id.toString()
-                                        )
-                                    )
-                                }
-                            ) {
-                                Card(
-                                    modifier = Modifier.padding(
-                                        horizontal = 8.dp,
-                                        vertical = 4.dp
-                                    ),
-                                    shape = RoundedCornerShape(12.dp)
-                                ) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter(recipe.image),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.Crop,
-                                        modifier = Modifier
-                                            .height(100.dp)
-                                            .fillMaxWidth()
-                                    )
-                                }
-
-                                Text(
-                                    text = recipe.title,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 4.dp, vertical = 8.dp),
-                                    fontSize = 12.sp,
-                                    maxLines = 2,
-                                    lineHeight = 14.sp
-                                )
-                            }
-                        }
-                    }
-                })
-        }
-
-        item {
-            Text(
-                text = "Explore",
-                fontSize = 22.sp,
-                fontFamily = FontFamily.SansSerif,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(horizontal = 8.dp)
-                    .padding(bottom = 16.dp)
-            )
-        }
-
-        item {
-            LazyHorizontalGrid(
-                modifier = Modifier.heightIn(max = 220.dp),
-                rows = GridCells.Fixed(1),
-                content = {
-                    items(updatedCategoryList) { category ->
-                        if (category.categoryId in listOf(2, 3, 4))
-                            Column(
-                                modifier = Modifier
-                                    .height(210.dp)
-                                    .clickable {
-                                        when (category.categoryRoute) {
-                                            "search_by_ingredients" -> navController.navigate(Screen.FindByIngredient.route)
-                                            "search_by_cuisines" -> navController.navigate(Screen.SearchByCuisines.route)
-                                            "search_by_nutrients" -> navController.navigate(Screen.SearchByNutrients.route)
-                                        }
-                                    },
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Card(
-                                    modifier = Modifier.padding(
-                                        horizontal = 8.dp,
-                                        vertical = 4.dp
-                                    ),
-                                    shape = RoundedCornerShape(12.dp)
-                                ) {
-                                    Image(
-                                        painter = rememberAsyncImagePainter(category.categoryImage),
-                                        contentDescription = null,
-                                        contentScale = ContentScale.FillHeight,
-                                        modifier = Modifier
-                                            .height(160.dp)
-                                            .width(170.dp)
-                                    )
-                                }
-
-                                Text(
-                                    text = category.categoryName,
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier
-                                        .padding(horizontal = 4.dp, vertical = 8.dp),
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.W500,
-                                    maxLines = 2,
-                                    lineHeight = 14.sp
-                                )
-                            }
-                    }
-                })
-        }
-
-        item {
-            if (showHorizontalViewPager) {
-                Column(
+            item {
+                Row(
                     modifier = Modifier
-                        .padding(vertical = 8.dp)
-                        .height(240.dp)
+                        .fillMaxWidth()
+                        .padding(start = 8.dp, end = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    if (randomRecipes.isSuccess != null) {
-                        val listOfRecipes = randomRecipes.isSuccess.recipes
-                        HorizontalPagerWithIndicators(listOfRecipes, navController)
-                    }
+                    OutlinedTextField(
+                        value = searchQuery,
+                        onValueChange = {
+                            searchQuery = it
+                            if (it.length >= 3) onSearchQueryChanged(searchQuery, isVeg)
+                        },
+                        label = { Text("Search recipes...") },
+                        modifier = Modifier
+                            .weight(1f),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = MaterialTheme.colorScheme.primary,
+                            unfocusedBorderColor = Color.Gray,
+                            cursorColor = MaterialTheme.colorScheme.primary,
+                            focusedLabelColor = MaterialTheme.colorScheme.primary,
+                            focusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),  // replaces containerColor
+                            unfocusedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                        ),
+                        leadingIcon = {
+                            Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                        },
+                        singleLine = true
+                    )
+                    DietSwitchWithIcon(onCheckedChange = {
+                        isVeg = it
+                        onSearchQueryChanged(searchQuery, it)
+                    })
                 }
             }
 
-            if (updatedCategoryList.isNotEmpty()) {
-                LazyVerticalStaggeredGrid(
-                    modifier = Modifier.heightIn(max = 2000.dp),
-                    columns = StaggeredGridCells.Fixed(2), content = {
-                        items(updatedCategoryList, span = { item ->
-                            if (item.categoryId in listOf(
-                                    1001, 1002
-                                )
-                            ) StaggeredGridItemSpan.FullLine else StaggeredGridItemSpan.SingleLane
-                        }) { category ->
-                            if (category.categoryId in listOf(1001, 1002)) {
-                                FactCard(
-                                    category.categoryName,
-                                    if (category.categoryId == 1001) "Joke" else "Fun Fact",
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .fillMaxWidth(),
+            item {
+                LazyVerticalGrid(
+                    modifier = Modifier
+                        .padding(vertical = 24.dp)
+                        .heightIn(max = 1200.dp),
+                    columns = GridCells.Fixed(3),
+                    content = {
+                        searchByQueryState.isSuccess?.results?.let { results ->
+                            items(results) { recipe ->
+                                Column(
+                                    modifier = Modifier.clickable {
+                                        navController.navigate(
+                                            Screen.RecipeDetailById.createRoute(
+                                                recipe.id.toString()
+                                            )
+                                        )
+                                    }
+                                ) {
+                                    Card(
+                                        modifier = Modifier.padding(
+                                            horizontal = 8.dp,
+                                            vertical = 4.dp
+                                        ),
+                                        shape = RoundedCornerShape(12.dp)
+                                    ) {
+                                        Image(
+                                            painter = rememberAsyncImagePainter(recipe.image),
+                                            contentDescription = null,
+                                            contentScale = ContentScale.Crop,
+                                            modifier = Modifier
+                                                .height(100.dp)
+                                                .fillMaxWidth()
+                                        )
+                                    }
 
+                                    Text(
+                                        text = recipe.title,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 4.dp, vertical = 8.dp),
+                                        fontSize = 12.sp,
+                                        maxLines = 2,
+                                        lineHeight = 14.sp
                                     )
-                            } else if (category.categoryId !in listOf(2, 3, 4)) {
-                                CategoryCard(category, navController)
+                                }
                             }
                         }
                     })
             }
 
+            item {
+                Text(
+                    text = "Explore",
+                    fontSize = 22.sp,
+                    fontFamily = FontFamily.SansSerif,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp)
+                        .padding(bottom = 16.dp)
+                )
+            }
+
+            item {
+                LazyHorizontalGrid(
+                    modifier = Modifier.heightIn(max = 220.dp),
+                    rows = GridCells.Fixed(1),
+                    content = {
+                        items(updatedCategoryList) { category ->
+                            if (category.categoryId in listOf(2, 3, 4))
+                                Column(
+                                    modifier = Modifier
+                                        .height(210.dp)
+                                        .clickable {
+                                            when (category.categoryRoute) {
+                                                "search_by_ingredients" -> navController.navigate(
+                                                    Screen.FindByIngredient.route
+                                                )
+
+                                                "search_by_cuisines" -> navController.navigate(
+                                                    Screen.SearchByCuisines.route
+                                                )
+
+                                                "search_by_nutrients" -> navController.navigate(
+                                                    Screen.SearchByNutrients.route
+                                                )
+                                            }
+                                        },
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    Card(
+                                        modifier = Modifier.padding(
+                                            horizontal = 8.dp,
+                                            vertical = 4.dp
+                                        ),
+                                        shape = RoundedCornerShape(12.dp)
+                                    ) {
+                                        Image(
+                                            painter = rememberAsyncImagePainter(category.categoryImage),
+                                            contentDescription = null,
+                                            contentScale = ContentScale.FillHeight,
+                                            modifier = Modifier
+                                                .height(160.dp)
+                                                .width(170.dp)
+                                        )
+                                    }
+
+                                    Text(
+                                        text = category.categoryName,
+                                        textAlign = TextAlign.Center,
+                                        modifier = Modifier
+                                            .padding(horizontal = 4.dp, vertical = 8.dp),
+                                        fontSize = 13.sp,
+                                        fontWeight = FontWeight.W500,
+                                        maxLines = 2,
+                                        lineHeight = 14.sp
+                                    )
+                                }
+                        }
+                    })
+            }
+
+            item {
+                if (showHorizontalViewPager) {
+                    Column(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .height(240.dp)
+                    ) {
+                        if (randomRecipes.isSuccess != null) {
+                            val listOfRecipes = randomRecipes.isSuccess.recipes
+                            HorizontalPagerWithIndicators(listOfRecipes, navController)
+                        }
+                    }
+                }
+            }
+
+            item {
+                if (updatedCategoryList.isNotEmpty()) {
+                    LazyVerticalStaggeredGrid(
+                        modifier = Modifier.heightIn(max = 2000.dp),
+                        columns = StaggeredGridCells.Fixed(2), content = {
+                            items(updatedCategoryList, span = { item ->
+                                if (item.categoryId in listOf(
+                                        1001, 1002
+                                    )
+                                ) StaggeredGridItemSpan.FullLine else StaggeredGridItemSpan.SingleLane
+                            }) { category ->
+                                if (category.categoryId in listOf(1001, 1002)) {
+                                    FactCard(
+                                        category.categoryName,
+                                        if (category.categoryId == 1001) "Joke" else "Fun Fact",
+                                        modifier = Modifier
+                                            .padding(8.dp)
+                                            .fillMaxWidth(),
+
+                                        )
+                                } else if (category.categoryId !in listOf(2, 3, 4)) {
+                                    CategoryCard(category, navController)
+                                }
+                            }
+                        })
+                }
+            }
         }
     }
-
 
 // Show loading indicator if isLoading is true
     if (isLoading) {
