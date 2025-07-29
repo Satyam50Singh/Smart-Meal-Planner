@@ -283,14 +283,17 @@ class RecipeViewModel @Inject constructor(
         coroutineScope = viewModelScope,
         onSearchTriggered = { query, isVeg ->
             fetchRecipesByQuery(query, isVeg, false)
+        },
+        onSearchIngredientTriggered = { query ->
+            fetchAutoCompleteIngredients(query)
         }
     )
 
     var searchByQueryState by mutableStateOf(State<SearchByQuery>())
         private set
 
-    fun onQueryChange(query: String, isVeg: Boolean) {
-        searchQueryHandler.onQueryChange(query, isVeg)
+    fun onQueryChange(query: String, isVeg: Boolean = true, isIngredientSearch: Boolean = false) {
+        searchQueryHandler.onQueryChange(query, isVeg, isIngredientSearch)
     }
 
     fun fetchRecipesByQuery(searchQuery: String, isVeg: Boolean, forceRefresh: Boolean) {

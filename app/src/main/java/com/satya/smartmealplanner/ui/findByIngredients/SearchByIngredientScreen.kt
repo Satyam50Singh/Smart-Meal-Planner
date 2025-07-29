@@ -12,10 +12,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
@@ -28,6 +30,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,18 +61,24 @@ fun SearchByIngredientScreen(
 
     val autoCompleteIngredientsState = viewModel.autoCompleteIngredientsState
 
-    var input by remember { mutableStateOf("") }
+    var input by rememberSaveable { mutableStateOf("") }
 
     val context = LocalContext.current
 
     val focusManager = LocalFocusManager.current
 
-    var suggestions = remember { mutableStateListOf<String>() }
+    val suggestions = remember { mutableStateListOf<String>() }
 
     LaunchedEffect(autoCompleteIngredientsState) {
         if (autoCompleteIngredientsState.isSuccess != null) {
             suggestions.clear()
             suggestions.addAll(autoCompleteIngredientsState.isSuccess)
+        }
+    }
+
+    LaunchedEffect(uiState.isSuccess) {
+        if (!uiState.isSuccess.isNullOrEmpty()) {
+            suggestions.clear()
         }
     }
 
@@ -110,7 +119,7 @@ fun SearchByIngredientScreen(
                     viewModel.clearRecipes()
                 } else if (it.length >= 3) {
                     suggestions.removeAll { true }
-                    viewModel.fetchAutoCompleteIngredients(it)
+                    viewModel.onQueryChange(query = it, isIngredientSearch = true)
                 }
             },
             shape = RoundedCornerShape(14.dp),
@@ -130,30 +139,38 @@ fun SearchByIngredientScreen(
                 )
             },
             trailingIcon = {
-                if (input.isNotEmpty()) {
-                    Image(
-                        painter = painterResource(R.drawable.outline_close),
-                        contentDescription = null,
-                        modifier = Modifier.clickable {
-                            input = ""
-                            viewModel.clearRecipes()
-                        }
+                if (autoCompleteIngredientsState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp), strokeWidth = 2.dp,
                     )
                 } else {
-                    Image(
-                        painter = painterResource(R.drawable.outline_mic),
-                        contentDescription = null,
-                        modifier = Modifier.clickable {
-                            UIHelpers.customToast(context, "Coming Soon")
-                        }
-                    )
+                    if (input.isNotEmpty()) {
+                        Image(
+                            painter = painterResource(R.drawable.outline_close),
+                            contentDescription = null,
+                            modifier = Modifier.clickable {
+                                input = ""
+                                viewModel.clearRecipes()
+                            }
+                        )
+                    } else {
+                        Image(
+                            painter = painterResource(R.drawable.outline_mic),
+                            contentDescription = null,
+                            modifier = Modifier.clickable {
+                                UIHelpers.customToast(context, "Coming Soon")
+                            }
+                        )
+                    }
                 }
             }
         )
 
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
             DropdownMenu(
                 expanded = suggestions.isNotEmpty(),
                 onDismissRequest = { suggestions.clear() },
