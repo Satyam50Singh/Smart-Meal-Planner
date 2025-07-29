@@ -1,6 +1,7 @@
 package com.satya.smartmealplanner.data.remote
 
 import com.satya.smartmealplanner.BuildConfig
+import com.satya.smartmealplanner.data.model.autoCompleteIngredients.AutoCompleteIngredients
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
@@ -80,5 +81,12 @@ interface ApiService {
         @Query("diet") diet: String = "vegetarian",
         @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
     ): Response<SearchByQuery>
+
+    @GET("food/ingredients/autocomplete")
+    suspend fun fetchAutocompleteIngredients(
+        @Query("query") query: String,
+        @Query("number") number: Int = 6,
+        @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
+    ): Response<AutoCompleteIngredients>
 
 }

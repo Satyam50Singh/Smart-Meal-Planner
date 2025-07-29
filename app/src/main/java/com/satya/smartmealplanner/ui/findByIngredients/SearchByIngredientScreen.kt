@@ -9,17 +9,23 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
 import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -50,17 +56,29 @@ fun SearchByIngredientScreen(
 ) {
     val uiState = viewModel.uiState
 
+    val autoCompleteIngredientsState = viewModel.autoCompleteIngredientsState
+
     var input by remember { mutableStateOf("") }
 
     val context = LocalContext.current
 
     val focusManager = LocalFocusManager.current
 
-    Column(modifier = Modifier
-        .padding(8.dp)
-        .pointerInput(Unit) {
-            focusManager.clearFocus()
-        }) {
+    var suggestions = remember { mutableStateListOf<String>() }
+
+    LaunchedEffect(autoCompleteIngredientsState) {
+        if (autoCompleteIngredientsState.isSuccess != null) {
+            suggestions.clear()
+            suggestions.addAll(autoCompleteIngredientsState.isSuccess)
+        }
+    }
+
+    Column(
+        modifier = Modifier
+            .padding(8.dp)
+            .pointerInput(Unit) {
+                focusManager.clearFocus()
+            }) {
 
         Row(
             verticalAlignment = Alignment.CenterVertically
@@ -91,7 +109,8 @@ fun SearchByIngredientScreen(
                 if (it.isEmpty()) {
                     viewModel.clearRecipes()
                 } else if (it.length >= 3) {
-                    viewModel.findByIngredients(it)
+                    suggestions.removeAll { true }
+                    viewModel.fetchAutoCompleteIngredients(it)
                 }
             },
             shape = RoundedCornerShape(14.dp),
@@ -131,6 +150,29 @@ fun SearchByIngredientScreen(
                 }
             }
         )
+
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)) {
+            DropdownMenu(
+                expanded = suggestions.isNotEmpty(),
+                onDismissRequest = { suggestions.clear() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .heightIn(max = 200.dp)
+                    .offset(x = 0.dp, y = 4.dp)
+            ) {
+                suggestions.forEach { label ->
+                    DropdownMenuItem(onClick = {
+                        input = label
+                        focusManager.clearFocus()
+                        viewModel.findByIngredients(input)
+                        suggestions.clear()
+                    }, text = { Text(text = label) })
+                }
+            }
+        }
+
 
         Spacer(modifier = Modifier.height(16.dp))
 

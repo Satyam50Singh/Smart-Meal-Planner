@@ -2,6 +2,7 @@ package com.satya.smartmealplanner.domain.repository
 
 import com.satya.smartmealplanner.data.local.entity.FoodFactEntity
 import com.satya.smartmealplanner.data.local.entity.RandomRecipeEntity
+import com.satya.smartmealplanner.data.model.autoCompleteIngredients.AutoCompleteIngredients
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
@@ -49,4 +50,5 @@ interface RecipeRepository {
 
     suspend fun fetchRecipeByQuery(searchQuery: String, isVeg: Boolean): Resource<SearchByQuery?>
 
+    suspend fun fetchAutoCompleteIngredients(query: String): Resource<AutoCompleteIngredients?>
 }

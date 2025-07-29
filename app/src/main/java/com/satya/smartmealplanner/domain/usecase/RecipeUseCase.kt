@@ -3,6 +3,7 @@ package com.satya.smartmealplanner.domain.usecase
 import com.satya.smartmealplanner.data.local.entity.FoodFactEntity
 import com.satya.smartmealplanner.data.local.entity.RandomRecipeEntity
 import com.satya.smartmealplanner.data.local.entity.toDomain
+import com.satya.smartmealplanner.data.model.autoCompleteIngredients.AutoCompleteIngredients
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
@@ -95,4 +96,14 @@ class RecipeUseCase @Inject constructor(
 
     suspend fun fetchRecipesByQuery(searchQuery: String, isVeg: Boolean): Resource<SearchByQuery?> = repository.fetchRecipeByQuery(searchQuery, isVeg)
 
+    suspend fun fetchAutoCompleteIngredients(query: String): Resource<List<String>?> {
+        val response: Resource<AutoCompleteIngredients?> = repository.fetchAutoCompleteIngredients(query)
+        return when (response) {
+            is Resource.Success -> {
+                val ingredients = response.data?.map { it.name }
+                Resource.Success(ingredients)
+            }
+            is Resource.Error -> Resource.Error(response.message)
+        }
+    }
 }

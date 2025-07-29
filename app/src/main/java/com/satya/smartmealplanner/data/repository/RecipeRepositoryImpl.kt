@@ -4,6 +4,7 @@ import com.satya.smartmealplanner.data.local.dao.FoodFactDao
 import com.satya.smartmealplanner.data.local.dao.RandomRecipeDao
 import com.satya.smartmealplanner.data.local.entity.FoodFactEntity
 import com.satya.smartmealplanner.data.local.entity.RandomRecipeEntity
+import com.satya.smartmealplanner.data.model.autoCompleteIngredients.AutoCompleteIngredients
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
@@ -291,6 +292,23 @@ class RecipeRepositoryImpl @Inject constructor(
             query = searchQuery,
             diet = if (isVeg) "vegetarian" else "Whole30"
         )
+        return if (response.isSuccessful) {
+            val body = response.body()
+            if (body != null) {
+                Resource.Success(body)
+            } else {
+                Resource.Error("Something went wrong!")
+            }
+        } else if (response.errorBody() != null) {
+            parseErrorBody(response.errorBody(), response.code())
+        } else {
+            Resource.Error("Something went wrong!")
+        }
+    }
+
+    override suspend fun fetchAutoCompleteIngredients(query: String): Resource<AutoCompleteIngredients?> {
+        val response = apiService.fetchAutocompleteIngredients(query)
+
         return if (response.isSuccessful) {
             val body = response.body()
             if (body != null) {

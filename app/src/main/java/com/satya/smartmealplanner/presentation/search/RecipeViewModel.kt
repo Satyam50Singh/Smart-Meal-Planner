@@ -325,4 +325,42 @@ class RecipeViewModel @Inject constructor(
             }
         }
     }
+
+    var autoCompleteIngredientsState by mutableStateOf(State<List<String>>())
+        private set
+
+    fun fetchAutoCompleteIngredients(query: String) {
+
+        viewModelScope.launch {
+
+            autoCompleteIngredientsState =
+                autoCompleteIngredientsState.copy(isLoading = true, isError = null)
+
+            try {
+
+                val response = withContext(Dispatchers.IO) {
+                    recipeUseCase.fetchAutoCompleteIngredients(query)
+                }
+
+                autoCompleteIngredientsState = when (response) {
+                    is Resource.Error -> autoCompleteIngredientsState.copy(
+                        isLoading = false,
+                        isError = response.message
+                    )
+
+                    is Resource.Success -> autoCompleteIngredientsState.copy(
+                        isLoading = false,
+                        isError = null,
+                        isSuccess = response.data
+                    )
+                }
+
+            } catch (e: Exception) {
+                autoCompleteIngredientsState =
+                    autoCompleteIngredientsState.copy(isError = e.message, isLoading = false)
+                e.printStackTrace()
+            }
+        }
+    }
+
 }
