@@ -31,9 +31,13 @@ fun RecipeDetailScreen(
     viewModel: RecipeViewModel = hiltViewModel()
 ) {
     val selectedRecipeState = viewModel.selectedRecipeState
+    val similarRecipesByIdState = viewModel.similarRecipesByIdState
 
     LaunchedEffect(Unit) {
-        recipeId?.let { viewModel.getRecipeById(it) }
+        recipeId?.let {
+            viewModel.getRecipeById(it)
+            viewModel.fetchSimilarRecipesById(recipeId)
+        }
     }
     Column(modifier = Modifier.padding(8.dp)) {
         Row(
@@ -48,7 +52,7 @@ fun RecipeDetailScreen(
             )
 
             Text(
-                text = selectedRecipeState.isSuccess?.title?: "",
+                text = selectedRecipeState.isSuccess?.title ?: "",
                 fontSize = 22.sp,
                 modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
                 fontWeight = FontWeight.Bold
@@ -56,9 +60,11 @@ fun RecipeDetailScreen(
         }
 
         when {
-            selectedRecipeState.isLoading -> CircularLoader()
+            selectedRecipeState.isLoading || similarRecipesByIdState.isLoading -> CircularLoader()
 
-            selectedRecipeState.isError != null -> ErrorContainer(message = "Error: ${selectedRecipeState.isError}")
+            selectedRecipeState.isError != null || similarRecipesByIdState.isError != null -> ErrorContainer(
+                message = "Error: ${selectedRecipeState.isError}"
+            )
 
             selectedRecipeState.isSuccess == null -> {
                 Box(
@@ -68,7 +74,10 @@ fun RecipeDetailScreen(
 
             else -> {
                 val recipeDetails = selectedRecipeState.isSuccess
-                RecipeDetailCard(recipeDetails)
+                val similarRecipes = similarRecipesByIdState.isSuccess
+                if (similarRecipes != null) {
+                    RecipeDetailCard(recipeDetails, similarRecipes, navController)
+                }
             }
         }
     }

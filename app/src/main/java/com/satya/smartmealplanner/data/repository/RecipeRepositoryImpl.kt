@@ -15,6 +15,7 @@ import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
+import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesById
 import com.satya.smartmealplanner.data.preferences.PreferenceKeys
 import com.satya.smartmealplanner.data.preferences.SharedPreferencesManager
 import com.satya.smartmealplanner.data.remote.ApiService
@@ -308,6 +309,23 @@ class RecipeRepositoryImpl @Inject constructor(
 
     override suspend fun fetchAutoCompleteIngredients(query: String): Resource<AutoCompleteIngredients?> {
         val response = apiService.fetchAutocompleteIngredients(query)
+
+        return if (response.isSuccessful) {
+            val body = response.body()
+            if (body != null) {
+                Resource.Success(body)
+            } else {
+                Resource.Error("Something went wrong!")
+            }
+        } else if (response.errorBody() != null) {
+            parseErrorBody(response.errorBody(), response.code())
+        } else {
+            Resource.Error("Something went wrong!")
+        }
+    }
+
+    override suspend fun fetchSimilarRecipesById(recipeId: Int): Resource<SimilarRecipesById?> {
+        val response = apiService.fetchSimilarRecipesById(recipeId)
 
         return if (response.isSuccessful) {
             val body = response.body()

@@ -16,6 +16,7 @@ import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
+import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesById
 import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.usecase.RecipeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -332,7 +333,7 @@ class RecipeViewModel @Inject constructor(
     var autoCompleteIngredientsState by mutableStateOf(State<List<String>>())
         private set
 
-    fun fetchAutoCompleteIngredients(query: String) {
+    private fun fetchAutoCompleteIngredients(query: String) {
 
         viewModelScope.launch {
 
@@ -366,4 +367,29 @@ class RecipeViewModel @Inject constructor(
         }
     }
 
+
+    var similarRecipesByIdState by mutableStateOf(State<SimilarRecipesById>())
+        private set
+
+    fun fetchSimilarRecipesById(recipeId: Int) {
+        viewModelScope.launch {
+            similarRecipesByIdState = similarRecipesByIdState.copy(isLoading = true, isError = null)
+
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    recipeUseCase.fetchSimilarRecipesById(recipeId)
+                }
+
+                similarRecipesByIdState = when (response) {
+                    is Resource.Error -> similarRecipesByIdState.copy(isError = response.message, isLoading = false)
+
+                    is Resource.Success -> similarRecipesByIdState.copy(isSuccess = response.data, isLoading = false)
+                }
+            } catch (e: Exception) {
+                similarRecipesByIdState =
+                    similarRecipesByIdState.copy(isError = e.message, isLoading = false)
+                e.printStackTrace()
+            }
+        }
+    }
 }

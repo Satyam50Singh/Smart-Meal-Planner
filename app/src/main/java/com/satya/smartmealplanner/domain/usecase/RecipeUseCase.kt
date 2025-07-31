@@ -106,4 +106,6 @@ class RecipeUseCase @Inject constructor(
             is Resource.Error -> Resource.Error(response.message)
         }
     }
+
+    suspend fun fetchSimilarRecipesById(recipeId: Int) = repository.fetchSimilarRecipesById(recipeId)
 }
