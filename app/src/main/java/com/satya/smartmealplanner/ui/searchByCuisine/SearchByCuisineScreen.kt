@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
@@ -25,7 +24,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -37,8 +35,8 @@ import com.satya.smartmealplanner.presentation.search.RecipeViewModel
 import com.satya.smartmealplanner.ui.searchByCuisine.components.CuisinesFilterBottomSheet
 import com.satya.smartmealplanner.ui.searchByCuisine.components.RecipeByCuisineCard
 import com.satya.smartmealplanner.ui.utils.CircularLoader
+import com.satya.smartmealplanner.ui.utils.ErrorContainer
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchByCuisineScreen(
     navController: NavHostController,
@@ -75,7 +73,8 @@ fun SearchByCuisineScreen(
             Text(
                 text = "Search By Cuisine",
                 fontSize = 22.sp,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 16.dp),
+                fontWeight = FontWeight.Bold
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -93,23 +92,13 @@ fun SearchByCuisineScreen(
         when {
             recipeByCuisine.isLoading -> CircularLoader()
 
-            recipeByCuisine.error != null -> Box(
-                modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = "Error: ${recipeByCuisine.error}",
-                    color = Color.Red,
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Bold
-                )
-            }
+            recipeByCuisine.isError != null -> ErrorContainer(message = "Error: ${recipeByCuisine.isError}")
 
-
-            recipeByCuisine.recipes == null -> Box(
+            recipeByCuisine.isSuccess == null -> Box(
                 modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) { Text("No recipes found") }
 
-            recipeByCuisine.recipes.results.isEmpty() -> Box(
+            recipeByCuisine.isSuccess.results.isEmpty() -> Box(
                 modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 Text("No recipes match your criteria.")
@@ -125,7 +114,7 @@ fun SearchByCuisineScreen(
                     Text(
                         text = "Selected Filters:",
                         modifier = Modifier.weight(1f),
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.W500
                     )
 
                     if (selectedCuisine.isNotEmpty()) {
@@ -161,7 +150,7 @@ fun SearchByCuisineScreen(
                 }
 
                 LazyColumn {
-                    items(recipeByCuisine.recipes.results) { recipe ->
+                    items(recipeByCuisine.isSuccess.results) { recipe ->
                         RecipeByCuisineCard(recipe, navController)
                     }
                 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -18,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -29,6 +31,7 @@ import com.satya.smartmealplanner.ui.searchByNutrients.components.LaunchFilterDi
 import com.satya.smartmealplanner.ui.searchByNutrients.components.RecipeList
 import com.satya.smartmealplanner.ui.searchByNutrients.components.SelectedNutrientsChips
 import com.satya.smartmealplanner.ui.utils.CircularLoader
+import com.satya.smartmealplanner.ui.utils.ErrorContainer
 
 @Composable
 fun SearchByNutrientsScreen(
@@ -39,10 +42,11 @@ fun SearchByNutrientsScreen(
 
     var showDialog by rememberSaveable { mutableStateOf(true) }
 
-    var nutrientRange by rememberSaveable(saver = Saver(
-        save = { it },
-        restore = { it }
-    )) { mutableStateOf(NutrientRange()) }
+    var nutrientRange by rememberSaveable(
+        saver = Saver(
+            save = { it },
+            restore = { it }
+        )) { mutableStateOf(NutrientRange()) }
 
     var showNutrientFilterChip by rememberSaveable { mutableStateOf(false) }
 
@@ -93,7 +97,11 @@ fun SearchByNutrientsScreen(
             Text(
                 text = "Search By Nutrients",
                 fontSize = 22.sp,
-                modifier = Modifier.padding(horizontal = 8.dp, vertical = 16.dp),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                fontWeight = FontWeight.Bold
             )
         }
 
@@ -107,9 +115,11 @@ fun SearchByNutrientsScreen(
         when {
             recipeByNutrientsState.isLoading -> CircularLoader()
 
-            recipeByNutrientsState.error != null -> Text(text = recipeByNutrientsState.error)
+            recipeByNutrientsState.isError != null -> ErrorContainer(
+                recipeByNutrientsState.isError ?: "Something went wrong!"
+            )
 
-            recipeByNutrientsState.recipes == null || recipeByNutrientsState.recipes.isEmpty() -> Box(
+            recipeByNutrientsState.isSuccess == null || recipeByNutrientsState.isSuccess?.isEmpty() ?: true -> Box(
                 modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -120,7 +130,9 @@ fun SearchByNutrientsScreen(
             }
 
             else -> {
-                RecipeList(navController, recipeByNutrientsState.recipes)
+                recipeByNutrientsState.isSuccess?.let { recipes ->
+                    RecipeList(navController, recipes)
+                }
             }
 
         }

@@ -1,6 +1,7 @@
 package com.satya.smartmealplanner.data.remote
 
 import com.satya.smartmealplanner.BuildConfig
+import com.satya.smartmealplanner.data.model.autoCompleteIngredients.AutoCompleteIngredients
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
@@ -8,6 +9,8 @@ import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
 import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
+import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
+import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesById
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -59,7 +62,7 @@ interface ApiService {
         @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
     ) : Response<RandomJoke>
 
-    @GET("/food/trivia/random")
+    @GET("food/trivia/random")
     suspend fun fetchRandomTrivia(
         @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
     ): Response<FoodTrivia>
@@ -71,4 +74,26 @@ interface ApiService {
         @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
     ): Response<RandomRecipes>
 
+
+    @GET("recipes/complexSearch")
+    suspend fun fetchRecipesByQuery(
+        @Query("query") query: String,
+        @Query("number") number: Int = 9,
+        @Query("diet") diet: String = "vegetarian",
+        @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
+    ): Response<SearchByQuery>
+
+    @GET("food/ingredients/autocomplete")
+    suspend fun fetchAutocompleteIngredients(
+        @Query("query") query: String,
+        @Query("number") number: Int = 6,
+        @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
+    ): Response<AutoCompleteIngredients>
+
+    @GET("recipes/{id}/similar")
+    suspend fun fetchSimilarRecipesById(
+        @Path("id") recipeId: Int,
+        @Query("number") number: Int = 10,
+        @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
+    ): Response<SimilarRecipesById>
 }
