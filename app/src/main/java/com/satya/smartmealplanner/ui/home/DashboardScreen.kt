@@ -34,7 +34,7 @@ fun DashboardScreen(
 
     LaunchedEffect(Unit) {
         if (!preserveState) {
-            viewModel.fetchRecipesByQuery("", true, false)
+           // viewModel.fetchRecipesByQuery("", true, false)
             viewModel.getRandomRecipes(false)
             viewModel.getRandomTrivia(false)
             viewModel.getRandomJoke(false)
@@ -62,7 +62,7 @@ fun DashboardScreen(
 
         randomFoodTrivia.isSuccess?.let {
             list.add(
-                6, DashboardCategory(
+                5, DashboardCategory(
                     1002,
                     randomFoodTrivia.isSuccess.text,
                     -1, "", "",

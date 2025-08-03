@@ -330,28 +330,13 @@ fun DashboardScreenUI(
             }
 
             item {
-                if (showHorizontalViewPager) {
-                    Column(
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .height(240.dp)
-                    ) {
-                        if (randomRecipes.isSuccess != null) {
-                            val listOfRecipes = randomRecipes.isSuccess.recipes
-                            HorizontalPagerWithIndicators(listOfRecipes, navController)
-                        }
-                    }
-                }
-            }
-
-            item {
                 if (updatedCategoryList.isNotEmpty()) {
                     LazyVerticalStaggeredGrid(
                         modifier = Modifier.heightIn(max = 2000.dp),
                         columns = StaggeredGridCells.Fixed(2), content = {
                             items(updatedCategoryList, span = { item ->
                                 if (item.categoryId in listOf(
-                                        1001, 1002
+                                        1001, 1002, 6
                                     )
                                 ) StaggeredGridItemSpan.FullLine else StaggeredGridItemSpan.SingleLane
                             }) { category ->
@@ -371,6 +356,22 @@ fun DashboardScreenUI(
                         })
                 }
             }
+
+            item {
+                if (showHorizontalViewPager) {
+                    Column(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .height(240.dp)
+                    ) {
+                        if (randomRecipes.isSuccess != null) {
+                            val listOfRecipes = randomRecipes.isSuccess.recipes
+                            HorizontalPagerWithIndicators(listOfRecipes, navController)
+                        }
+                    }
+                }
+            }
+
         }
     }
 

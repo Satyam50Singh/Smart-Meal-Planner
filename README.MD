@@ -16,9 +16,9 @@ A food-based Android mobile app using Spoonacular APIs that helps users find rec
 | 🧪 Nutrition-Based Recipe Search   | `/recipes/findByNutrients`                      | Filter recipes by carbs, protein, fat, and calories.                       | ✅ Done     |
 | 😂 Random Joke                     | `/food/jokes/random`                            | Display a random food joke for fun.                                        | ✅ Done     |
 | 🤓 Random Food Trivia              | `/food/trivia/random`                           | Display a random food fact/trivia.                                         | ✅ Done     |
-| 🔠 Autocomplete Ingredient Search  | `/recipes/autocomplete`                         | Suggest ingredients as users type in the search bar.                       | 🛠️ Planned |
+| 🔠 Autocomplete Ingredient Search  | `/recipes/autocomplete`                         | Suggest ingredients as users type in the search bar.                       | ✅ Done     |
 | 🧂 Recipe Taste Profile            | `/recipes/{id}/tasteWidget.json`                | Analyze the taste profile of a recipe (sweetness, saltiness, etc.).       | 🛠️ Planned |
-| 🔁 Similar Recipes                 | `/recipes/{id}/similar`                         | Display similar recipes based on a selected one.                           | 🛠️ Planned |
+| 🔁 Similar Recipes                 | `/recipes/{id}/similar`                         | Display similar recipes based on a selected one.                           | ✅ Done     |
 | 🔍 Search Recipes by Query         | `/recipes/complexSearch`                        | Basic keyword search with optional diet filters.                           | ✅ Done     |
 | ❤️ Save Favorite Recipes           | — (Room/Firebase integration)                   | Users can save their liked recipes offline or sync to cloud.              | 🛠️ Planned |
 
