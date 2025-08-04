@@ -59,7 +59,7 @@ fun CategoryCard(category: DashboardCategory, navController: NavController) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(color = Color.Black.copy(0.5f))
+                    .background(color = Color.Black.copy(0.7f))
             ) {
                 Text(
                     category.categoryName,

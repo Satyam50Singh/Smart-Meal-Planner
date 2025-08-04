@@ -105,4 +105,8 @@ dependencies {
 
     // Swipe to refresh
     implementation(libs.swipe.to.refresh)
+
+    // Compose Charts
+    implementation(libs.compose.charts)
+
 }

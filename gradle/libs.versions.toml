@@ -20,6 +20,7 @@ ksp = "2.0.21-1.0.27"
 room = "2.6.0-alpha01"
 
 swipetToRefresh = "0.36.0"
+composeChart = "0.1.8"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -53,6 +54,8 @@ room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 
 swipe-to-refresh = { module="com.google.accompanist:accompanist-swiperefresh", version.ref="swipetToRefresh"}
+
+compose-charts = {module="io.github.ehsannarmani:compose-charts", version.ref="composeChart"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
