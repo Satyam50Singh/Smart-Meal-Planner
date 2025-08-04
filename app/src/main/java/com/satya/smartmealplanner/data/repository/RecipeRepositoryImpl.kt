@@ -16,6 +16,7 @@ import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesById
+import com.satya.smartmealplanner.data.model.weeklyMealPlan.WeeklyMealPlan
 import com.satya.smartmealplanner.data.preferences.PreferenceKeys
 import com.satya.smartmealplanner.data.preferences.SharedPreferencesManager
 import com.satya.smartmealplanner.data.remote.ApiService
@@ -329,6 +330,34 @@ class RecipeRepositoryImpl @Inject constructor(
 
         return if (response.isSuccessful) {
             val body = response.body()
+            if (body != null) {
+                Resource.Success(body)
+            } else {
+                Resource.Error("Something went wrong!")
+            }
+        } else if (response.errorBody() != null) {
+            parseErrorBody(response.errorBody(), response.code())
+        } else {
+            Resource.Error("Something went wrong!")
+        }
+    }
+
+    override suspend fun generateWeeklyMealPlan(
+        timeFrame: String,
+        targetCalories: Int,
+        diet: String,
+        exclude: String
+    ): Resource<WeeklyMealPlan?> {
+        val response = apiService.generateWeeklyMealPlan(
+            timeFrame = timeFrame,
+            targetCalories = targetCalories,
+            diet = diet,
+            exclude = exclude
+        )
+
+        return if (response.isSuccessful) {
+            val body = response.body()
+
             if (body != null) {
                 Resource.Success(body)
             } else {

@@ -108,4 +108,11 @@ class RecipeUseCase @Inject constructor(
     }
 
     suspend fun fetchSimilarRecipesById(recipeId: Int) = repository.fetchSimilarRecipesById(recipeId)
+
+    suspend fun generateWeeklyMealPlan(
+        timeFrame: String,
+        targetCalories: Int,
+        diet: String,
+        exclude: String
+    ) = repository.generateWeeklyMealPlan(timeFrame, targetCalories, diet, exclude)
 }

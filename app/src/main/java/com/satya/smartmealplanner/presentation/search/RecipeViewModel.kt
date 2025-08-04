@@ -17,6 +17,7 @@ import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesById
+import com.satya.smartmealplanner.data.model.weeklyMealPlan.WeeklyMealPlan
 import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.usecase.RecipeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -374,4 +375,36 @@ class RecipeViewModel @Inject constructor(
             }
         }
     }
+
+    var weeklyMealPlanState by mutableStateOf(State<WeeklyMealPlan>())
+        private set
+
+    fun generateWeeklyMealPlan(
+        timeFrame: String,
+        targetCalories: Int,
+        diet: String,
+        exclude: String
+    ) {
+        viewModelScope.launch {
+            weeklyMealPlanState = weeklyMealPlanState.copy(isLoading = true, isError = null)
+
+            try {
+                val response = withContext(Dispatchers.IO) {
+                    recipeUseCase.generateWeeklyMealPlan(timeFrame, targetCalories, diet, exclude)
+                }
+
+                weeklyMealPlanState = when(response) {
+                    is Resource.Error ->
+                        weeklyMealPlanState.copy(isError = response.message, isLoading = false)
+
+                    is Resource.Success ->
+                        weeklyMealPlanState.copy(isSuccess = response.data, isLoading = false)
+                }
+            } catch (e: Exception) {
+                weeklyMealPlanState = weeklyMealPlanState.copy(isError = e.message, isLoading = false)
+                e.printStackTrace()
+            }
+        }
+    }
+
 }

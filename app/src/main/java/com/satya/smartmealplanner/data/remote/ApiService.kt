@@ -11,6 +11,7 @@ import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesById
+import com.satya.smartmealplanner.data.model.weeklyMealPlan.WeeklyMealPlan
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -96,4 +97,13 @@ interface ApiService {
         @Query("number") number: Int = 10,
         @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
     ): Response<SimilarRecipesById>
+
+    @GET("mealplanner/generate")
+    suspend fun generateWeeklyMealPlan(
+        @Query("timeFrame") timeFrame: String = "week",
+        @Query("targetCalories") targetCalories: Int = 2000,
+        @Query("diet") diet: String = "vegetarian",
+        @Query("exclude") exclude: String = "",
+        @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
+    ): Response<WeeklyMealPlan>
 }
