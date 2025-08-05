@@ -62,7 +62,7 @@ fun DashboardScreen(
 
         randomFoodTrivia.isSuccess?.let {
             list.add(
-                5, DashboardCategory(
+                4, DashboardCategory(
                     1002,
                     randomFoodTrivia.isSuccess.text,
                     -1, "", "",

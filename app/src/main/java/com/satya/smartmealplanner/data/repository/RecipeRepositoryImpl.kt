@@ -1,9 +1,12 @@
 package com.satya.smartmealplanner.data.repository
 
+import android.util.Log
 import com.satya.smartmealplanner.data.local.dao.FoodFactDao
 import com.satya.smartmealplanner.data.local.dao.RandomRecipeDao
+import com.satya.smartmealplanner.data.local.dao.WeeklyMealPlanDao
 import com.satya.smartmealplanner.data.local.entity.FoodFactEntity
 import com.satya.smartmealplanner.data.local.entity.RandomRecipeEntity
+import com.satya.smartmealplanner.data.local.entity.WeeklyMealPlanEntity
 import com.satya.smartmealplanner.data.model.autoCompleteIngredients.AutoCompleteIngredients
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
@@ -27,12 +30,18 @@ import com.satya.smartmealplanner.utils.Utils
 import com.satya.smartmealplanner.utils.parseErrorBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
+import java.util.Date
+import java.util.Locale
 import javax.inject.Inject
 
 class RecipeRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
     private val randomRecipeDao: RandomRecipeDao,
     private val foodFactDao: FoodFactDao,
+    private val weeklyMealPlanDao: WeeklyMealPlanDao,
     private val sharedPreferencesManager: SharedPreferencesManager
 ) : RecipeRepository {
 
@@ -348,25 +357,48 @@ class RecipeRepositoryImpl @Inject constructor(
         diet: String,
         exclude: String
     ): Resource<WeeklyMealPlan?> {
-        val response = apiService.generateWeeklyMealPlan(
-            timeFrame = timeFrame,
-            targetCalories = targetCalories,
-            diet = diet,
-            exclude = exclude
-        )
 
-        return if (response.isSuccessful) {
-            val body = response.body()
+        val weekStartDate = Utils.getCurrentDate()
+        val nextWeekStartDate =
+            sharedPreferencesManager.getString(PreferenceKeys.NEXT_WEEK_START_DATE, "")
 
-            if (body != null) {
-                Resource.Success(body)
+        if (nextWeekStartDate.isEmpty() || (weekStartDate == nextWeekStartDate)) {
+            sharedPreferencesManager.putString(
+                PreferenceKeys.NEXT_WEEK_START_DATE,
+                Utils.getNextWeekStartDate()
+            )
+
+            val response = apiService.generateWeeklyMealPlan(
+                timeFrame = timeFrame,
+                targetCalories = targetCalories,
+                diet = diet,
+                exclude = exclude
+            )
+
+            return if (response.isSuccessful) {
+                val body = response.body()
+
+                withContext(Dispatchers.IO) {
+                    weeklyMealPlanDao.deleteWeeklyMealPlan()
+                    body?.week?.let {
+                        val entity = WeeklyMealPlanEntity(week = it)
+                        weeklyMealPlanDao.insertWeeklyMealPlan(entity)
+                    }
+                }
+
+                if (body != null) {
+                    Resource.Success(body)
+                } else {
+                    Resource.Error("Something went wrong!")
+                }
+            } else if (response.errorBody() != null) {
+                parseErrorBody(response.errorBody(), response.code())
             } else {
                 Resource.Error("Something went wrong!")
             }
-        } else if (response.errorBody() != null) {
-            parseErrorBody(response.errorBody(), response.code())
         } else {
-            Resource.Error("Something went wrong!")
+            // fetch meals from the room db
+            return Resource.Error("Fetch from DB")
         }
     }
 }

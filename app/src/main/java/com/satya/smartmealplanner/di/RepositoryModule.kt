@@ -2,6 +2,7 @@ package com.satya.smartmealplanner.di
 
 import com.satya.smartmealplanner.data.local.dao.FoodFactDao
 import com.satya.smartmealplanner.data.local.dao.RandomRecipeDao
+import com.satya.smartmealplanner.data.local.dao.WeeklyMealPlanDao
 import com.satya.smartmealplanner.data.preferences.SharedPreferencesManager
 import com.satya.smartmealplanner.data.remote.ApiService
 import com.satya.smartmealplanner.data.repository.RecipeRepositoryImpl
@@ -21,9 +22,10 @@ object RepositoryModule {
         apiService: ApiService,
         randomRecipeDao: RandomRecipeDao,
         foodFactDao: FoodFactDao,
+        weeklyMealPlanDao: WeeklyMealPlanDao,
         prefs: SharedPreferencesManager
     ): RecipeRepository {
-        return RecipeRepositoryImpl(apiService, randomRecipeDao, foodFactDao, prefs)
+        return RecipeRepositoryImpl(apiService, randomRecipeDao, foodFactDao, weeklyMealPlanDao, prefs)
     }
 
 }
