@@ -358,7 +358,7 @@ class RecipeRepositoryImpl @Inject constructor(
         exclude: String
     ): Resource<WeeklyMealPlan?> {
 
-        val weekStartDate = Utils.getCurrentDate()
+        val weekStartDate = sharedPreferencesManager.getString(PreferenceKeys.CURRENT_DATE, "")
         val nextWeekStartDate =
             sharedPreferencesManager.getString(PreferenceKeys.NEXT_WEEK_START_DATE, "")
 
@@ -398,7 +398,19 @@ class RecipeRepositoryImpl @Inject constructor(
             }
         } else {
             // fetch meals from the room db
-            return Resource.Error("Fetch from DB")
+            return try {
+                withContext(Dispatchers.IO) {
+                    val responseFromDB = weeklyMealPlanDao.getWeeklyMealPlan()
+                    if (responseFromDB != null) {
+                        Resource.Success(responseFromDB.toDomain())
+                    } else {
+                        Resource.Error("Something went wrong!")
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Resource.Error("Something went wrong!")
+            }
         }
     }
 }
