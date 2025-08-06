@@ -24,6 +24,10 @@ import com.satya.smartmealplanner.presentation.search.RecipeViewModel
 import com.satya.smartmealplanner.ui.utils.CircularLoader
 import com.satya.smartmealplanner.ui.utils.ErrorContainer
 import com.satya.smartmealplanner.utils.UIHelpers
+import com.satya.smartmealplanner.utils.Utils
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 @Composable
 fun WeeklyMealPlannerScreen(
@@ -86,7 +90,15 @@ fun WeeklyMealPlannerScreen(
                     "Sunday" to week.sunday
                 )
 
-                WeeklyMealPlannerScreenUI(weeklyPlanList)
+                val updatedWeeklyPlanList: List<Pair<String, MealDay>> = weeklyPlanList.map { (day, mealDay) ->
+                    if (day.equals(Utils.getCurrentDay(), ignoreCase = true)) {
+                        "$day (Today)" to mealDay
+                    } else {
+                        day to mealDay
+                    }
+                }
+
+                WeeklyMealPlannerScreenUI(updatedWeeklyPlanList)
             }
         }
     }
