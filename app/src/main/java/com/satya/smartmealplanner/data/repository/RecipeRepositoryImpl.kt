@@ -352,6 +352,7 @@ class RecipeRepositoryImpl @Inject constructor(
     }
 
     override suspend fun generateWeeklyMealPlan(
+        loadApi: Boolean,
         timeFrame: String,
         targetCalories: Int,
         diet: String,
@@ -362,11 +363,14 @@ class RecipeRepositoryImpl @Inject constructor(
         val nextWeekStartDate =
             sharedPreferencesManager.getString(PreferenceKeys.NEXT_WEEK_START_DATE, "")
 
-        if (nextWeekStartDate.isEmpty() || (weekStartDate == nextWeekStartDate)) {
-            sharedPreferencesManager.putString(
-                PreferenceKeys.NEXT_WEEK_START_DATE,
-                Utils.getNextWeekStartDate()
-            )
+
+        if (loadApi || nextWeekStartDate.isEmpty() || weekStartDate == nextWeekStartDate) {
+            if (nextWeekStartDate.isEmpty() || weekStartDate == nextWeekStartDate) {
+                sharedPreferencesManager.putString(
+                    PreferenceKeys.NEXT_WEEK_START_DATE,
+                    Utils.getCurrentDate()
+                )
+            }
 
             val response = apiService.generateWeeklyMealPlan(
                 timeFrame = timeFrame,

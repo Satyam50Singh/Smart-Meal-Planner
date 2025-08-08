@@ -380,6 +380,7 @@ class RecipeViewModel @Inject constructor(
         private set
 
     fun generateWeeklyMealPlan(
+        loadApi: Boolean,
         timeFrame: String,
         targetCalories: Int,
         diet: String,
@@ -390,7 +391,7 @@ class RecipeViewModel @Inject constructor(
 
             try {
                 val response = withContext(Dispatchers.IO) {
-                    recipeUseCase.generateWeeklyMealPlan(timeFrame, targetCalories, diet, exclude)
+                    recipeUseCase.generateWeeklyMealPlan(loadApi, timeFrame, targetCalories, diet, exclude)
                 }
 
                 weeklyMealPlanState = when(response) {

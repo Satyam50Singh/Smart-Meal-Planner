@@ -57,6 +57,7 @@ interface RecipeRepository {
     suspend fun fetchSimilarRecipesById(recipeId: Int): Resource<SimilarRecipesById?>
 
     suspend fun generateWeeklyMealPlan(
+        loadApi: Boolean,
         timeFrame: String,
         targetCalories: Int,
         diet: String,
