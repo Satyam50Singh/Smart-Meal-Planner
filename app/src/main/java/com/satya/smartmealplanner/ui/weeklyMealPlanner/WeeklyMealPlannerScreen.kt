@@ -37,7 +37,6 @@ import com.satya.smartmealplanner.data.model.weeklyMealPlan.MealDay
 import com.satya.smartmealplanner.presentation.search.RecipeViewModel
 import com.satya.smartmealplanner.ui.utils.CircularLoader
 import com.satya.smartmealplanner.ui.utils.ErrorContainer
-import com.satya.smartmealplanner.utils.UIHelpers
 import com.satya.smartmealplanner.utils.Utils
 
 @Composable
@@ -115,7 +114,7 @@ fun WeeklyMealPlannerScreen(
                         }
                     }
 
-                WeeklyMealPlannerScreenUI(updatedWeeklyPlanList)
+                WeeklyMealPlannerScreenUI(updatedWeeklyPlanList, navController)
             }
         }
     }
@@ -180,7 +179,7 @@ fun CustomFilterBottomSheet(onClose: (Boolean, String, String) -> Unit) {
             Spacer(modifier = Modifier.height(12.dp))
 
             OutlinedButton(
-                modifier = Modifier.fillMaxWidth().align(alignment = Alignment.End),
+                modifier = Modifier.align(alignment = Alignment.End),
                 onClick = {
                     onClose(false, caloriesInput, excludeIngredientsInput)
                 }

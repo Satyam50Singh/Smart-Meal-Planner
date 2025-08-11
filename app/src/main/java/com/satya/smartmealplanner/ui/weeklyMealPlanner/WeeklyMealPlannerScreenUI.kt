@@ -12,13 +12,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.satya.smartmealplanner.data.model.weeklyMealPlan.MealDay
 import com.satya.smartmealplanner.ui.weeklyMealPlanner.components.CardHeader
 import com.satya.smartmealplanner.ui.weeklyMealPlanner.components.DayWiseMealsListing
 import com.satya.smartmealplanner.ui.weeklyMealPlanner.components.NutritionDonutChart
 
 @Composable
-fun WeeklyMealPlannerScreenUI(week: List<Pair<String, MealDay>>) {
+fun WeeklyMealPlannerScreenUI(week: List<Pair<String, MealDay>>, navController: NavController) {
 
     val todayIndex = week.indexOfFirst { it.first.contains("(Today)") }
     val listState = rememberLazyListState()
@@ -42,7 +43,7 @@ fun WeeklyMealPlannerScreenUI(week: List<Pair<String, MealDay>>) {
                 ) {
                     CardHeader(day)
 
-                    DayWiseMealsListing(mealDay.meals)
+                    DayWiseMealsListing(mealDay.meals, navController)
 
                     NutritionDonutChart(mealDay.nutrients)
                 }

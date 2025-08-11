@@ -48,7 +48,7 @@ fun NutritionDonutChart(nutrients: Nutrients) {
     ) {
 
         PieChart(
-            modifier = Modifier.size(220.dp),
+            modifier = Modifier.size(180.dp),
             data = slices,
             selectedScale = 2f,
             style = Pie.Style.Stroke(width = 60.dp),
@@ -57,7 +57,7 @@ fun NutritionDonutChart(nutrients: Nutrients) {
 
         Text(
             text = "${nutrients.calories.toInt()} kcal",
-            style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+            style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
         )
     }
 
@@ -78,7 +78,7 @@ fun NutritionDonutChart(nutrients: Nutrients) {
                 pie.label?.let { label ->
                     Text(
                         text = "$label - ${"%.1f".format(pie.data)}g",
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodySmall
                     )
                 }
             }

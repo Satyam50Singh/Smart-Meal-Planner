@@ -162,7 +162,7 @@ fun DashboardScreenUI(
                         value = searchQuery,
                         onValueChange = {
                             searchQuery = it
-                            if (it.length >= 3) onSearchQueryChanged(searchQuery, isVeg)
+                            onSearchQueryChanged(searchQuery, isVeg)
                         },
                         label = { Text("Search recipes...") },
                         modifier = Modifier
@@ -186,6 +186,7 @@ fun DashboardScreenUI(
                                     contentDescription = null,
                                     modifier = Modifier.clickable {
                                         searchQuery = ""
+                                        onSearchQueryChanged(searchQuery, isVeg)
                                     }
                                 )
                             } else {

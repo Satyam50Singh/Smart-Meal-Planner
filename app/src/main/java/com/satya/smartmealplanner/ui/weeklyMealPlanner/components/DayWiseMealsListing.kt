@@ -2,6 +2,7 @@ package com.satya.smartmealplanner.ui.weeklyMealPlanner.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
@@ -12,6 +13,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -25,26 +28,32 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.satya.smartmealplanner.data.model.weeklyMealPlan.Meal
+import com.satya.smartmealplanner.presentation.navigation.Screen
 
 
 @Composable
-fun DayWiseMealsListing(meals: List<Meal>) {
-    FlowRow(
+fun DayWiseMealsListing(meals: List<Meal>, navController: NavController) {
+    LazyRow(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        meals.forEach { meal ->
+
+        items(meals) {
+                meal ->
             val imageURL = "https://spoonacular.com/recipeImages/${meal.image}"
 
             Card(
                 modifier = Modifier
                     .width(110.dp)
-                    .height(150.dp),
+                    .height(150.dp)
+                    .clickable {
+                        navController.navigate(Screen.RecipeDetailById.createRoute(meal.id.toString()))
+                    },
                 shape = RoundedCornerShape(16.dp),
                 elevation = CardDefaults.cardElevation(4.dp)
             ) {
