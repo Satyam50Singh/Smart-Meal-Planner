@@ -19,14 +19,17 @@ class MainActivity : ComponentActivity() {
         setContent {
             SmartMealPlannerTheme {
                 val navController = rememberNavController()
-                Scaffold { paddingValues ->
+                Scaffold(
+                    bottomBar = {
+                        BottomNavBar(navController = navController)
+                    }
+                ) { paddingValues ->
                     AppNavGraph(
                         navController = navController,
                         innerPadding = paddingValues,
                         destination = Screen.Dashboard.route
                     )
                 }
-
             }
         }
     }

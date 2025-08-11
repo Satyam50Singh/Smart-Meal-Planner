@@ -1,7 +1,9 @@
 package com.satya.smartmealplanner.presentation.navigation
 
-sealed class Screen(val route: String) {
-    object Dashboard : Screen("dashboard")
+import com.satya.smartmealplanner.R
+
+sealed class Screen(val route: String, val title: String = "", val icon: Int = 0) {
+    object Dashboard : Screen("dashboard", "Home", R.drawable.outline_home)
 
     object FindByIngredient : Screen("findByIngredient")
 
@@ -14,4 +16,5 @@ sealed class Screen(val route: String) {
     object SearchByNutrients : Screen("searchByNutrients")
 
     object WeeklyMealPlanner : Screen("weeklyMealPlanner")
+    object Favorites : Screen("favorites", "Favorites", R.drawable.outline_favorite)
 }
