@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.ksp)
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -111,5 +112,12 @@ dependencies {
     implementation(libs.compose.charts)
 
     // firebase
-    implementation(libs.firebase.bom)
+    implementation(platform(libs.firebase.bom))
+
+    // Firestore (for favorite recipes)
+    implementation(libs.firebase.firestore)
+
+    // Crashlytics
+    implementation(libs.firebase.crashlytics)
+
 }

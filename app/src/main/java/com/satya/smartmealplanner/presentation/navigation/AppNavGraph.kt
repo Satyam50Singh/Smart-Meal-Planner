@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.satya.smartmealplanner.ui.Favorites
+import com.satya.smartmealplanner.ui.favorites.Favorites
 import com.satya.smartmealplanner.ui.home.DashboardScreen
 import com.satya.smartmealplanner.ui.findByIngredients.SearchByIngredientScreen
 import com.satya.smartmealplanner.ui.recipeDetailsById.RecipeDetailScreen
