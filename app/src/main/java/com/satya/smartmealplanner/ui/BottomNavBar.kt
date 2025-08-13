@@ -1,5 +1,7 @@
 package com.satya.smartmealplanner.ui
 
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -9,7 +11,9 @@ import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.satya.smartmealplanner.presentation.navigation.Screen
@@ -17,7 +21,11 @@ import com.satya.smartmealplanner.presentation.navigation.Screen
 @Composable
 fun BottomNavBar(navController: NavHostController) {
 
-    NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
+    NavigationBar(
+        containerColor = MaterialTheme.colorScheme.background,
+        tonalElevation = 0.dp,
+        windowInsets = WindowInsets(0, 0, 0, 0)
+    ) {
         val items = listOf(
             Screen.Dashboard,
             Screen.Favorites
@@ -40,7 +48,8 @@ fun BottomNavBar(navController: NavHostController) {
                 icon = {
                     Icon(
                         painterResource(id = it.icon),
-                        contentDescription = it.title
+                        contentDescription = it.title,
+                        modifier = Modifier.size(20.dp)
                     )
                 },
                 label = {

@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
                     AppNavGraph(
                         navController = navController,
                         innerPadding = paddingValues,
-                        destination = Screen.Dashboard.route
+                        destination = Screen.Favorites.route
                     )
                 }
             }

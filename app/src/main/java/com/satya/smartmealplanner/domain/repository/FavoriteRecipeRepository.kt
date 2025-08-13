@@ -6,7 +6,7 @@ interface FavoriteRecipeRepository {
 
     suspend fun deleteFavoriteRecipe(recipeId: Int): Boolean
 
-    suspend fun getAllFavoriteRecipes(): List<Map<String, Any>>
+    suspend fun getAllFavoriteRecipes(): List<Map<String, Any?>>
 
     suspend fun isRecipeFavorite(recipeId: Int): Boolean
 

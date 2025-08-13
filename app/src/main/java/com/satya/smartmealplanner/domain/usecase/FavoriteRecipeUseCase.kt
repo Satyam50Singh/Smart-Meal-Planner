@@ -15,4 +15,7 @@ class FavoriteRecipeUseCase @Inject constructor(
     suspend fun isRecipeFavorite(recipeId: Int): Boolean =
         favoriteRecipeRepository.isRecipeFavorite(recipeId)
 
+    suspend fun getAllFavoriteRecipes(): List<Map<String, Any?>> =
+        favoriteRecipeRepository.getAllFavoriteRecipes()
+
 }

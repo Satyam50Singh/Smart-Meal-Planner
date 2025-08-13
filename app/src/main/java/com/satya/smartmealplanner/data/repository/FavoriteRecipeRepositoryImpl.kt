@@ -44,8 +44,28 @@ class FavoriteRecipeRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAllFavoriteRecipes(): List<Map<String, Any>> {
-        return emptyList()
+    override suspend fun getAllFavoriteRecipes(): List<Map<String, Any?>> {
+        val document = firebaseFirestore
+            .collection(Constants.USERS)
+            .document(deviceIdProvider.getDeviceId())
+            .collection(Constants.FAVORITE_RECIPES)
+            .get()
+            .await()
+
+        val recipes = mutableListOf<Map<String, Any?>>()
+
+        document.documents.forEach {
+            val recipe = mapOf(
+                "recipeId" to it.get("recipeId"),
+                "recipeTitle" to it.get("recipeTitle"),
+                "recipeImage" to it.get("recipeImage"),
+                "recipeServings" to it.get("recipeServings"),
+                "recipeReadyInMinutes" to it.get("recipeReadyInMinutes")
+            )
+            recipes.add(recipe)
+        }
+
+        return recipes
     }
 
     override suspend fun isRecipeFavorite(recipeId: Int): Boolean {
