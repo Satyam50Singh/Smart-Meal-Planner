@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.satya.smartmealplanner.R
-import com.satya.smartmealplanner.presentation.search.RecipeViewModel
+import com.satya.smartmealplanner.presentation.viewmodel.RecipeViewModel
 import com.satya.smartmealplanner.ui.recipeDetailsById.components.RecipeDetailCard
 import com.satya.smartmealplanner.ui.utils.CircularLoader
 import com.satya.smartmealplanner.ui.utils.ErrorContainer

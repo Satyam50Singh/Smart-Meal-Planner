@@ -34,7 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.data.model.weeklyMealPlan.MealDay
-import com.satya.smartmealplanner.presentation.search.RecipeViewModel
+import com.satya.smartmealplanner.presentation.viewmodel.RecipeViewModel
 import com.satya.smartmealplanner.ui.utils.CircularLoader
 import com.satya.smartmealplanner.ui.utils.ErrorContainer
 import com.satya.smartmealplanner.utils.Utils

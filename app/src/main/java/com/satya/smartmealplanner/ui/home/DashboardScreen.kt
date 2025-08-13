@@ -10,9 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
-import com.satya.smartmealplanner.presentation.preferences.SharedPreferencesViewModel
-import com.satya.smartmealplanner.presentation.search.RecipeViewModel
-import com.satya.smartmealplanner.utils.Utils
+import com.satya.smartmealplanner.presentation.viewmodel.RecipeViewModel
 
 @Composable
 fun DashboardScreen(

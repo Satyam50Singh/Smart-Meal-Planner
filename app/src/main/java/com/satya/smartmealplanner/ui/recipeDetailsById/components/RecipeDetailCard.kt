@@ -22,6 +22,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,12 +37,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesById
 import com.satya.smartmealplanner.presentation.navigation.Screen
+import com.satya.smartmealplanner.presentation.viewmodel.FavoriteRecipeViewModel
 import com.satya.smartmealplanner.utils.UIHelpers
 import com.satya.smartmealplanner.utils.Utils
 
@@ -49,10 +52,15 @@ import com.satya.smartmealplanner.utils.Utils
 fun RecipeDetailCard(
     recipe: SelectedRecipeDetails?,
     similarRecipes: SimilarRecipesById,
-    navController: NavHostController
+    navController: NavHostController,
+    favoriteRecipeViewModel: FavoriteRecipeViewModel = hiltViewModel()
 ) {
 
-    var isFavorite by remember { mutableStateOf(false) }
+    val saveFavoriteRecipeState = favoriteRecipeViewModel.saveFavoriteRecipeState
+
+    LaunchedEffect(Unit) {
+        recipe?.id?.let { favoriteRecipeViewModel.isRecipeFavorite(it) }
+    }
 
     // Details
     LazyColumn(
@@ -82,12 +90,27 @@ fun RecipeDetailCard(
                 )
                 Icon(
                     painter = painterResource(
-                        if (isFavorite) R.drawable.baseline_favorite_filled else R.drawable.outline_favorite
+                        if (saveFavoriteRecipeState) R.drawable.baseline_favorite_filled else R.drawable.outline_favorite
                     ),
                     contentDescription = "",
                     modifier = Modifier.clickable {
-                        UIHelpers.customToast(navController.context, "Device Id: ${Utils.getDeviceId(navController.context)}")
-                        isFavorite = !isFavorite
+                        if (!saveFavoriteRecipeState) {
+                            recipe?.let {
+                                val recipeData = mapOf(
+                                    "recipeId" to recipe.id,
+                                    "recipeTitle" to recipe.title,
+                                    "recipeImage" to recipe.image,
+                                    "recipeServings" to recipe.servings,
+                                    "recipeReadyInMinutes" to recipe.readyInMinutes
+                                )
+                                favoriteRecipeViewModel.saveFavoriteRecipe(
+                                    recipeId = recipe.id,
+                                    recipeData = recipeData
+                                )
+                            }
+                        } else {
+                            recipe?.id?.let { favoriteRecipeViewModel.deleteFavoriteRecipe(it) }
+                        }
                     }
                 )
             }

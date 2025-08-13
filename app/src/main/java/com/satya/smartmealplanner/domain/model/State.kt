@@ -1,4 +1,4 @@
-package com.satya.smartmealplanner.presentation.search
+package com.satya.smartmealplanner.domain.model
 
 data class State<T>(
     val isLoading: Boolean = false,

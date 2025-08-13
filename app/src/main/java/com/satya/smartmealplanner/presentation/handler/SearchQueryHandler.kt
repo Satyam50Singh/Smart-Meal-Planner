@@ -1,6 +1,5 @@
-package com.satya.smartmealplanner.presentation.search
+package com.satya.smartmealplanner.presentation.handler
 
-import androidx.room.util.query
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow

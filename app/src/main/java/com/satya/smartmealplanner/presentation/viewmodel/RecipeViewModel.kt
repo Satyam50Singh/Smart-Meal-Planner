@@ -1,4 +1,4 @@
-package com.satya.smartmealplanner.presentation.search
+package com.satya.smartmealplanner.presentation.viewmodel
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +20,8 @@ import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesById
 import com.satya.smartmealplanner.data.model.weeklyMealPlan.WeeklyMealPlan
 import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.usecase.RecipeUseCase
+import com.satya.smartmealplanner.presentation.handler.SearchQueryHandler
+import com.satya.smartmealplanner.domain.model.State
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay

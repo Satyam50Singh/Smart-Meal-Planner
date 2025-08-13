@@ -1,6 +1,5 @@
 package com.satya.smartmealplanner.data.repository
 
-import android.util.Log
 import com.satya.smartmealplanner.data.local.dao.FoodFactDao
 import com.satya.smartmealplanner.data.local.dao.RandomRecipeDao
 import com.satya.smartmealplanner.data.local.dao.WeeklyMealPlanDao
@@ -30,11 +29,6 @@ import com.satya.smartmealplanner.utils.Utils
 import com.satya.smartmealplanner.utils.parseErrorBody
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.ZoneId
-import java.util.Date
-import java.util.Locale
 import javax.inject.Inject
 
 class RecipeRepositoryImpl @Inject constructor(

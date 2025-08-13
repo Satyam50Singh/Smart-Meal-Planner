@@ -64,7 +64,7 @@ import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
 import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import com.satya.smartmealplanner.presentation.navigation.Screen
-import com.satya.smartmealplanner.presentation.search.State
+import com.satya.smartmealplanner.domain.model.State
 import com.satya.smartmealplanner.ui.home.components.CategoryCard
 import com.satya.smartmealplanner.ui.home.components.DietSwitchWithIcon
 import com.satya.smartmealplanner.ui.home.components.FactCard
