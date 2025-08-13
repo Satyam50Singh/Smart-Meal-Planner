@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     id("kotlin-parcelize")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -109,4 +110,6 @@ dependencies {
     // Compose Charts
     implementation(libs.compose.charts)
 
+    // firebase
+    implementation(libs.firebase.bom)
 }
