@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import coil.compose.rememberAsyncImagePainter
 import com.satya.smartmealplanner.R
+import com.satya.smartmealplanner.presentation.navigation.Screen
 import com.satya.smartmealplanner.presentation.viewmodel.FavoriteRecipeViewModel
 import com.satya.smartmealplanner.ui.utils.CircularLoader
 
@@ -103,7 +103,10 @@ fun Favorites(
                             modifier = Modifier
                                 .padding(vertical = 8.dp, horizontal = 8.dp)
                                 .fillMaxWidth()
-                                .clip(RoundedCornerShape(16.dp)),
+                                .clip(RoundedCornerShape(16.dp))
+                                .clickable {
+                                    navController.navigate(Screen.RecipeDetailById.createRoute(recipeId = recipe["recipeId"].toString()))
+                                },
                             elevation = CardDefaults.cardElevation(defaultElevation = 6.dp)
                         ) {
                             Column {

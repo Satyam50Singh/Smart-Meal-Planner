@@ -4,6 +4,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.satya.smartmealplanner.domain.repository.FavoriteRecipeRepository
 import com.satya.smartmealplanner.utils.Constants
 import com.satya.smartmealplanner.utils.DeviceIdProvider
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -44,28 +47,36 @@ class FavoriteRecipeRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAllFavoriteRecipes(): List<Map<String, Any?>> {
-        val document = firebaseFirestore
+    override suspend fun getAllFavoriteRecipes(): Flow<List<Map<String, Any?>>> = callbackFlow {
+
+        val listener = firebaseFirestore
             .collection(Constants.USERS)
             .document(deviceIdProvider.getDeviceId())
             .collection(Constants.FAVORITE_RECIPES)
-            .get()
-            .await()
+            .addSnapshotListener { snapshot, e ->
 
-        val recipes = mutableListOf<Map<String, Any?>>()
+                if (e != null) {
+                    close(e)
+                    return@addSnapshotListener
+                }
 
-        document.documents.forEach {
-            val recipe = mapOf(
-                "recipeId" to it.get("recipeId"),
-                "recipeTitle" to it.get("recipeTitle"),
-                "recipeImage" to it.get("recipeImage"),
-                "recipeServings" to it.get("recipeServings"),
-                "recipeReadyInMinutes" to it.get("recipeReadyInMinutes")
-            )
-            recipes.add(recipe)
-        }
+                val recipes = mutableListOf<Map<String, Any?>>()
 
-        return recipes
+                snapshot?.documents?.forEach {
+                    val recipe = mapOf(
+                        "recipeId" to it.get("recipeId"),
+                        "recipeTitle" to it.get("recipeTitle"),
+                        "recipeImage" to it.get("recipeImage"),
+                        "recipeServings" to it.get("recipeServings"),
+                        "recipeReadyInMinutes" to it.get("recipeReadyInMinutes")
+                    )
+                    recipes.add(recipe)
+                }
+
+                trySend(recipes)
+            }
+
+        awaitClose { listener.remove() }
     }
 
     override suspend fun isRecipeFavorite(recipeId: Int): Boolean {

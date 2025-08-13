@@ -1,6 +1,7 @@
 package com.satya.smartmealplanner.domain.usecase
 
 import com.satya.smartmealplanner.domain.repository.FavoriteRecipeRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class FavoriteRecipeUseCase @Inject constructor(
@@ -15,7 +16,7 @@ class FavoriteRecipeUseCase @Inject constructor(
     suspend fun isRecipeFavorite(recipeId: Int): Boolean =
         favoriteRecipeRepository.isRecipeFavorite(recipeId)
 
-    suspend fun getAllFavoriteRecipes(): List<Map<String, Any?>> =
+    suspend fun getAllFavoriteRecipes(): Flow<List<Map<String, Any?>>> =
         favoriteRecipeRepository.getAllFavoriteRecipes()
 
 }
