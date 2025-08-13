@@ -19,3 +19,12 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# Firebase Firestore
+-keepattributes Signature
+-keepattributes *Annotation*
+-keep class com.google.firebase.** { *; }
+-keep class com.google.firestore.** { *; }
+
+# Crashlytics
+-keep class com.google.firebase.crashlytics.** { *; }

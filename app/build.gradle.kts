@@ -5,6 +5,8 @@ plugins {
     alias(libs.plugins.hilt.android)
     alias(libs.plugins.ksp)
     id("kotlin-parcelize")
+    id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -105,4 +107,17 @@ dependencies {
 
     // Swipe to refresh
     implementation(libs.swipe.to.refresh)
+
+    // Compose Charts
+    implementation(libs.compose.charts)
+
+    // firebase
+    implementation(platform(libs.firebase.bom))
+
+    // Firestore (for favorite recipes)
+    implementation(libs.firebase.firestore)
+
+    // Crashlytics
+    implementation(libs.firebase.crashlytics)
+
 }

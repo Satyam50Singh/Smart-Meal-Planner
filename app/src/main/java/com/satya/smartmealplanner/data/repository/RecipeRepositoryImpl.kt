@@ -2,8 +2,10 @@ package com.satya.smartmealplanner.data.repository
 
 import com.satya.smartmealplanner.data.local.dao.FoodFactDao
 import com.satya.smartmealplanner.data.local.dao.RandomRecipeDao
+import com.satya.smartmealplanner.data.local.dao.WeeklyMealPlanDao
 import com.satya.smartmealplanner.data.local.entity.FoodFactEntity
 import com.satya.smartmealplanner.data.local.entity.RandomRecipeEntity
+import com.satya.smartmealplanner.data.local.entity.WeeklyMealPlanEntity
 import com.satya.smartmealplanner.data.model.autoCompleteIngredients.AutoCompleteIngredients
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
@@ -16,6 +18,7 @@ import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesById
+import com.satya.smartmealplanner.data.model.weeklyMealPlan.WeeklyMealPlan
 import com.satya.smartmealplanner.data.preferences.PreferenceKeys
 import com.satya.smartmealplanner.data.preferences.SharedPreferencesManager
 import com.satya.smartmealplanner.data.remote.ApiService
@@ -32,6 +35,7 @@ class RecipeRepositoryImpl @Inject constructor(
     private val apiService: ApiService,
     private val randomRecipeDao: RandomRecipeDao,
     private val foodFactDao: FoodFactDao,
+    private val weeklyMealPlanDao: WeeklyMealPlanDao,
     private val sharedPreferencesManager: SharedPreferencesManager
 ) : RecipeRepository {
 
@@ -338,6 +342,73 @@ class RecipeRepositoryImpl @Inject constructor(
             parseErrorBody(response.errorBody(), response.code())
         } else {
             Resource.Error("Something went wrong!")
+        }
+    }
+
+    override suspend fun generateWeeklyMealPlan(
+        loadApi: Boolean,
+        timeFrame: String,
+        targetCalories: Int,
+        diet: String,
+        exclude: String
+    ): Resource<WeeklyMealPlan?> {
+
+        val weekStartDate = sharedPreferencesManager.getString(PreferenceKeys.CURRENT_DATE, "")
+        val nextWeekStartDate =
+            sharedPreferencesManager.getString(PreferenceKeys.NEXT_WEEK_START_DATE, "")
+
+
+        if (loadApi || nextWeekStartDate.isEmpty() || weekStartDate == nextWeekStartDate) {
+            if (nextWeekStartDate.isEmpty() || weekStartDate == nextWeekStartDate) {
+                sharedPreferencesManager.putString(
+                    PreferenceKeys.NEXT_WEEK_START_DATE,
+                    Utils.getCurrentDate()
+                )
+            }
+
+            val response = apiService.generateWeeklyMealPlan(
+                timeFrame = timeFrame,
+                targetCalories = targetCalories,
+                diet = diet,
+                exclude = exclude
+            )
+
+            return if (response.isSuccessful) {
+                val body = response.body()
+
+                withContext(Dispatchers.IO) {
+                    weeklyMealPlanDao.deleteWeeklyMealPlan()
+                    body?.week?.let {
+                        val entity = WeeklyMealPlanEntity(week = it)
+                        weeklyMealPlanDao.insertWeeklyMealPlan(entity)
+                    }
+                }
+
+                if (body != null) {
+                    Resource.Success(body)
+                } else {
+                    Resource.Error("Something went wrong!")
+                }
+            } else if (response.errorBody() != null) {
+                parseErrorBody(response.errorBody(), response.code())
+            } else {
+                Resource.Error("Something went wrong!")
+            }
+        } else {
+            // fetch meals from the room db
+            return try {
+                withContext(Dispatchers.IO) {
+                    val responseFromDB = weeklyMealPlanDao.getWeeklyMealPlan()
+                    if (responseFromDB != null) {
+                        Resource.Success(responseFromDB.toDomain())
+                    } else {
+                        Resource.Error("Something went wrong!")
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Resource.Error("Something went wrong!")
+            }
         }
     }
 }

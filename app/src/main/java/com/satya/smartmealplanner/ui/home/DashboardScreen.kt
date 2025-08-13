@@ -10,9 +10,7 @@ import androidx.compose.runtime.setValue
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
-import com.satya.smartmealplanner.presentation.preferences.SharedPreferencesViewModel
-import com.satya.smartmealplanner.presentation.search.RecipeViewModel
-import com.satya.smartmealplanner.utils.Utils
+import com.satya.smartmealplanner.presentation.viewmodel.RecipeViewModel
 
 @Composable
 fun DashboardScreen(
@@ -34,7 +32,7 @@ fun DashboardScreen(
 
     LaunchedEffect(Unit) {
         if (!preserveState) {
-            viewModel.fetchRecipesByQuery("", true, false)
+            viewModel.fetchRecipesByQuery("", isVeg = true, forceRefresh = false)
             viewModel.getRandomRecipes(false)
             viewModel.getRandomTrivia(false)
             viewModel.getRandomJoke(false)
@@ -62,7 +60,7 @@ fun DashboardScreen(
 
         randomFoodTrivia.isSuccess?.let {
             list.add(
-                6, DashboardCategory(
+                5, DashboardCategory(
                     1002,
                     randomFoodTrivia.isSuccess.text,
                     -1, "", "",
@@ -82,7 +80,11 @@ fun DashboardScreen(
         randomFoodTrivia,
         searchByQueryState,
         onSearchQueryChanged = { query, isVeg ->
-            viewModel.onQueryChange(query, isVeg)
+            if (query.length < 3) {
+                viewModel.fetchRecipesByQuery("", isVeg = isVeg, forceRefresh = false)
+            } else {
+                viewModel.onQueryChange(query, isVeg)
+            }
         },
         onReloadPage = { forceRefresh, isVeg ->
             viewModel.getRandomRecipes(forceRefresh)

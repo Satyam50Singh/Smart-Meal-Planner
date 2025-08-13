@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.material3.Scaffold
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.FirebaseApp
 import com.satya.smartmealplanner.presentation.navigation.AppNavGraph
 import com.satya.smartmealplanner.presentation.navigation.Screen
 import com.satya.smartmealplanner.ui.theme.SmartMealPlannerTheme
@@ -16,17 +17,23 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
+        FirebaseApp.initializeApp(this)
+
         setContent {
             SmartMealPlannerTheme {
                 val navController = rememberNavController()
-                Scaffold { paddingValues ->
+                Scaffold(
+                    bottomBar = {
+                        BottomNavBar(navController = navController)
+                    }
+                ) { paddingValues ->
                     AppNavGraph(
                         navController = navController,
                         innerPadding = paddingValues,
-                        destination = Screen.Dashboard.route
+                        destination = Screen.Favorites.route
                     )
                 }
-
             }
         }
     }

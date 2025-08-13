@@ -7,11 +7,13 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.satya.smartmealplanner.ui.favorites.Favorites
 import com.satya.smartmealplanner.ui.home.DashboardScreen
 import com.satya.smartmealplanner.ui.findByIngredients.SearchByIngredientScreen
 import com.satya.smartmealplanner.ui.recipeDetailsById.RecipeDetailScreen
 import com.satya.smartmealplanner.ui.searchByCuisine.SearchByCuisineScreen
 import com.satya.smartmealplanner.ui.searchByNutrients.SearchByNutrientsScreen
+import com.satya.smartmealplanner.ui.weeklyMealPlanner.WeeklyMealPlannerScreen
 
 @Composable
 fun AppNavGraph(
@@ -45,5 +47,12 @@ fun AppNavGraph(
             SearchByNutrientsScreen(navController)
         }
 
+        composable(Screen.WeeklyMealPlanner.route) {
+            WeeklyMealPlannerScreen(navController)
+        }
+
+        composable(Screen.Favorites.route) {
+            Favorites(navController)
+        }
     }
 }

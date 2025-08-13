@@ -26,7 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.data.model.recipeByNutrients.NutrientRange
-import com.satya.smartmealplanner.presentation.search.RecipeViewModel
+import com.satya.smartmealplanner.presentation.viewmodel.RecipeViewModel
 import com.satya.smartmealplanner.ui.searchByNutrients.components.LaunchFilterDialog
 import com.satya.smartmealplanner.ui.searchByNutrients.components.RecipeList
 import com.satya.smartmealplanner.ui.searchByNutrients.components.SelectedNutrientsChips

@@ -64,7 +64,7 @@ import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
 import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import com.satya.smartmealplanner.presentation.navigation.Screen
-import com.satya.smartmealplanner.presentation.search.State
+import com.satya.smartmealplanner.domain.model.State
 import com.satya.smartmealplanner.ui.home.components.CategoryCard
 import com.satya.smartmealplanner.ui.home.components.DietSwitchWithIcon
 import com.satya.smartmealplanner.ui.home.components.FactCard
@@ -162,7 +162,7 @@ fun DashboardScreenUI(
                         value = searchQuery,
                         onValueChange = {
                             searchQuery = it
-                            if (it.length >= 3) onSearchQueryChanged(searchQuery, isVeg)
+                            onSearchQueryChanged(searchQuery, isVeg)
                         },
                         label = { Text("Search recipes...") },
                         modifier = Modifier
@@ -186,6 +186,7 @@ fun DashboardScreenUI(
                                     contentDescription = null,
                                     modifier = Modifier.clickable {
                                         searchQuery = ""
+                                        onSearchQueryChanged(searchQuery, isVeg)
                                     }
                                 )
                             } else {
@@ -330,28 +331,13 @@ fun DashboardScreenUI(
             }
 
             item {
-                if (showHorizontalViewPager) {
-                    Column(
-                        modifier = Modifier
-                            .padding(vertical = 8.dp)
-                            .height(240.dp)
-                    ) {
-                        if (randomRecipes.isSuccess != null) {
-                            val listOfRecipes = randomRecipes.isSuccess.recipes
-                            HorizontalPagerWithIndicators(listOfRecipes, navController)
-                        }
-                    }
-                }
-            }
-
-            item {
                 if (updatedCategoryList.isNotEmpty()) {
                     LazyVerticalStaggeredGrid(
                         modifier = Modifier.heightIn(max = 2000.dp),
                         columns = StaggeredGridCells.Fixed(2), content = {
                             items(updatedCategoryList, span = { item ->
                                 if (item.categoryId in listOf(
-                                        1001, 1002
+                                        1001, 1002, 6
                                     )
                                 ) StaggeredGridItemSpan.FullLine else StaggeredGridItemSpan.SingleLane
                             }) { category ->
@@ -371,6 +357,22 @@ fun DashboardScreenUI(
                         })
                 }
             }
+
+            item {
+                if (showHorizontalViewPager) {
+                    Column(
+                        modifier = Modifier
+                            .padding(vertical = 8.dp)
+                            .height(240.dp)
+                    ) {
+                        if (randomRecipes.isSuccess != null) {
+                            val listOfRecipes = randomRecipes.isSuccess.recipes
+                            HorizontalPagerWithIndicators(listOfRecipes, navController)
+                        }
+                    }
+                }
+            }
+
         }
     }
 

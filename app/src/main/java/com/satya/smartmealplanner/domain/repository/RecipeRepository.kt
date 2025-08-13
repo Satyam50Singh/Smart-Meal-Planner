@@ -12,6 +12,7 @@ import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesById
+import com.satya.smartmealplanner.data.model.weeklyMealPlan.WeeklyMealPlan
 import com.satya.smartmealplanner.domain.model.Resource
 
 interface RecipeRepository {
@@ -54,4 +55,12 @@ interface RecipeRepository {
     suspend fun fetchAutoCompleteIngredients(query: String): Resource<AutoCompleteIngredients?>
 
     suspend fun fetchSimilarRecipesById(recipeId: Int): Resource<SimilarRecipesById?>
+
+    suspend fun generateWeeklyMealPlan(
+        loadApi: Boolean,
+        timeFrame: String,
+        targetCalories: Int,
+        diet: String,
+        exclude: String
+    ): Resource<WeeklyMealPlan?>
 }

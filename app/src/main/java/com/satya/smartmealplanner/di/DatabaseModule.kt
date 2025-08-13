@@ -26,4 +26,7 @@ object DatabaseModule {
     @Provides
     fun providesFoodFactDao(appDatabase: AppDatabase) = appDatabase.foodFactDao()
 
+    @Provides
+    fun providesWeeklyMealPlanDao(appDatabase: AppDatabase) = appDatabase.weeklyMealPlanDao()
+
 }
