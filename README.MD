@@ -1,7 +1,7 @@
 # 🍽️ Smart Meal Planner & Recipe Finder App
 
 A food-based Android mobile app using Spoonacular APIs that helps users find recipes, plan meals, analyze nutrition, and manage pantry items.  
-The app is built with **Clean Architecture, Hilt, Retrofit, Jetpack Compose**, and integrates **Firebase Crashlytics** for crash reporting.
+The app is built with **Clean Architecture, Hilt, Retrofit, Jetpack Compose**, and integrates **Firebase Firestore** for cloud storage and **Firebase Crashlytics** for crash reporting.
 
 ---
 
