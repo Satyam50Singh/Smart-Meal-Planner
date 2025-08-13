@@ -59,19 +59,20 @@ class FavoriteRecipeViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val data = favoriteRecipeUseCase.getAllFavoriteRecipes()
-                favoriteRecipeState = if (data.isNotEmpty()) {
-                    favoriteRecipeState.copy(
-                        isLoading = false,
-                        isSuccess = data,
-                        isError = null
-                    )
-                } else {
-                    favoriteRecipeState.copy(
-                        isLoading = false,
-                        isSuccess = emptyList(),
-                        isError = "No data found!"
-                    )
+                favoriteRecipeUseCase.getAllFavoriteRecipes().collect { recipes ->
+                    favoriteRecipeState = if (recipes.isNotEmpty()) {
+                        favoriteRecipeState.copy(
+                            isLoading = false,
+                            isSuccess = recipes,
+                            isError = null
+                        )
+                    } else {
+                        favoriteRecipeState.copy(
+                            isLoading = false,
+                            isSuccess = emptyList(),
+                            isError = "No data found!"
+                        )
+                    }
                 }
             } catch (e: Exception) {
                 favoriteRecipeState.copy(isError = "Something went wrong!", isLoading = false)
