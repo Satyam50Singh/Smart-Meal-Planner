@@ -2,24 +2,41 @@ package com.satya.smartmealplanner.ui
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemColors
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.material3.NavigationBar
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.satya.smartmealplanner.presentation.navigation.Screen
+import com.satya.smartmealplanner.presentation.viewmodel.FavoriteRecipeViewModel
 
 @Composable
-fun BottomNavBar(navController: NavHostController) {
+fun BottomNavBar(
+    navController: NavHostController,
+    favoritesViewModel: FavoriteRecipeViewModel = hiltViewModel()
+) {
+
+    val favoriteRecipeState = favoritesViewModel.favoriteRecipeState
+
+    LaunchedEffect(favoriteRecipeState) {
+        favoritesViewModel.getAllFavoriteRecipes()
+    }
+
+    LaunchedEffect(Unit) {
+        favoritesViewModel.getAllFavoriteRecipes()
+    }
 
     NavigationBar(
         containerColor = MaterialTheme.colorScheme.background,
@@ -28,7 +45,7 @@ fun BottomNavBar(navController: NavHostController) {
     ) {
         val items = listOf(
             Screen.Dashboard,
-            Screen.Favorites
+            Screen.Favorites,
         )
 
         val navBackStackEntry by navController.currentBackStackEntryAsState()
@@ -46,11 +63,27 @@ fun BottomNavBar(navController: NavHostController) {
                     }
                 },
                 icon = {
-                    Icon(
-                        painterResource(id = it.icon),
-                        contentDescription = it.title,
-                        modifier = Modifier.size(20.dp)
-                    )
+                    if (it.route == Screen.Favorites.route) {
+                        BadgedBox(badge = {
+                            if (!favoriteRecipeState.isSuccess.isNullOrEmpty()) {
+                                Badge {
+                                    Text(text = favoriteRecipeState.isSuccess.size.toString())
+                                }
+                            }
+                        }) {
+                            Icon(
+                                painterResource(id = it.icon),
+                                contentDescription = it.title,
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    } else {
+                        Icon(
+                            painterResource(id = it.icon),
+                            contentDescription = it.title,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 },
                 label = {
                     Text(text = it.title)
@@ -63,7 +96,7 @@ fun BottomNavBar(navController: NavHostController) {
                     selectedIndicatorColor = MaterialTheme.colorScheme.primary,
                     disabledIconColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f),
                     disabledTextColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
-                )
+                ),
             )
         }
     }

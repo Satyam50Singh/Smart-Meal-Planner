@@ -146,7 +146,8 @@ fun DashboardScreenUI(
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .padding(vertical = 16.dp)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .padding(bottom = 8.dp),
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -155,7 +156,7 @@ fun DashboardScreenUI(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 8.dp, end = 4.dp),
+                        .padding(start = 8.dp, end = 4.dp, bottom = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     OutlinedTextField(
@@ -211,8 +212,8 @@ fun DashboardScreenUI(
             item {
                 LazyVerticalGrid(
                     modifier = Modifier
-                        .padding(vertical = 24.dp)
-                        .heightIn(max = 1200.dp),
+                        .heightIn(max = 1200.dp)
+                        .padding(bottom = 8.dp),
                     columns = GridCells.Fixed(3),
                     content = {
                         searchByQueryState.isSuccess?.results?.let { results ->
@@ -266,15 +267,16 @@ fun DashboardScreenUI(
                     fontFamily = FontFamily.SansSerif,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier
-                        .padding(horizontal = 8.dp)
-                        .padding(bottom = 16.dp)
+                        .padding(horizontal = 8.dp, vertical = 8.dp)
                 )
             }
 
             item {
                 LazyHorizontalGrid(
                     modifier = Modifier.heightIn(max = 220.dp),
+
                     rows = GridCells.Fixed(1),
+
                     content = {
                         items(updatedCategoryList) { category ->
                             if (category.categoryId in listOf(2, 3, 4))
@@ -333,8 +335,11 @@ fun DashboardScreenUI(
             item {
                 if (updatedCategoryList.isNotEmpty()) {
                     LazyVerticalStaggeredGrid(
-                        modifier = Modifier.heightIn(max = 2000.dp),
-                        columns = StaggeredGridCells.Fixed(2), content = {
+                        modifier = Modifier
+                            .heightIn(max = 2000.dp)
+                            .padding(top = 8.dp),
+                        columns = StaggeredGridCells.Fixed(2),
+                        content = {
                             items(updatedCategoryList, span = { item ->
                                 if (item.categoryId in listOf(
                                         1001, 1002, 6
@@ -362,7 +367,6 @@ fun DashboardScreenUI(
                 if (showHorizontalViewPager) {
                     Column(
                         modifier = Modifier
-                            .padding(vertical = 8.dp)
                             .height(240.dp)
                     ) {
                         if (randomRecipes.isSuccess != null) {
