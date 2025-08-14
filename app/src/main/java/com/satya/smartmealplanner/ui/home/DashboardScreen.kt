@@ -30,6 +30,8 @@ fun DashboardScreen(
 
     var preserveState by rememberSaveable { mutableStateOf(false) }
 
+    val list = baseCategoryList.toMutableList()
+
     LaunchedEffect(Unit) {
         if (!preserveState) {
             viewModel.fetchRecipesByQuery("", isVeg = true, forceRefresh = false)
@@ -45,9 +47,6 @@ fun DashboardScreen(
     }
 
     LaunchedEffect(randomFoodTrivia, randomJokeState) {
-
-        val list = baseCategoryList.toMutableList()
-
         randomJokeState.isSuccess?.let {
             list.add(
                 2, DashboardCategory(
@@ -57,7 +56,10 @@ fun DashboardScreen(
                 )
             )
         }
+        updatedCategoryList = list
+    }
 
+    LaunchedEffect(randomFoodTrivia) {
         randomFoodTrivia.isSuccess?.let {
             list.add(
                 5, DashboardCategory(
@@ -67,7 +69,6 @@ fun DashboardScreen(
                 )
             )
         }
-
         updatedCategoryList = list
     }
 

@@ -1,6 +1,5 @@
 package com.satya.smartmealplanner.ui.favorites
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +27,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -36,10 +34,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.presentation.navigation.Screen
 import com.satya.smartmealplanner.presentation.viewmodel.FavoriteRecipeViewModel
+import com.satya.smartmealplanner.ui.utils.FetchImageFromUrl
 import com.satya.smartmealplanner.ui.utils.CircularLoader
 
 @Composable
@@ -111,9 +109,9 @@ fun Favorites(
                         ) {
                             Column {
                                 Box {
-                                    Image(
-                                        painter = rememberAsyncImagePainter(recipe["recipeImage"].toString()),
-                                        contentDescription = recipe["recipeTitle"].toString(),
+
+                                    FetchImageFromUrl(
+                                        url = recipe["recipeImage"].toString(),
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .height(200.dp)
@@ -122,8 +120,7 @@ fun Favorites(
                                                     topStart = 16.dp,
                                                     topEnd = 16.dp
                                                 )
-                                            ),
-                                        contentScale = ContentScale.Crop
+                                            )
                                     )
 
                                     Icon(

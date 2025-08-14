@@ -1,6 +1,5 @@
 package com.satya.smartmealplanner.ui.recipeDetailsById.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,14 +14,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
 import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponseItem
 import com.satya.smartmealplanner.presentation.navigation.Screen
+import com.satya.smartmealplanner.ui.utils.FetchImageFromUrl
 
 
 @Composable
@@ -33,10 +31,8 @@ fun RecipeCard(recipe: FindByIngredientsResponseItem, navController: NavControll
             .padding(vertical = 4.dp, horizontal = 4.dp)
     ) {
         Column {
-            Image(
-                painter = rememberAsyncImagePainter(recipe.image),
-                contentDescription = null,
-                contentScale = ContentScale.Crop, // <-- important!
+            FetchImageFromUrl(
+                url = recipe.image,
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(150.dp)

@@ -365,35 +365,7 @@ class RecipeRepositoryImpl @Inject constructor(
                     Utils.getCurrentDate()
                 )
             }
-
-            val response = apiService.generateWeeklyMealPlan(
-                timeFrame = timeFrame,
-                targetCalories = targetCalories,
-                diet = diet,
-                exclude = exclude
-            )
-
-            return if (response.isSuccessful) {
-                val body = response.body()
-
-                withContext(Dispatchers.IO) {
-                    weeklyMealPlanDao.deleteWeeklyMealPlan()
-                    body?.week?.let {
-                        val entity = WeeklyMealPlanEntity(week = it)
-                        weeklyMealPlanDao.insertWeeklyMealPlan(entity)
-                    }
-                }
-
-                if (body != null) {
-                    Resource.Success(body)
-                } else {
-                    Resource.Error("Something went wrong!")
-                }
-            } else if (response.errorBody() != null) {
-                parseErrorBody(response.errorBody(), response.code())
-            } else {
-                Resource.Error("Something went wrong!")
-            }
+            return callWeeklyMealPlannerAPI(timeFrame, targetCalories, diet, exclude)
         } else {
             // fetch meals from the room db
             return try {
@@ -402,13 +374,50 @@ class RecipeRepositoryImpl @Inject constructor(
                     if (responseFromDB != null) {
                         Resource.Success(responseFromDB.toDomain())
                     } else {
-                        Resource.Error("Something went wrong!")
+                        callWeeklyMealPlannerAPI(timeFrame, targetCalories, diet, exclude)
                     }
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 Resource.Error("Something went wrong!")
             }
+        }
+    }
+
+    private suspend fun callWeeklyMealPlannerAPI(
+        timeFrame: String,
+        targetCalories: Int,
+        diet: String,
+        exclude: String
+    ): Resource<WeeklyMealPlan?> {
+
+        val response = apiService.generateWeeklyMealPlan(
+            timeFrame = timeFrame,
+            targetCalories = targetCalories,
+            diet = diet,
+            exclude = exclude
+        )
+
+        return if (response.isSuccessful) {
+            val body = response.body()
+
+            withContext(Dispatchers.IO) {
+                weeklyMealPlanDao.deleteWeeklyMealPlan()
+                body?.week?.let {
+                    val entity = WeeklyMealPlanEntity(week = it)
+                    weeklyMealPlanDao.insertWeeklyMealPlan(entity)
+                }
+            }
+
+            if (body != null) {
+                Resource.Success(body)
+            } else {
+                Resource.Error("Something went wrong!")
+            }
+        } else if (response.errorBody() != null) {
+            parseErrorBody(response.errorBody(), response.code())
+        } else {
+            Resource.Error("Something went wrong!")
         }
     }
 }
