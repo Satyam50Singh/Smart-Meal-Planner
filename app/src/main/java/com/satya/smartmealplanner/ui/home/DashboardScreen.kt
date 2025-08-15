@@ -62,7 +62,7 @@ fun DashboardScreen(
     LaunchedEffect(randomFoodTrivia) {
         randomFoodTrivia.isSuccess?.let {
             list.add(
-                5, DashboardCategory(
+                (if (list.size == 4) 4 else 5), DashboardCategory(
                     1002,
                     randomFoodTrivia.isSuccess.text,
                     -1, "", "",
