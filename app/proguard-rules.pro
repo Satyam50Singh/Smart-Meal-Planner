@@ -21,10 +21,35 @@
 #-renamesourcefileattribute SourceFile
 
 # Firebase Firestore
--keepattributes Signature
+-keepattributes Signature,RuntimeVisibleAnnotations,RuntimeVisibleParameterAnnotations
 -keepattributes *Annotation*
 -keep class com.google.firebase.** { *; }
 -keep class com.google.firestore.** { *; }
 
 # Crashlytics
 -keep class com.google.firebase.crashlytics.** { *; }
+
+# Keep all Retrofit interfaces and their method signatures
+-keep interface com.satya.smartmealplanner.data.remote.** { *; }
+
+# Keep model classes used in Retrofit/Gson
+-keep class com.satya.smartmealplanner.domain.model.** { *; }
+-keep class com.satya.smartmealplanner.data.model.** { *; }
+
+# Gson specific: keep fields annotated with @SerializedName
+-keepclassmembers class * {
+    @com.google.gson.annotations.SerializedName <fields>;
+}
+
+# --- Keep Gson TypeToken helper ---
+-keep class com.google.gson.reflect.TypeToken
+
+# Keep all model classes and their fields
+-keepclassmembers class com.satya.smartmealplanner.data.model.** {
+    <fields>;
+    <methods>;
+}
+-keepclassmembers class com.satya.smartmealplanner.domain.model.** {
+    <fields>;
+    <methods>;
+}
