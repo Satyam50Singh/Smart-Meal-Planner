@@ -3,13 +3,13 @@ package com.satya.smartmealplanner.domain.usecase
 import com.satya.smartmealplanner.data.local.entity.FoodFactEntity
 import com.satya.smartmealplanner.data.local.entity.RandomRecipeEntity
 import com.satya.smartmealplanner.data.local.entity.toDomain
-import com.satya.smartmealplanner.data.model.autoCompleteIngredients.AutoCompleteIngredients
+import com.satya.smartmealplanner.data.model.autoCompleteIngredients.AutoCompleteIngredientsItem
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
-import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
+import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponseItem
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
-import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
+import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrientsItem
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
 import com.satya.smartmealplanner.domain.model.Resource
@@ -23,7 +23,7 @@ class RecipeUseCase @Inject constructor(
 
     suspend operator fun invoke(
         ingredients: String, number: Int, apiKey: String
-    ): Resource<FindByIngredientsResponse> =
+    ): Resource<List<FindByIngredientsResponseItem>> =
         repository.findByIngredients(ingredients, number, apiKey)
 
 
@@ -42,7 +42,7 @@ class RecipeUseCase @Inject constructor(
         maxCalories: Int,
         minFat: Int,
         maxFat: Int
-    ): Resource<RecipeByNutrients> = repository.getRecipeByNutrients(
+    ): Resource<List<RecipeByNutrientsItem>> = repository.getRecipeByNutrients(
         minCarbs, maxCarbs, minProtein, maxProtein, minCalories, maxCalories, minFat, maxFat
     )
 
@@ -104,7 +104,7 @@ class RecipeUseCase @Inject constructor(
         repository.fetchRecipeByQuery(searchQuery, isVeg)
 
     suspend fun fetchAutoCompleteIngredients(query: String): Resource<List<String>?> {
-        val response: Resource<AutoCompleteIngredients?> =
+        val response: Resource<List<AutoCompleteIngredientsItem>?> =
             repository.fetchAutoCompleteIngredients(query)
         return when (response) {
             is Resource.Success -> {

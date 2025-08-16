@@ -10,13 +10,13 @@ import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
-import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
+import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponseItem
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
-import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
+import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrientsItem
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
-import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesById
+import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesByIdItem
 import com.satya.smartmealplanner.data.model.weeklyMealPlan.WeeklyMealPlan
 import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.usecase.RecipeUseCase
@@ -34,7 +34,7 @@ class RecipeViewModel @Inject constructor(
     private val recipeUseCase: RecipeUseCase
 ) : ViewModel() {
 
-    var uiState by mutableStateOf(State<FindByIngredientsResponse>())
+    var uiState by mutableStateOf(State<List<FindByIngredientsResponseItem>>())
         private set
 
     fun findByIngredients(ingredients: String) {
@@ -57,7 +57,7 @@ class RecipeViewModel @Inject constructor(
     }
 
     fun clearRecipes() {
-        uiState = uiState.copy(isSuccess = FindByIngredientsResponse())
+        uiState = uiState.copy(isSuccess =  emptyList())
     }
 
     fun getCategoryList(): List<DashboardCategory> {
@@ -148,7 +148,7 @@ class RecipeViewModel @Inject constructor(
         }
     }
 
-    var recipeByNutrientsState by mutableStateOf(State<RecipeByNutrients>())
+    var recipeByNutrientsState by mutableStateOf(State<List<RecipeByNutrientsItem>>())
         private set
 
     fun getRecipeByNutrients(
@@ -387,7 +387,7 @@ class RecipeViewModel @Inject constructor(
     }
 
 
-    var similarRecipesByIdState by mutableStateOf(State<SimilarRecipesById>())
+    var similarRecipesByIdState by mutableStateOf(State<List<SimilarRecipesByIdItem>>())
         private set
 
     fun fetchSimilarRecipesById(recipeId: Int) {

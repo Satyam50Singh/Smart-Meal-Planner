@@ -34,7 +34,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
-import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesById
+import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesByIdItem
 import com.satya.smartmealplanner.presentation.navigation.Screen
 import com.satya.smartmealplanner.presentation.viewmodel.FavoriteRecipeViewModel
 import com.satya.smartmealplanner.ui.utils.FetchImageFromUrl
@@ -43,7 +43,7 @@ import com.satya.smartmealplanner.utils.Constants
 @Composable
 fun RecipeDetailCard(
     recipe: SelectedRecipeDetails?,
-    similarRecipes: SimilarRecipesById,
+    similarRecipes: List<SimilarRecipesByIdItem>,
     navController: NavHostController,
     favoriteRecipeViewModel: FavoriteRecipeViewModel = hiltViewModel()
 ) {

@@ -6,18 +6,18 @@ import com.satya.smartmealplanner.data.local.dao.WeeklyMealPlanDao
 import com.satya.smartmealplanner.data.local.entity.FoodFactEntity
 import com.satya.smartmealplanner.data.local.entity.RandomRecipeEntity
 import com.satya.smartmealplanner.data.local.entity.WeeklyMealPlanEntity
-import com.satya.smartmealplanner.data.model.autoCompleteIngredients.AutoCompleteIngredients
+import com.satya.smartmealplanner.data.model.autoCompleteIngredients.AutoCompleteIngredientsItem
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
-import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
+import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponseItem
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
 import com.satya.smartmealplanner.data.model.randomRecipes.Recipe
 import com.satya.smartmealplanner.data.model.randomRecipes.toEntity
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
-import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
+import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrientsItem
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
-import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesById
+import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesByIdItem
 import com.satya.smartmealplanner.data.model.weeklyMealPlan.WeeklyMealPlan
 import com.satya.smartmealplanner.data.preferences.PreferenceKeys
 import com.satya.smartmealplanner.data.preferences.SharedPreferencesManager
@@ -41,7 +41,7 @@ class RecipeRepositoryImpl @Inject constructor(
 
     override suspend fun findByIngredients(
         ingredients: String, number: Int, apiKey: String
-    ): Resource<FindByIngredientsResponse> {
+    ): Resource<List<FindByIngredientsResponseItem>> {
         val response = apiService.findByIngredients(ingredients, number, apiKey)
         return if (response.isSuccessful) {
             val body = response.body()
@@ -101,7 +101,7 @@ class RecipeRepositoryImpl @Inject constructor(
         maxCalories: Int,
         minFat: Int,
         maxFat: Int
-    ): Resource<RecipeByNutrients> {
+    ): Resource<List<RecipeByNutrientsItem>> {
         val response = apiService.findByNutrients(
             minCarbs, maxCarbs, minProtein, maxProtein, minCalories, maxCalories, minFat, maxFat
         )
@@ -341,7 +341,7 @@ class RecipeRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun fetchAutoCompleteIngredients(query: String): Resource<AutoCompleteIngredients?> {
+    override suspend fun fetchAutoCompleteIngredients(query: String): Resource<List<AutoCompleteIngredientsItem>?> {
         val response = apiService.fetchAutocompleteIngredients(query)
 
         return if (response.isSuccessful) {
@@ -358,7 +358,7 @@ class RecipeRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun fetchSimilarRecipesById(recipeId: Int): Resource<SimilarRecipesById?> {
+    override suspend fun fetchSimilarRecipesById(recipeId: Int): Resource<List<SimilarRecipesByIdItem>?> {
         val response = apiService.fetchSimilarRecipesById(recipeId)
 
         return if (response.isSuccessful) {
