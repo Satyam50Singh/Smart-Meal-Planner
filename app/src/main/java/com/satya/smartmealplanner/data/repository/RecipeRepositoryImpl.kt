@@ -40,22 +40,55 @@ class RecipeRepositoryImpl @Inject constructor(
 ) : RecipeRepository {
 
     override suspend fun findByIngredients(
-        ingredients: String,
-        number: Int,
-        apiKey: String
-    ): FindByIngredientsResponse {
-        return apiService.findByIngredients(ingredients, number, apiKey)
+        ingredients: String, number: Int, apiKey: String
+    ): Resource<FindByIngredientsResponse> {
+        val response = apiService.findByIngredients(ingredients, number, apiKey)
+        return if (response.isSuccessful) {
+            val body = response.body()
+            if (body != null) {
+                Resource.Success(body)
+            } else {
+                Resource.Error("Something went wrong!")
+            }
+        } else if (response.errorBody() != null) {
+            parseErrorBody(response.errorBody(), response.code())
+        } else {
+            Resource.Error("Something went wrong!")
+        }
     }
 
-    override suspend fun getRecipeDetailsById(recipeId: Int): SelectedRecipeDetails {
-        return apiService.getRecipeDetailsById(recipeId)
+    override suspend fun getRecipeDetailsById(recipeId: Int): Resource<SelectedRecipeDetails> {
+        val response = apiService.getRecipeDetailsById(recipeId)
+        return if (response.isSuccessful) {
+            val body = response.body()
+            if (body != null) {
+                Resource.Success(body)
+            } else {
+                Resource.Error("Something went wrong!")
+            }
+        } else if (response.errorBody() != null) {
+            parseErrorBody(response.errorBody(), response.code())
+        } else {
+            Resource.Error("Something went wrong!")
+        }
     }
 
     override suspend fun getRecipeByCuisine(
-        cuisine: String,
-        diet: String
-    ): RecipeByCuisine {
-        return apiService.getRecipeByCuisine(cuisine, diet)
+        cuisine: String, diet: String
+    ): Resource<RecipeByCuisine> {
+        val response = apiService.getRecipeByCuisine(cuisine, diet)
+        return if (response.isSuccessful) {
+            val body = response.body()
+            if (body != null) {
+                Resource.Success(body)
+            } else {
+                Resource.Error("Something went wrong!")
+            }
+        } else if (response.errorBody() != null) {
+            parseErrorBody(response.errorBody(), response.code())
+        } else {
+            Resource.Error("Something went wrong!")
+        }
     }
 
 
@@ -68,17 +101,23 @@ class RecipeRepositoryImpl @Inject constructor(
         maxCalories: Int,
         minFat: Int,
         maxFat: Int
-    ): RecipeByNutrients {
-        return apiService.findByNutrients(
-            minCarbs,
-            maxCarbs,
-            minProtein,
-            maxProtein,
-            minCalories,
-            maxCalories,
-            minFat,
-            maxFat
+    ): Resource<RecipeByNutrients> {
+        val response = apiService.findByNutrients(
+            minCarbs, maxCarbs, minProtein, maxProtein, minCalories, maxCalories, minFat, maxFat
         )
+
+        return if (response.isSuccessful) {
+            val body = response.body()
+            if (body != null) {
+                Resource.Success(body)
+            } else {
+                Resource.Error("Something went wrong!")
+            }
+        } else if (response.errorBody() != null) {
+            parseErrorBody(response.errorBody(), response.code())
+        } else {
+            Resource.Error("Something went wrong!")
+        }
     }
 
     override suspend fun getRandomJoke(): Resource<RandomJoke?> {
@@ -89,8 +128,7 @@ class RecipeRepositoryImpl @Inject constructor(
                 val body = response.body()
                 if (body != null) {
                     val foodFactEntity = FoodFactEntity(
-                        text = body.text,
-                        type = Constants.JOKE
+                        text = body.text, type = Constants.JOKE
                     )
 
                     withContext(Dispatchers.IO) {
@@ -128,8 +166,7 @@ class RecipeRepositoryImpl @Inject constructor(
                 val body = response.body()
                 if (body != null) {
                     val foodFactEntity = FoodFactEntity(
-                        text = body.text,
-                        type = Constants.JOKE
+                        text = body.text, type = Constants.JOKE
                     )
 
                     withContext(Dispatchers.IO) {
@@ -138,8 +175,7 @@ class RecipeRepositoryImpl @Inject constructor(
                     }
 
                     sharedPreferencesManager.putString(
-                        PreferenceKeys.CURRENT_DATE,
-                        Utils.getCurrentDate()
+                        PreferenceKeys.CURRENT_DATE, Utils.getCurrentDate()
                     )
                     Resource.Success(foodFactEntity)
                 } else {
@@ -158,8 +194,7 @@ class RecipeRepositoryImpl @Inject constructor(
             response.isSuccessful -> {
                 val body = response.body()
                 val foodFactEntity = FoodFactEntity(
-                    text = body?.text ?: "",
-                    type = Constants.TRIVIA
+                    text = body?.text ?: "", type = Constants.TRIVIA
                 )
 
                 withContext(Dispatchers.IO) {
@@ -199,16 +234,14 @@ class RecipeRepositoryImpl @Inject constructor(
                     val body = response.body()
                     if (body != null) {
                         val foodFactEntity = FoodFactEntity(
-                            text = body.text,
-                            type = Constants.TRIVIA
+                            text = body.text, type = Constants.TRIVIA
                         )
                         withContext(Dispatchers.IO) {
                             foodFactDao.deleteFoodFactByType(Constants.TRIVIA)
                             foodFactDao.insertFoodFact(foodFactEntity)
                         }
                         sharedPreferencesManager.putString(
-                            PreferenceKeys.CURRENT_DATE,
-                            Utils.getCurrentDate()
+                            PreferenceKeys.CURRENT_DATE, Utils.getCurrentDate()
                         )
                         Resource.Success(foodFactEntity)
                     } else {
@@ -272,8 +305,7 @@ class RecipeRepositoryImpl @Inject constructor(
                             randomRecipeDao.insertRandomRecipes(recipeEntities)
                         }
                         sharedPreferencesManager.putString(
-                            PreferenceKeys.CURRENT_DATE,
-                            Utils.getCurrentDate()
+                            PreferenceKeys.CURRENT_DATE, Utils.getCurrentDate()
                         )
                         Resource.Success(recipeEntities)
                     } else {
@@ -290,12 +322,10 @@ class RecipeRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchRecipeByQuery(
-        searchQuery: String,
-        isVeg: Boolean
+        searchQuery: String, isVeg: Boolean
     ): Resource<SearchByQuery?> {
         val response = apiService.fetchRecipesByQuery(
-            query = searchQuery,
-            diet = if (isVeg) "vegetarian" else "Whole30"
+            query = searchQuery, diet = if (isVeg) "vegetarian" else "Whole30"
         )
         return if (response.isSuccessful) {
             val body = response.body()
@@ -346,11 +376,7 @@ class RecipeRepositoryImpl @Inject constructor(
     }
 
     override suspend fun generateWeeklyMealPlan(
-        loadApi: Boolean,
-        timeFrame: String,
-        targetCalories: Int,
-        diet: String,
-        exclude: String
+        loadApi: Boolean, timeFrame: String, targetCalories: Int, diet: String, exclude: String
     ): Resource<WeeklyMealPlan?> {
 
         val weekStartDate = sharedPreferencesManager.getString(PreferenceKeys.CURRENT_DATE, "")
@@ -361,8 +387,7 @@ class RecipeRepositoryImpl @Inject constructor(
         if (loadApi || nextWeekStartDate.isEmpty() || weekStartDate == nextWeekStartDate) {
             if (nextWeekStartDate.isEmpty() || weekStartDate == nextWeekStartDate) {
                 sharedPreferencesManager.putString(
-                    PreferenceKeys.NEXT_WEEK_START_DATE,
-                    Utils.getCurrentDate()
+                    PreferenceKeys.NEXT_WEEK_START_DATE, Utils.getCurrentDate()
                 )
             }
             return callWeeklyMealPlannerAPI(timeFrame, targetCalories, diet, exclude)
@@ -385,17 +410,11 @@ class RecipeRepositoryImpl @Inject constructor(
     }
 
     private suspend fun callWeeklyMealPlannerAPI(
-        timeFrame: String,
-        targetCalories: Int,
-        diet: String,
-        exclude: String
+        timeFrame: String, targetCalories: Int, diet: String, exclude: String
     ): Resource<WeeklyMealPlan?> {
 
         val response = apiService.generateWeeklyMealPlan(
-            timeFrame = timeFrame,
-            targetCalories = targetCalories,
-            diet = diet,
-            exclude = exclude
+            timeFrame = timeFrame, targetCalories = targetCalories, diet = diet, exclude = exclude
         )
 
         return if (response.isSuccessful) {

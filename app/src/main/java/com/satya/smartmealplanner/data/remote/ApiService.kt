@@ -24,14 +24,14 @@ interface ApiService {
         @Query("ingredients") ingredients: String,
         @Query("number") number: Int = 5,
         @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
-    ): FindByIngredientsResponse
+    ): Response<FindByIngredientsResponse>
 
     @GET("recipes/{id}/information")
     suspend fun getRecipeDetailsById(
         @Path("id") recipeId: Int,
         @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY,
         @Query("addWinePairing") addWinePairing: Boolean = true
-    ): SelectedRecipeDetails
+    ): Response<SelectedRecipeDetails>
 
     @GET("recipes/complexSearch")
     suspend fun getRecipeByCuisine(
@@ -42,7 +42,7 @@ interface ApiService {
         @Query("sortDirection") sortDirection: String = "asc",
         @Query("number") number: Int = 20,
         @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
-    ): RecipeByCuisine
+    ): Response<RecipeByCuisine>
 
     @GET("recipes/findByNutrients")
     suspend fun findByNutrients(
@@ -56,7 +56,7 @@ interface ApiService {
         @Query("maxFat") maxFat: Int,
         @Query("number") number: Int = 20,
         @Query("apiKey") apiKey: String = BuildConfig.SPOONACULAR_API_KEY
-    ): RecipeByNutrients
+    ): Response<RecipeByNutrients>
 
     @GET("food/jokes/random")
     suspend fun fetchRandomJoke(

@@ -18,14 +18,12 @@ import com.satya.smartmealplanner.domain.model.Resource
 interface RecipeRepository {
 
     suspend fun findByIngredients(
-        ingredients: String,
-        number: Int,
-        apiKey: String
-    ): FindByIngredientsResponse
+        ingredients: String, number: Int, apiKey: String
+    ): Resource<FindByIngredientsResponse>
 
-    suspend fun getRecipeDetailsById(recipeId: Int): SelectedRecipeDetails
+    suspend fun getRecipeDetailsById(recipeId: Int): Resource<SelectedRecipeDetails>
 
-    suspend fun getRecipeByCuisine(cuisine: String, diet: String): RecipeByCuisine
+    suspend fun getRecipeByCuisine(cuisine: String, diet: String): Resource<RecipeByCuisine>
 
     suspend fun getRecipeByNutrients(
         minCarbs: Int,
@@ -36,7 +34,7 @@ interface RecipeRepository {
         maxCalories: Int,
         minFat: Int,
         maxFat: Int
-    ): RecipeByNutrients
+    ): Resource<RecipeByNutrients>
 
     suspend fun getRandomJoke(): Resource<RandomJoke?>
 
@@ -57,10 +55,6 @@ interface RecipeRepository {
     suspend fun fetchSimilarRecipesById(recipeId: Int): Resource<SimilarRecipesById?>
 
     suspend fun generateWeeklyMealPlan(
-        loadApi: Boolean,
-        timeFrame: String,
-        targetCalories: Int,
-        diet: String,
-        exclude: String
+        loadApi: Boolean, timeFrame: String, targetCalories: Int, diet: String, exclude: String
     ): Resource<WeeklyMealPlan?>
 }
