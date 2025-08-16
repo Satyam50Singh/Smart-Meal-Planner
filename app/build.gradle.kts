@@ -32,8 +32,20 @@ android {
     }
 
     buildTypes {
-        release {
-            isMinifyEnabled = false
+        signingConfigs {
+            create("release") {
+                storeFile =
+                    file("/Users/satyamsingh/Documents/Workspace/Android/SmartMealPlanner/app/src/main/res/raw/release_key.jks")
+                storePassword = "Satya@2025"
+                keyAlias = "Satya@2025"
+                keyPassword = "Satya@2025"
+            }
+        }
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = true
+            isShrinkResources = true
+            isDebuggable = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"

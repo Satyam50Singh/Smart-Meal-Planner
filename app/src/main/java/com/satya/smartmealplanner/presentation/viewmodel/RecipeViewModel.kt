@@ -10,13 +10,13 @@ import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.data.model.dashboard.DashboardCategory
 import com.satya.smartmealplanner.data.model.dashboard.FoodTrivia
 import com.satya.smartmealplanner.data.model.dashboard.RandomJoke
-import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponse
+import com.satya.smartmealplanner.data.model.findByIngredients.FindByIngredientsResponseItem
 import com.satya.smartmealplanner.data.model.randomRecipes.RandomRecipes
 import com.satya.smartmealplanner.data.model.recipeByCuisine.RecipeByCuisine
-import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrients
+import com.satya.smartmealplanner.data.model.recipeByNutrients.RecipeByNutrientsItem
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
 import com.satya.smartmealplanner.data.model.searchByQuery.SearchByQuery
-import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesById
+import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesByIdItem
 import com.satya.smartmealplanner.data.model.weeklyMealPlan.WeeklyMealPlan
 import com.satya.smartmealplanner.domain.model.Resource
 import com.satya.smartmealplanner.domain.usecase.RecipeUseCase
@@ -34,7 +34,7 @@ class RecipeViewModel @Inject constructor(
     private val recipeUseCase: RecipeUseCase
 ) : ViewModel() {
 
-    var uiState by mutableStateOf(State<FindByIngredientsResponse>())
+    var uiState by mutableStateOf(State<List<FindByIngredientsResponseItem>>())
         private set
 
     fun findByIngredients(ingredients: String) {
@@ -42,16 +42,22 @@ class RecipeViewModel @Inject constructor(
             uiState = uiState.copy(isLoading = true)
 
             try {
-                val recipe = recipeUseCase(ingredients, 20, BuildConfig.SPOONACULAR_API_KEY)
-                uiState = uiState.copy(isSuccess = recipe, isLoading = false)
+                val response = recipeUseCase(ingredients, 20, BuildConfig.SPOONACULAR_API_KEY)
+                uiState = when (response) {
+                    is Resource.Error -> uiState.copy(isError = response.message, isLoading = false)
+                    is Resource.Success -> {
+                        uiState.copy(isSuccess = response.data, isLoading = false)
+                    }
+                }
             } catch (e: Exception) {
                 uiState = uiState.copy(isError = e.message, isLoading = false)
+                e.printStackTrace()
             }
         }
     }
 
     fun clearRecipes() {
-        uiState = uiState.copy(isSuccess = FindByIngredientsResponse())
+        uiState = uiState.copy(isSuccess =  emptyList())
     }
 
     fun getCategoryList(): List<DashboardCategory> {
@@ -93,12 +99,22 @@ class RecipeViewModel @Inject constructor(
             selectedRecipeState = selectedRecipeState.copy(isLoading = true)
 
             try {
-                val recipeDetails = recipeUseCase.getRecipeDetailsById(recipeId)
-                selectedRecipeState =
-                    selectedRecipeState.copy(isSuccess = recipeDetails, isLoading = false)
+                val response = recipeUseCase.getRecipeDetailsById(recipeId)
+                selectedRecipeState = when (response) {
+                    is Resource.Error -> selectedRecipeState.copy(
+                        isError = response.message,
+                        isLoading = false
+                    )
+
+                    is Resource.Success -> selectedRecipeState.copy(
+                        isSuccess = response.data,
+                        isLoading = false
+                    )
+                }
             } catch (e: Exception) {
                 selectedRecipeState =
                     selectedRecipeState.copy(isError = e.message, isLoading = false)
+                e.printStackTrace()
             }
         }
 
@@ -112,18 +128,27 @@ class RecipeViewModel @Inject constructor(
             recipeByCuisineState = recipeByCuisineState.copy(isLoading = true, isError = null)
 
             try {
-                val listOfRecipes: RecipeByCuisine = recipeUseCase.getRecipeByCuisine(cuisine, diet)
-                recipeByCuisineState = recipeByCuisineState.copy(
-                    isLoading = false, isSuccess = listOfRecipes, isError = null
-                )
+                val response = recipeUseCase.getRecipeByCuisine(cuisine, diet)
+                recipeByCuisineState = when (response) {
+                    is Resource.Error -> recipeByCuisineState.copy(
+                        isError = response.message,
+                        isLoading = false
+                    )
+
+                    is Resource.Success -> recipeByCuisineState.copy(
+                        isSuccess = response.data,
+                        isLoading = false
+                    )
+                }
             } catch (e: Exception) {
                 recipeByCuisineState =
                     recipeByCuisineState.copy(isError = e.message, isLoading = false)
+                e.printStackTrace()
             }
         }
     }
 
-    var recipeByNutrientsState by mutableStateOf(State<RecipeByNutrients>())
+    var recipeByNutrientsState by mutableStateOf(State<List<RecipeByNutrientsItem>>())
         private set
 
     fun getRecipeByNutrients(
@@ -142,7 +167,7 @@ class RecipeViewModel @Inject constructor(
             recipeByNutrientsState = recipeByNutrientsState.copy(isLoading = true, isError = null)
 
             try {
-                val listOfRecipes: RecipeByNutrients = recipeUseCase.getRecipeByNutrients(
+                val response = recipeUseCase.getRecipeByNutrients(
                     minCarbs,
                     maxCarbs,
                     minProtein,
@@ -152,12 +177,21 @@ class RecipeViewModel @Inject constructor(
                     minFat,
                     maxFat
                 )
-                recipeByNutrientsState = recipeByNutrientsState.copy(
-                    isLoading = false, isSuccess = listOfRecipes, isError = null
-                )
+                recipeByNutrientsState = when (response) {
+                    is Resource.Error -> recipeByNutrientsState.copy(
+                        isError = response.message,
+                        isLoading = false
+                    )
+
+                    is Resource.Success -> recipeByNutrientsState.copy(
+                        isSuccess = response.data,
+                        isLoading = false
+                    )
+                }
             } catch (e: Exception) {
                 recipeByNutrientsState =
                     recipeByNutrientsState.copy(isError = e.message, isLoading = false)
+                e.printStackTrace()
             }
         }
 
@@ -353,7 +387,7 @@ class RecipeViewModel @Inject constructor(
     }
 
 
-    var similarRecipesByIdState by mutableStateOf(State<SimilarRecipesById>())
+    var similarRecipesByIdState by mutableStateOf(State<List<SimilarRecipesByIdItem>>())
         private set
 
     fun fetchSimilarRecipesById(recipeId: Int) {
@@ -366,9 +400,15 @@ class RecipeViewModel @Inject constructor(
                 }
 
                 similarRecipesByIdState = when (response) {
-                    is Resource.Error -> similarRecipesByIdState.copy(isError = response.message, isLoading = false)
+                    is Resource.Error -> similarRecipesByIdState.copy(
+                        isError = response.message,
+                        isLoading = false
+                    )
 
-                    is Resource.Success -> similarRecipesByIdState.copy(isSuccess = response.data, isLoading = false)
+                    is Resource.Success -> similarRecipesByIdState.copy(
+                        isSuccess = response.data,
+                        isLoading = false
+                    )
                 }
             } catch (e: Exception) {
                 similarRecipesByIdState =
@@ -393,10 +433,16 @@ class RecipeViewModel @Inject constructor(
 
             try {
                 val response = withContext(Dispatchers.IO) {
-                    recipeUseCase.generateWeeklyMealPlan(loadApi, timeFrame, targetCalories, diet, exclude)
+                    recipeUseCase.generateWeeklyMealPlan(
+                        loadApi,
+                        timeFrame,
+                        targetCalories,
+                        diet,
+                        exclude
+                    )
                 }
 
-                weeklyMealPlanState = when(response) {
+                weeklyMealPlanState = when (response) {
                     is Resource.Error ->
                         weeklyMealPlanState.copy(isError = response.message, isLoading = false)
 
@@ -404,7 +450,8 @@ class RecipeViewModel @Inject constructor(
                         weeklyMealPlanState.copy(isSuccess = response.data, isLoading = false)
                 }
             } catch (e: Exception) {
-                weeklyMealPlanState = weeklyMealPlanState.copy(isError = e.message, isLoading = false)
+                weeklyMealPlanState =
+                    weeklyMealPlanState.copy(isError = e.message, isLoading = false)
                 e.printStackTrace()
             }
         }

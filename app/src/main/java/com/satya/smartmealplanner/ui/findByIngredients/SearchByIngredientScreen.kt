@@ -212,7 +212,7 @@ fun SearchByIngredientScreen(
                                 .align(Alignment.CenterHorizontally)
                         )
                         Text(
-                            "Search here to find recipes",
+                            "Search here to find recipes . . .",
                             modifier = Modifier
                                 .padding(16.dp)
                                 .align(Alignment.CenterHorizontally),

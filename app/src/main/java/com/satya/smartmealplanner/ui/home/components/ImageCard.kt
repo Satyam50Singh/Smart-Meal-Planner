@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.satya.smartmealplanner.data.model.randomRecipes.Recipe
+import com.satya.smartmealplanner.ui.utils.FetchImageFromUrl
 
 @Composable
 fun ImageCard(recipe: Recipe, onClick: () -> Unit) {
@@ -30,7 +31,7 @@ fun ImageCard(recipe: Recipe, onClick: () -> Unit) {
                 onClick()
             }, contentAlignment = Alignment.Center
     ) {
-        FetchImageFromUrl(url = recipe.image)
+        FetchImageFromUrl(url = recipe.image, modifier = Modifier.fillMaxWidth())
         Text(
             text = recipe.title,
             modifier = Modifier

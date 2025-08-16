@@ -1,6 +1,8 @@
 package com.satya.smartmealplanner.ui.weeklyMealPlanner
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,7 +38,8 @@ fun WeeklyMealPlannerScreenUI(week: List<Pair<String, MealDay>>, navController: 
             Card(
                 shape = RoundedCornerShape(14.dp),
                 modifier = Modifier.padding(vertical = 12.dp, horizontal = 4.dp),
-                border = BorderStroke(2.dp, color = MaterialTheme.colorScheme.primary)
+                border = BorderStroke(2.dp, color = if (isSystemInDarkTheme()) MaterialTheme.colorScheme.primaryContainer else MaterialTheme.colorScheme.primary)
+
             ) {
                 Column(
                     modifier = Modifier.padding(bottom = 16.dp)

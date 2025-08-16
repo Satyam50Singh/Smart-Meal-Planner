@@ -1,11 +1,9 @@
 package com.satya.smartmealplanner.ui.weeklyMealPlanner.components
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,15 +21,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import coil.compose.rememberAsyncImagePainter
 import com.satya.smartmealplanner.data.model.weeklyMealPlan.Meal
 import com.satya.smartmealplanner.presentation.navigation.Screen
+import com.satya.smartmealplanner.ui.utils.FetchImageFromUrl
 
 
 @Composable
@@ -62,10 +59,8 @@ fun DayWiseMealsListing(meals: List<Meal>, navController: NavController) {
                         .fillMaxSize()
                         .background(Color.White)
                 ) {
-                    Image(
-                        painter = rememberAsyncImagePainter(imageURL),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
+                    FetchImageFromUrl(
+                        imageURL,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(80.dp)

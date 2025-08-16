@@ -68,6 +68,7 @@ import com.satya.smartmealplanner.domain.model.State
 import com.satya.smartmealplanner.ui.home.components.CategoryCard
 import com.satya.smartmealplanner.ui.home.components.DietSwitchWithIcon
 import com.satya.smartmealplanner.ui.home.components.FactCard
+import com.satya.smartmealplanner.ui.utils.FetchImageFromUrl
 import com.satya.smartmealplanner.ui.home.components.HorizontalPagerWithIndicators
 import com.satya.smartmealplanner.ui.utils.CircularLoader
 import com.satya.smartmealplanner.utils.UIHelpers
@@ -234,14 +235,7 @@ fun DashboardScreenUI(
                                         ),
                                         shape = RoundedCornerShape(12.dp)
                                     ) {
-                                        Image(
-                                            painter = rememberAsyncImagePainter(recipe.image),
-                                            contentDescription = null,
-                                            contentScale = ContentScale.Crop,
-                                            modifier = Modifier
-                                                .height(100.dp)
-                                                .fillMaxWidth()
-                                        )
+                                        FetchImageFromUrl(recipe.image, modifier = Modifier.height(100.dp).fillMaxWidth())
                                     }
 
                                     Text(
@@ -273,7 +267,7 @@ fun DashboardScreenUI(
 
             item {
                 LazyHorizontalGrid(
-                    modifier = Modifier.heightIn(max = 220.dp),
+                    modifier = Modifier.heightIn(max = 210.dp),
 
                     rows = GridCells.Fixed(1),
 
@@ -322,7 +316,7 @@ fun DashboardScreenUI(
                                         textAlign = TextAlign.Center,
                                         modifier = Modifier
                                             .padding(horizontal = 4.dp, vertical = 8.dp),
-                                        fontSize = 13.sp,
+                                        fontSize = 14.sp,
                                         fontWeight = FontWeight.W500,
                                         maxLines = 2,
                                         lineHeight = 14.sp

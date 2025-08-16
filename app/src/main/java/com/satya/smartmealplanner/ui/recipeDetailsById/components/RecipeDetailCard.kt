@@ -1,10 +1,8 @@
 package com.satya.smartmealplanner.ui.recipeDetailsById.components
 
 import android.text.Html
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -23,14 +21,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -39,19 +32,18 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import coil.compose.rememberAsyncImagePainter
 import com.satya.smartmealplanner.R
 import com.satya.smartmealplanner.data.model.recipeDetails.SelectedRecipeDetails
-import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesById
+import com.satya.smartmealplanner.data.model.similarRecipes.SimilarRecipesByIdItem
 import com.satya.smartmealplanner.presentation.navigation.Screen
 import com.satya.smartmealplanner.presentation.viewmodel.FavoriteRecipeViewModel
-import com.satya.smartmealplanner.utils.UIHelpers
-import com.satya.smartmealplanner.utils.Utils
+import com.satya.smartmealplanner.ui.utils.FetchImageFromUrl
+import com.satya.smartmealplanner.utils.Constants
 
 @Composable
 fun RecipeDetailCard(
     recipe: SelectedRecipeDetails?,
-    similarRecipes: SimilarRecipesById,
+    similarRecipes: List<SimilarRecipesByIdItem>,
     navController: NavHostController,
     favoriteRecipeViewModel: FavoriteRecipeViewModel = hiltViewModel()
 ) {
@@ -64,18 +56,17 @@ fun RecipeDetailCard(
 
     // Details
     LazyColumn(
-        modifier = Modifier.padding(16.dp),
+        modifier = Modifier.padding(horizontal = 16.dp),
     ) {
         item {
-            Image(
-                painter = rememberAsyncImagePainter(recipe?.image),
-                contentDescription = null,
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp)
-                    .clip(RoundedCornerShape(16.dp))
-            )
+            recipe?.image?.let {
+                FetchImageFromUrl(
+                    url = it, modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                        .clip(RoundedCornerShape(16.dp))
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -84,8 +75,10 @@ fun RecipeDetailCard(
             ) {
                 Text(
                     text = recipe?.title ?: "",
-                    style = MaterialTheme.typography.titleLarge,
+                    fontSize = 20.sp,
                     fontWeight = FontWeight.Bold,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f)
                 )
                 Icon(
@@ -197,7 +190,7 @@ fun RecipeDetailCard(
 
                 Text(
                     text = "Similar Recipes",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     modifier = Modifier.padding(vertical = 8.dp)
                 )
@@ -231,13 +224,12 @@ fun RecipeDetailCard(
                                     }
                             ) {
                                 Column {
-                                    Image(
-                                        painter = rememberAsyncImagePainter("https://spoonacular.com/recipeImages/${recipe.image}"),
-                                        contentDescription = recipe.title,
+
+                                    FetchImageFromUrl(
+                                        url = "${Constants.IMAGE_BASE_URL}${recipe.image}",
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .height(100.dp),
-                                        contentScale = ContentScale.Crop
+                                            .height(100.dp)
                                     )
 
                                     Text(
